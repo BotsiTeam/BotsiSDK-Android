@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1036937190106",
+    "project_id": "botsiexample",
+    "storage_bucket": "botsiexample.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1036937190106:android:e03e42f2f24230e31da3e3",
+        "android_client_info": {
+          "package_name": "com.botsi.example"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKnIMHZAl_aOjefViUgI-0IQRs2bIt7us"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
