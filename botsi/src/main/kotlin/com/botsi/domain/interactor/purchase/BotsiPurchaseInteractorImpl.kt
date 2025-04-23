@@ -125,7 +125,9 @@ internal class BotsiPurchaseInteractorImpl(
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun syncPurchases(): Flow<BotsiProfile> {
         return googlePlayManager.getPurchaseHistoryDataToRestore()
-            .zip(repository.profileStateFlow) { history, profile ->
+            .map { history ->
+                val profile = repository.profileStateFlow.first()
+
                 val alreadyPurchased = profile.subscriptions.orEmpty()
                     .mapNotNull { it.value.sourceProductId } +
                         profile.nonSubscriptions.orEmpty()
