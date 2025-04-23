@@ -27,8 +27,8 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onEmpty
-import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resumeWithException
 
@@ -94,13 +94,10 @@ internal class BotsiPurchaseInteractorImpl(
         product: BotsiPurchasableProduct,
     ): Flow<Pair<BotsiProfile, Purchase>> =
         repository.validatePurchase(purchase, product.toDto())
-            .catch { e ->
-                if (e is BotsiException && e.cause != null) {
-                    googlePlayManager.acknowledgeOrConsume(purchase, product.toDto())
-                        .catch { }
-                        .collect()
-                }
-                throw e
+            .onEach {
+                googlePlayManager.acknowledgeOrConsume(purchase, product.toDto())
+                    .catch { }
+                    .collect()
             }
             .map { profile -> profile.toDomain() to purchase }
 
