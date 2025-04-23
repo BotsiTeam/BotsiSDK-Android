@@ -93,8 +93,7 @@ internal class BotsiPurchaseInteractorImpl(
         purchase: Purchase,
         product: BotsiPurchasableProduct,
     ): Flow<Pair<BotsiProfile, Purchase>> =
-        profileInteractor.profileFlow
-            .flatMapConcat { repository.validatePurchase(purchase, product.toDto()) }
+        repository.validatePurchase(purchase, product.toDto())
             .catch { e ->
                 if (e is BotsiException && e.cause != null) {
                     googlePlayManager.acknowledgeOrConsume(purchase, product.toDto())
