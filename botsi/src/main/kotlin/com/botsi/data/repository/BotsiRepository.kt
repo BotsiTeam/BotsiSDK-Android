@@ -29,5 +29,6 @@ internal interface BotsiRepository {
 
     fun getPaywall(placementId: String): Flow<BotsiPaywallDto>
     fun syncPurchases(details: List<Pair<BotsiPurchaseRecordDto, ProductDetails>>): Flow<BotsiProfileDto>
+    fun clearCache()
 
 }

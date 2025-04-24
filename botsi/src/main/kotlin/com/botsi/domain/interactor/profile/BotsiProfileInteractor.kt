@@ -10,6 +10,7 @@ internal interface BotsiProfileInteractor {
     val customerUserId: String?
     val profileFlow: Flow<BotsiProfile>
     fun getOrCreateProfile(): Flow<BotsiProfile>
+    fun clearCache()
     fun updateProfile(customerUserId: String?, params: BotsiUpdateProfileParameters?): Flow<BotsiProfile>
     fun <T> doOnProfileReady(flow: Flow<T>): Flow<T>
 }

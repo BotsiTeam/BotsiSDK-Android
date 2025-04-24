@@ -99,6 +99,11 @@ object Botsi {
         facade.logShowPaywall(paywall)
     }
 
+    @JvmStatic
+    fun clearCache() {
+        facade.clearCache()
+    }
+
     private fun checkActivation() {
         if (::facade.isInitialized.not()) {
             throw IllegalStateException("Botsi not activated!")

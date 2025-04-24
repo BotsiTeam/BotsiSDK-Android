@@ -34,6 +34,10 @@ internal class BotsiProfileInteractorImpl(
             .map { it.toDomain() }
     }
 
+    override fun clearCache() {
+        repository.clearCache()
+    }
+
     override fun updateProfile(customerUserId: String?, params: BotsiUpdateProfileParameters?): Flow<BotsiProfile> {
         return repository.updateProfile(customerUserId, params?.toDto())
             .map { it.toDomain() }

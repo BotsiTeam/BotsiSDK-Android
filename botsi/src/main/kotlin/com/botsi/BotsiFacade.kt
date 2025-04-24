@@ -200,6 +200,12 @@ internal class BotsiFacade(
         }
     }
 
+    fun clearCache() {
+        launch {
+            profileInteractor.clearCache()
+        }
+    }
+
     private fun <T> Flow<T>.retryIfNecessary(maxAttemptCount: Long = RETRY_DEFAULT_COUNT): Flow<T> =
         this.retryWhen { error, attempt ->
             error is BotsiException && (maxAttemptCount in 0..attempt)

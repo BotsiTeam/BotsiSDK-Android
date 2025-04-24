@@ -22,6 +22,13 @@ internal class BotsiPrefsStorage(
     }
 
     @JvmSynthetic
+    fun clearData() {
+        prefs.edit(commit = true) {
+            clear()
+        }
+    }
+
+    @JvmSynthetic
     fun getKeysToRemove(containsKeys: Set<String>, startsWithKeys: Set<String>): Set<String> =
         prefs.all.keys.filterTo(mutableSetOf()) { key ->
             key != null && (key in containsKeys || startsWithKeys.firstOrNull { key.startsWith(it) } != null)

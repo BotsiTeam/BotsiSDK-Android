@@ -8,6 +8,9 @@ import java.util.UUID
 internal class BotsiStorageManager(
     private val prefsStorage: BotsiPrefsStorage,
 ) {
+    fun clearCache() {
+        prefsStorage.clearData()
+    }
 
     private var tempProfileId: String? = null
 

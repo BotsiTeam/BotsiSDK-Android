@@ -97,4 +97,8 @@ internal class BotsiRepositoryImpl(
                 _profileStateFlow.tryEmit(it)
             }
     }
+
+    override fun clearCache() {
+        storageManager.clearCache()
+    }
 }

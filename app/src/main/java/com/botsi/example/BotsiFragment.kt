@@ -354,7 +354,10 @@ class BotsiFragment : Fragment() {
         ConfigsBottomSheetModal(
             isVisible = isConfigsVisible,
             storage = app.botsiStorage,
-            recreate = { requireActivity().recreate() }
+            recreate = {
+                Botsi.clearCache()
+                requireActivity().recreate()
+            }
         )
     }
 
