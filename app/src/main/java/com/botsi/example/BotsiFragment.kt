@@ -28,14 +28,20 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,6 +55,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -56,6 +63,7 @@ import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.botsi.Botsi
+import com.botsi.BuildConfig
 import com.botsi.domain.model.BotsiPaywall
 import com.botsi.domain.model.BotsiProduct
 import kotlinx.coroutines.launch
@@ -65,6 +73,9 @@ class BotsiFragment : Fragment() {
     companion object {
         fun newInstance() = BotsiFragment()
     }
+
+    private val app: BotsiApp
+        get() = requireContext().applicationContext as BotsiApp
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return ComposeView(context = requireContext()).apply {
@@ -83,11 +94,16 @@ class BotsiFragment : Fragment() {
         var isSuccessPayment by remember { mutableStateOf(false) }
         var isError by remember { mutableStateOf(false) }
         var selectedSub by remember { mutableStateOf<BotsiProduct?>(null) }
+        var isConfigsVisible = remember { mutableStateOf(false) }
 
         LaunchedEffect(Unit) {
+            Botsi.activate(
+                context = requireContext(),
+                apiKey = app.botsiStorage.appKey,
+            )
             Botsi.getProducts({}, {})
             Botsi.getPaywall(
-                placementId = "botsi-test-app-placement",
+                placementId = app.botsiStorage.placementId,
                 successCallback = {
                     isLoading = false
                     paywall = it
@@ -95,7 +111,8 @@ class BotsiFragment : Fragment() {
                 errorCallback = {
                     isError = true
                     isLoading = false
-                })
+                },
+            )
         }
 
         val mainColor = Color(0xFFFFFFFF)
@@ -103,9 +120,12 @@ class BotsiFragment : Fragment() {
 
         val snackbarHostState = remember { SnackbarHostState() }
 
-        Scaffold(containerColor = mainColor, snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
-        }) {
+        Scaffold(
+            containerColor = mainColor,
+            snackbarHost = {
+                SnackbarHost(hostState = snackbarHostState)
+            },
+        ) {
             Box(
                 Modifier
                     .padding(it)
@@ -257,50 +277,85 @@ class BotsiFragment : Fragment() {
                     }
                 }
 
-                if (!isSuccessPayment) {
-                    Button(
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(24.dp)
-                            .fillMaxWidth(),
-                        enabled = selectedSub != null,
-                        contentPadding = PaddingValues(vertical = 16.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xffFF9542), disabledContainerColor = Color(0xFFFFCDA6)
-                        ),
-                        onClick = {
-                            selectedSub?.let { sub ->
-                                isLoading = true
-                                Botsi.makePurchase(
-                                    activity = requireActivity(),
-                                    product = sub,
-                                    callback = {
-                                        isSuccessPayment = true
-                                        isLoading = false
-                                        lifecycleScope.launch {
-                                            snackbarHostState.showSnackbar("Success")
-                                        }
-                                    },
-                                    errorCallback = {
-                                        isLoading = false
-                                        isError = false
-                                    }
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    if (!isSuccessPayment) {
+                        Button(
+                            modifier = Modifier
+                                .padding(
+                                    horizontal = 24.dp,
+                                    vertical = 8.dp
                                 )
-                            }
-                        },
-                    ) {
-                        Text(
-                            text = "Subscribe",
-                            style = TextStyle(
-                                fontWeight = FontWeight.Medium
+                                .fillMaxWidth(),
+                            enabled = selectedSub != null,
+                            contentPadding = PaddingValues(vertical = 16.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xffFF9542), disabledContainerColor = Color(0xFFFFCDA6)
                             ),
-                            color = Color.White,
-                            fontSize = 16.sp,
-                        )
+                            onClick = {
+                                selectedSub?.let { sub ->
+                                    isLoading = true
+                                    Botsi.makePurchase(
+                                        activity = requireActivity(),
+                                        product = sub,
+                                        callback = {
+                                            isSuccessPayment = true
+                                            isLoading = false
+                                            lifecycleScope.launch {
+                                                snackbarHostState.showSnackbar("Success")
+                                            }
+                                        },
+                                        errorCallback = {
+                                            isLoading = false
+                                            isError = false
+                                        }
+                                    )
+                                }
+                            },
+                        ) {
+                            Text(
+                                text = "Subscribe",
+                                style = TextStyle(
+                                    fontWeight = FontWeight.Medium
+                                ),
+                                color = Color.White,
+                                fontSize = 16.sp,
+                            )
+                        }
+                    }
+
+                    if (BuildConfig.DEBUG) {
+                        Button(
+                            modifier = Modifier
+                                .padding(horizontal = 24.dp)
+                                .fillMaxWidth(),
+                            contentPadding = PaddingValues(vertical = 16.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA2A2A2)),
+                            onClick = {
+                                isConfigsVisible.value = true
+                            },
+                        ) {
+                            Text(
+                                text = "Configs",
+                                style = TextStyle(
+                                    fontWeight = FontWeight.Medium
+                                ),
+                                fontSize = 16.sp,
+                            )
+                        }
                     }
                 }
             }
         }
+
+        ConfigsBottomSheetModal(
+            isVisible = isConfigsVisible,
+            storage = app.botsiStorage,
+            recreate = { requireActivity().recreate() }
+        )
     }
 
     @Composable
@@ -385,6 +440,79 @@ class BotsiFragment : Fragment() {
                 lineHeight = 14.sp,
                 textAlign = TextAlign.Center,
                 color = Color(0xFF9B9EA1)
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ConfigsBottomSheetModal(
+    modifier: Modifier = Modifier,
+    isVisible: MutableState<Boolean>,
+    storage: BotsiConfigsStorage,
+    recreate: () -> Unit,
+) {
+    if (isVisible.value) {
+        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        var appKey by remember { mutableStateOf(TextFieldValue(storage.appKey)) }
+        var placementId by remember { mutableStateOf(TextFieldValue(storage.placementId)) }
+
+        ModalBottomSheet(
+            modifier = modifier,
+            onDismissRequest = {
+                isVisible.value = false
+
+                val hasChanged = storage.appKey != appKey.text || storage.placementId != placementId.text
+                storage.appKey = appKey.text
+                storage.placementId = placementId.text
+
+                if (hasChanged) {
+                    recreate()
+                }
+            },
+            sheetState = sheetState,
+            properties = ModalBottomSheetProperties(shouldDismissOnBackPress = true),
+            containerColor = Color.White,
+        ) {
+            TextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = 16.dp,
+                    ),
+                onValueChange = {
+                    appKey = it
+                },
+                label = {
+                    Text(
+                        text = "App key",
+                        style = TextStyle(
+                            fontWeight = FontWeight.Medium
+                        ),
+                    )
+                },
+                value = appKey,
+            )
+            TextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = 16.dp,
+                        vertical = 16.dp
+                    ),
+                onValueChange = {
+                    placementId = it
+                },
+                label = {
+                    Text(
+                        text = "Placement id",
+                        style = TextStyle(
+                            fontWeight = FontWeight.Medium
+                        ),
+                    )
+                },
+                value = placementId,
             )
         }
     }
