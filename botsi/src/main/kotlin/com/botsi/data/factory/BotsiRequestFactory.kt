@@ -19,10 +19,6 @@ internal class BotsiRequestFactory(
     private val apiKey: String,
 ) {
 
-    private val apiKeyPrefix = apiKey.split(".").let {
-        it.getOrNull(0).orEmpty() + "." + it.getOrNull(1).orEmpty()
-    }
-
     private fun String.toProfileEndPoint(): String {
         return "profiles/$this/"
     }

@@ -191,6 +191,33 @@ class BotsiFragment : Fragment() {
                         textAlign = TextAlign.Center,
                     )
 
+                    Text(
+                        modifier = Modifier
+                            .padding(
+                                vertical = 8.dp,
+                                horizontal = 48.dp,
+                            )
+                            .clickable(
+                                onClick = {
+                                    isLoading = true
+                                    Botsi.restoreProducts(
+                                        successCallback = {
+                                            isLoading = false
+                                            isSuccessPayment = true
+                                        },
+                                        errorCallback = {
+                                            isLoading = false
+                                            isError = true
+                                        }
+                                    )
+                                },
+                            ),
+                        text = "Restore",
+                        color = textColor,
+                        fontSize = 22.sp,
+                        textAlign = TextAlign.Center,
+                    )
+
                     Spacer(Modifier.height(48.dp))
 
                     if (isLoading) {
