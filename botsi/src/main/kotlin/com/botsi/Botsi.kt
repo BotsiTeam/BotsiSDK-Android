@@ -42,7 +42,6 @@ object Botsi {
     }
 
     @JvmStatic
-    @JvmOverloads
     fun getProfile(
         customerUserId: String?,
         successCallback: (BotsiProfile) -> Unit
