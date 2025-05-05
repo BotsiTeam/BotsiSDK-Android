@@ -87,6 +87,7 @@ internal class BotsiInstallationMetaRetrieverService(
                     appSetId = appSetId,
                     androidId = androidId,
                     storeCountry = storeCountry,
+                    customerUserId = null
                 )
             )
         }

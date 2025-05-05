@@ -31,23 +31,31 @@ internal class BotsiFacade(
 ) {
 
     @JvmSynthetic
-    fun activate(errorCallback: ((Throwable) -> Unit)? = null) {
+    fun activate(
+        customerUserId: String?,
+        successCallback: ((BotsiProfile) -> Unit)? = null,
+        errorCallback: ((Throwable) -> Unit)? = null,
+    ) {
         launch {
-            profileInteractor.getOrCreateProfile()
+            profileInteractor.getOrCreateProfile(customerUserId)
                 .retryIfNecessary()
                 .catch { errorCallback?.invoke(it) }
-                .collect()
+                .collect { successCallback?.invoke(it) }
         }
     }
 
     @JvmSynthetic
-    fun getProfile(callback: (BotsiProfile) -> Unit) {
+    fun getProfile(
+        customerUserId: String?,
+        successCallback: ((BotsiProfile) -> Unit)? = null,
+        errorCallback: ((Throwable) -> Unit)? = null,
+    ) {
         launch {
             profileInteractor
-                .getOrCreateProfile()
+                .getOrCreateProfile(customerUserId)
                 .retryIfNecessary()
-                .onEach { callback(it) }
-                .collect()
+                .catch { errorCallback?.invoke(it) }
+                .collect { successCallback?.invoke(it) }
         }
     }
 
@@ -55,7 +63,7 @@ internal class BotsiFacade(
     fun updateProfile(
         customerUserId: String?,
         params: BotsiUpdateProfileParameters?,
-        resultCallback: (BotsiProfile) -> Unit,
+        successCallback: ((BotsiProfile) -> Unit)? = null,
         errorCallback: ((Throwable) -> Unit)? = null
     ) {
         launch {
@@ -64,16 +72,13 @@ internal class BotsiFacade(
                     .updateProfile(customerUserId, params)
             )
                 .retryIfNecessary()
-                .onEach { result -> resultCallback(result) }
-                .catch {
-                    errorCallback?.invoke(it)
-                }
-                .collect()
+                .catch { errorCallback?.invoke(it) }
+                .collect { successCallback?.invoke(it) }
         }
     }
 
     fun getProducts(
-        successCallback: (List<ProductDetails>) -> Unit,
+        successCallback: ((List<ProductDetails>) -> Unit)? = null,
         errorCallback: ((Throwable) -> Unit)? = null,
     ) {
         launch {
@@ -81,9 +86,8 @@ internal class BotsiFacade(
                 productsInteractor.getProductsIds()
                     .retryIfNecessary()
             )
-                .onEach { result -> successCallback(result) }
                 .catch { errorCallback?.invoke(it) }
-                .collect()
+                .collect { successCallback?.invoke(it) }
         }
     }
 
@@ -93,7 +97,7 @@ internal class BotsiFacade(
         product: BotsiProduct,
         subscriptionUpdateParams: BotsiSubscriptionUpdateParameters?,
         isOfferPersonalized: Boolean,
-        callback: ((Pair<BotsiProfile, Purchase?>?) -> Unit),
+        successCallback: ((Pair<BotsiProfile, Purchase?>?) -> Unit)? = null,
         errorCallback: ((Throwable) -> Unit)? = null,
     ) {
         launch {
@@ -105,33 +109,30 @@ internal class BotsiFacade(
                     isOfferPersonalized
                 )
             )
-                .onEach { result -> callback(result) }
-                .catch {
-                    errorCallback?.invoke(it)
-                }
-                .collect()
+                .catch { errorCallback?.invoke(it) }
+                .collect { successCallback?.invoke(it) }
         }
     }
 
     @JvmSynthetic
     fun syncPurchases(
-        callback: ((BotsiProfile) -> Unit),
-        errorCallback: ((Throwable) -> Unit)? = null,
+        successCallback: ((BotsiProfile) -> Unit)? = null,
+        errorCallback: ((Throwable) -> Unit)? = null
     ) {
         launch {
             profileInteractor.doOnProfileReady(
                 purchaseInteractor.syncPurchases()
             )
-                .onEach { result -> callback(result) }
-                .catch {
-                    errorCallback?.invoke(it)
-                }
-                .collect()
+                .catch { errorCallback?.invoke(it) }
+                .collect { successCallback?.invoke(it) }
         }
     }
 
     @JvmSynthetic
-    fun logout(errorCallback: ((Throwable) -> Unit)?) {
+    fun logout(
+        successCallback: ((BotsiProfile) -> Unit)? = null,
+        errorCallback: ((Throwable) -> Unit)? = null
+    ) {
         launch {
             profileInteractor.doOnProfileReady(
                 profileInteractor.updateProfile(
@@ -140,14 +141,15 @@ internal class BotsiFacade(
                 )
             )
                 .catch { errorCallback?.invoke(it) }
-                .collect()
+                .collect { successCallback?.invoke(it) }
         }
     }
 
     @JvmSynthetic
     fun login(
         customerUserId: String?,
-        errorCallback: ((Throwable) -> Unit)?
+        successCallback: ((BotsiProfile) -> Unit)? = null,
+        errorCallback: ((Throwable) -> Unit)? = null
     ) {
         launch {
             profileInteractor.doOnProfileReady(
@@ -157,22 +159,21 @@ internal class BotsiFacade(
                 )
             )
                 .catch { errorCallback?.invoke(it) }
-                .collect()
+                .collect { successCallback?.invoke(it) }
         }
     }
 
     fun getPaywall(
         placementId: String,
-        successCallback: (BotsiPaywall) -> Unit,
-        errorCallback: ((Throwable) -> Unit)?
+        successCallback: ((BotsiPaywall) -> Unit)? = null,
+        errorCallback: ((Throwable) -> Unit)? = null
     ) {
         launch {
             profileInteractor.doOnProfileReady(
                 productsInteractor.getPaywall(placementId)
             )
-                .onEach { successCallback(it) }
                 .catch { errorCallback?.invoke(it) }
-                .collect()
+                .collect { successCallback?.invoke(it) }
         }
     }
 

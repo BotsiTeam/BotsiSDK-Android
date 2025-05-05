@@ -23,14 +23,11 @@ internal class BotsiProfileInteractorImpl(
     private val repository: BotsiRepository,
 ) : BotsiProfileInteractor {
 
-    override val customerUserId: String?
-        get() = repository.customerUserId
-
     override val profileFlow: Flow<BotsiProfile>
         get() = repository.profileStateFlow.map { it.toDomain() }
 
-    override fun getOrCreateProfile(): Flow<BotsiProfile> {
-        return repository.getOrCreateProfile()
+    override fun getOrCreateProfile(customerUserId: String?): Flow<BotsiProfile> {
+        return repository.getOrCreateProfile(customerUserId)
             .map { it.toDomain() }
     }
 

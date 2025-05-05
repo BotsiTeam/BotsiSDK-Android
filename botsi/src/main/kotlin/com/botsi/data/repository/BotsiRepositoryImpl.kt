@@ -25,19 +25,24 @@ internal class BotsiRepositoryImpl(
     private val metaRetrieverService: BotsiInstallationMetaRetrieverService,
 ) : BotsiRepository {
 
-    override val customerUserId: String?
-        get() = storageManager.customerUserId
-
     private val _profileStateFlow = MutableSharedFlow<BotsiProfileDto>(replay = 1)
     override val profileStateFlow: Flow<BotsiProfileDto> = _profileStateFlow
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getOrCreateProfile(): Flow<BotsiProfileDto> {
+    override fun getOrCreateProfile(customerUserId: String?): Flow<BotsiProfileDto> {
         return when {
             storageManager.isProfileTemp ->
                 metaRetrieverService.installationMetaFlow(storageManager.deviceId)
                     .flatMapLatest { installationMeta ->
-                        flow { emit(httpManager.createProfile(storageManager.profileId, installationMeta)) }
+                        flow {
+                            emit(
+                                httpManager.createProfile(
+                                    storageManager.profileId,
+                                    customerUserId,
+                                    installationMeta
+                                )
+                            )
+                        }
                     }
                     .onEach { storageManager.profile = it }
 
@@ -53,7 +58,6 @@ internal class BotsiRepositoryImpl(
         customerUserId: String?,
         params: BotsiUpdateProfileParametersDto?
     ): Flow<BotsiProfileDto> {
-        storageManager.customerUserId = customerUserId
         return flow { emit(httpManager.updateProfile(storageManager.profileId, customerUserId, params)) }
             .onEach {
                 storageManager.profile = it

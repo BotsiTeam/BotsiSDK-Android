@@ -9,6 +9,7 @@ import com.botsi.domain.model.BotsiPaywall
 import com.botsi.domain.model.BotsiProduct
 import com.botsi.domain.model.BotsiProfile
 import com.botsi.domain.model.BotsiSubscriptionUpdateParameters
+import com.botsi.domain.model.BotsiUpdateProfileParameters
 
 object Botsi {
 
@@ -20,6 +21,8 @@ object Botsi {
     fun activate(
         context: Context,
         apiKey: String,
+        customerUserId: String? = null,
+        successCallback: ((BotsiProfile) -> Unit)? = null,
         errorCallback: ((Throwable) -> Unit)? = null
     ) {
         diManager.initDi(context, apiKey)
@@ -31,21 +34,69 @@ object Botsi {
             analyticsTracker = diManager.inject(),
         )
 
-        facade.activate(errorCallback)
+        facade.activate(
+            customerUserId,
+            successCallback,
+            errorCallback,
+        )
     }
 
     @JvmStatic
     @JvmOverloads
-    fun login(customerUserId: String?, errorCallback: ((Throwable) -> Unit)? = null) {
+    fun getProfile(
+        customerUserId: String?,
+        successCallback: (BotsiProfile) -> Unit
+    ) {
         checkActivation()
-        facade.login(customerUserId, errorCallback)
+        facade.getProfile(
+            customerUserId,
+            successCallback
+        )
+    }
+
+    @JvmSynthetic
+    @JvmOverloads
+    fun updateProfile(
+        customerUserId: String?,
+        params: BotsiUpdateProfileParameters?,
+        successCallback: ((BotsiProfile) -> Unit)? = null,
+        errorCallback: ((Throwable) -> Unit)? = null
+    ) {
+        checkActivation()
+        facade.updateProfile(
+            customerUserId,
+            params,
+            successCallback,
+            errorCallback
+        )
     }
 
     @JvmStatic
     @JvmOverloads
-    fun logout(errorCallback: ((Throwable) -> Unit)? = null) {
+    fun login(
+        customerUserId: String?,
+        successCallback: ((BotsiProfile) -> Unit)? = null,
+        errorCallback: ((Throwable) -> Unit)? = null
+    ) {
         checkActivation()
-        facade.logout(errorCallback)
+        facade.login(
+            customerUserId,
+            successCallback,
+            errorCallback
+        )
+    }
+
+    @JvmStatic
+    @JvmOverloads
+    fun logout(
+        successCallback: ((BotsiProfile) -> Unit)? = null,
+        errorCallback: ((Throwable) -> Unit)? = null,
+    ) {
+        checkActivation()
+        facade.logout(
+            successCallback,
+            errorCallback
+        )
     }
 
     @JvmStatic

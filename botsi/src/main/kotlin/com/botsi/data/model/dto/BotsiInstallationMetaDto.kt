@@ -33,4 +33,6 @@ internal data class BotsiInstallationMetaDto(
     val androidId: String,
     @SerializedName("storeCountry")
     val storeCountry: String?,
+    @SerializedName("customerUserId")
+    val customerUserId: String?,
 )

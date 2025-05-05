@@ -13,10 +13,9 @@ import kotlinx.coroutines.flow.Flow
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 internal interface BotsiRepository {
 
-    val customerUserId: String?
     val profileStateFlow: Flow<BotsiProfileDto>
 
-    fun getOrCreateProfile(): Flow<BotsiProfileDto>
+    fun getOrCreateProfile(customerUserId: String?): Flow<BotsiProfileDto>
 
     fun updateProfile(customerUserId: String?,params: BotsiUpdateProfileParametersDto?): Flow<BotsiProfileDto>
 
