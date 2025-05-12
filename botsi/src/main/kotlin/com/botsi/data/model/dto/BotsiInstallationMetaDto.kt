@@ -35,4 +35,6 @@ internal data class BotsiInstallationMetaDto(
     val storeCountry: String?,
     @SerializedName("customerUserId")
     val customerUserId: String?,
+    @SerializedName("ip")
+    val ip: String?,
 )

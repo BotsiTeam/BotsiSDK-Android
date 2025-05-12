@@ -16,6 +16,7 @@ import com.botsi.data.repository.BotsiRepositoryImpl
 import com.botsi.data.service.BotsiInstallationMetaRetrieverService
 import com.botsi.data.service.retriever.BotsiAdIdRetriever
 import com.botsi.data.service.retriever.BotsiAppSetIdRetriever
+import com.botsi.data.service.retriever.BotsiNetworkIpRetriever
 import com.botsi.data.service.retriever.BotsiStoreCountryRetriever
 import com.botsi.data.service.retriever.BotsiUserAgentRetriever
 import com.botsi.data.storage.BotsiPrefsStorage
@@ -50,12 +51,14 @@ internal class DiManager {
 
         dependencies[BotsiGoogleStoreManager::class.java] = BotsiGoogleStoreManager(context)
         dependencies[BotsiAppSetIdRetriever::class.java] = BotsiAppSetIdRetriever()
+        dependencies[BotsiNetworkIpRetriever::class.java] = BotsiNetworkIpRetriever()
         dependencies[BotsiAdIdRetriever::class.java] = BotsiAdIdRetriever()
         dependencies[BotsiUserAgentRetriever::class.java] = BotsiUserAgentRetriever()
         dependencies[BotsiStoreCountryRetriever::class.java] = BotsiStoreCountryRetriever(inject())
 
         dependencies[BotsiInstallationMetaRetrieverService::class.java] = BotsiInstallationMetaRetrieverService(
             context,
+            inject(),
             inject(),
             inject(),
             inject(),

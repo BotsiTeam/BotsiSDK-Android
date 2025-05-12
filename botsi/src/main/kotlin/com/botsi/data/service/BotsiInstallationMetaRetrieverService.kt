@@ -9,6 +9,7 @@ import com.botsi.BuildConfig
 import com.botsi.data.model.dto.BotsiInstallationMetaDto
 import com.botsi.data.service.retriever.BotsiAdIdRetriever
 import com.botsi.data.service.retriever.BotsiAppSetIdRetriever
+import com.botsi.data.service.retriever.BotsiNetworkIpRetriever
 import com.botsi.data.service.retriever.BotsiStoreCountryRetriever
 import com.botsi.data.service.retriever.BotsiUserAgentRetriever
 import kotlinx.coroutines.flow.Flow
@@ -23,6 +24,7 @@ internal class BotsiInstallationMetaRetrieverService(
     private val adIdRetriever: BotsiAdIdRetriever,
     private val userAgentRetriever: BotsiUserAgentRetriever,
     private val storeCountryRetriever: BotsiStoreCountryRetriever,
+    private val networkIpRetriever: BotsiNetworkIpRetriever,
 ) {
     private var botsiSdkVersion: String = BuildConfig.VERSION_NAME
 
@@ -70,7 +72,8 @@ internal class BotsiInstallationMetaRetrieverService(
             appSetIdRetriever.getAppSetIdIfAvailable(appContext),
             userAgentRetriever.getUserAgentIfAvailable(appContext),
             storeCountryRetriever.getCountryIfAvailable(),
-        ) { advertisingId, appSetId, userAgent, storeCountry ->
+            networkIpRetriever.getIpIfAvailable(),
+        ) { advertisingId, appSetId, userAgent, storeCountry, ip ->
             emit(
                 BotsiInstallationMetaDto(
                     deviceId = deviceId,
@@ -87,6 +90,7 @@ internal class BotsiInstallationMetaRetrieverService(
                     appSetId = appSetId,
                     androidId = androidId,
                     storeCountry = storeCountry,
+                    ip = ip,
                     customerUserId = null
                 )
             )
