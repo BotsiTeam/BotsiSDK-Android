@@ -7,6 +7,7 @@ import com.botsi.data.factory.BotsiRequestFactory
 import com.botsi.data.http.client.BotsiHttpClient
 import com.botsi.data.model.dto.BotsiInstallationMetaDto
 import com.botsi.data.model.dto.BotsiPaywallDto
+import com.botsi.data.model.dto.BotsiPaywallViewConfigDto
 import com.botsi.data.model.dto.BotsiProfileDto
 import com.botsi.data.model.dto.BotsiPurchasableProductDto
 import com.botsi.data.model.dto.BotsiPurchaseRecordDto
@@ -92,6 +93,20 @@ internal class BotsiHttpManager(
         val response = httpClient.newRequest<BotsiBaseResponse<BotsiPaywallDto>>(
             requestFactory.getPaywallRequest(placementId, profileId),
             getReflectType<BotsiBaseResponse<BotsiPaywallDto>>(),
+        )
+        when (response) {
+            is BotsiResponse.Success -> return response.body.data
+            is BotsiResponse.Error -> throw response.error
+        }
+    }
+
+    fun getPaywallViewConfigRequest(
+        placementId: String,
+        profileId: String,
+    ): BotsiPaywallViewConfigDto {
+        val response = httpClient.newRequest<BotsiBaseResponse<BotsiPaywallViewConfigDto>>(
+            requestFactory.getPaywallViewConfigRequest(placementId, profileId),
+            getReflectType<BotsiBaseResponse<BotsiPaywallViewConfigDto>>(),
         )
         when (response) {
             is BotsiResponse.Success -> return response.body.data

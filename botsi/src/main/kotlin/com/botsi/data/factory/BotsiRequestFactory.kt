@@ -110,6 +110,15 @@ internal class BotsiRequestFactory(
     }
 
     @JvmSynthetic
+    fun getPaywallViewConfigRequest(
+        id: String,
+        profileId: String,
+    ) = buildRequest {
+        method = BotsiRequest.Method.GET
+//        endPoint = "paywalls/$id?profileId=$profileId&store=play_store"
+    }
+
+    @JvmSynthetic
     fun sendAnalyticsEventsRequest(events: List<AnalyticsEvent>) =
         buildRequest {
             method = BotsiRequest.Method.POST
