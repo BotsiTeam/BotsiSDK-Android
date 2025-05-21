@@ -22,7 +22,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build AAR
-        run: ./gradlew :your-library-module:assembleRelease
+        run: ./gradlew :botsi:assembleRelease
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
