@@ -1,0 +1,32 @@
+name: Publish AAR Release
+
+on:
+  push:
+    branches:
+      - 'rc'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build AAR
+        run: ./gradlew :your-library-module:assembleRelease
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: your-library-module/build/outputs/aar/*.aar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
