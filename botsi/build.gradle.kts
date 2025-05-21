@@ -5,7 +5,7 @@ plugins {
     `maven-publish`
 }
 
-val versionName = "rc-0.0.1-beta"
+val versionName = "master"
 val botsiArtifactId = "botsi-sdk"
 val botsiGroupId = "com.botsi"
 val token = "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"
