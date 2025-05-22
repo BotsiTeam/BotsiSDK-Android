@@ -54,49 +54,29 @@ android {
     }
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("release") {
-            groupId = botsiGroupId
-            artifactId = botsiArtifactId
-            version = versionName
-            artifact("$buildDir/outputs/aar/${botsiArtifactId}-release.aar")
-
-            pom {
-                withXml {
-                    asNode().appendNode("dependencies").apply {
-                        configurations["api"].dependencies.forEach { dependency ->
-                            appendNode("dependency").apply {
-                                appendNode("groupId", dependency.group)
-                                appendNode("artifactId", dependency.name)
-                                appendNode("version", dependency.version)
-                                appendNode("scope", "compile")
-                            }
-                        }
-                        configurations["implementation"].dependencies.forEach { dependency ->
-                            appendNode("dependency").apply {
-                                appendNode("groupId", dependency.group)
-                                appendNode("artifactId", dependency.name)
-                                appendNode("version", dependency.version)
-                                appendNode("scope", "runtime")
-                            }
-                        }
-                    }
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                from(components["release"])
+                groupId = botsiGroupId
+                artifactId = botsiArtifactId
+                version = versionName
+            }
+        }
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url = uri(mavenUrl)
+                credentials {
+                    username = localProperties.getProperty("admin.username")
+                    password = localProperties.getProperty("admin.token")
                 }
             }
         }
     }
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri(mavenUrl)
-            credentials {
-                username = localProperties.getProperty("admin.username")
-                password = localProperties.getProperty("admin.token")
-            }
-        }
-    }
 }
+
 
 dependencies {
     implementation(libs.gson)

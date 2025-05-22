@@ -2,8 +2,8 @@ name: Publish AAR Release
 
 on:
   push:
-    branches:
-      - 'rc-**'
+    tags:
+      - 'v-*'
 
 jobs:
   build:
