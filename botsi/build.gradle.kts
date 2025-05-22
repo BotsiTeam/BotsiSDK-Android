@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.dokka)
@@ -6,11 +8,16 @@ plugins {
 }
 
 val versionName = "master"
-val botsiArtifactId = "botsi-sdk"
+val botsiArtifactId = "botsi"
 val botsiGroupId = "com.botsi"
-val token = "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"
-val swtpUserName = "swtp-markevych"
 val mavenUrl = "https://maven.pkg.github.com/BotsiTeam/BotsiSDK-Android"
+
+val localProperties = Properties().apply {
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        load(localPropertiesFile.inputStream())
+    }
+}
 
 android {
     compileSdk = BotsiGlobalVars.compileSdk
@@ -18,7 +25,7 @@ android {
 
     defaultConfig {
         minSdk = BotsiGlobalVars.minSdk
-        buildConfigField("String", "VERSION_NAME", versionName)
+        buildConfigField("String", "VERSION_NAME", "\"$versionName\"")
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -39,7 +46,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
         }
     }
     publishing {
@@ -53,7 +60,30 @@ publishing {
             groupId = botsiGroupId
             artifactId = botsiArtifactId
             version = versionName
-            from(components["release"])
+            artifact("$buildDir/outputs/aar/${botsiArtifactId}-release.aar")
+
+            pom {
+                withXml {
+                    asNode().appendNode("dependencies").apply {
+                        configurations["api"].dependencies.forEach { dependency ->
+                            appendNode("dependency").apply {
+                                appendNode("groupId", dependency.group)
+                                appendNode("artifactId", dependency.name)
+                                appendNode("version", dependency.version)
+                                appendNode("scope", "compile")
+                            }
+                        }
+                        configurations["implementation"].dependencies.forEach { dependency ->
+                            appendNode("dependency").apply {
+                                appendNode("groupId", dependency.group)
+                                appendNode("artifactId", dependency.name)
+                                appendNode("version", dependency.version)
+                                appendNode("scope", "runtime")
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
     repositories {
@@ -61,8 +91,8 @@ publishing {
             name = "GitHubPackages"
             url = uri(mavenUrl)
             credentials {
-                username = System.getenv(swtpUserName)
-                password = System.getenv(token)
+                username = localProperties.getProperty("admin.username")
+                password = localProperties.getProperty("admin.token")
             }
         }
     }
