@@ -27,7 +27,7 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: your-library-module/build/outputs/aar/*.aar
+          files: botsi/build/outputs/aar/*.aar
           body: ${{ env.RELEASE_NAME }}
           draft: false
           prerelease: false
