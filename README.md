@@ -21,7 +21,7 @@ Add the SDK dependency in your `build.gradle`:
 
 ```groovy
 dependencies {
-    implementation 'com.botsi:sdk:<latest-version>'
+    implementation 'com.botsi:botsi:<latest-version>'
 }
 ```
 
