@@ -1,8 +1,8 @@
 import org.gradle.api.JavaVersion
 
 object BotsiGlobalVars {
-    val javaVersion = JavaVersion.VERSION_11
-    val jvmTarget = "11"
+    val javaVersion = JavaVersion.VERSION_17
+    val jvmTarget = "17"
 
     const val compileSdk = 35
     const val targetSdk = 35

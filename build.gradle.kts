@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.android.kotlin) apply false
     alias(libs.plugins.dokka)
     alias(libs.plugins.kotlin.jvm) apply false
+    alias(libs.plugins.maven.publish) apply false
     id("com.google.gms.google-services") version "4.4.2" apply false
 }
 

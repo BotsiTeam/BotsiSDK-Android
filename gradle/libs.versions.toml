@@ -10,6 +10,7 @@ appset = "16.1.0"
 billing = "7.1.1"
 lifecycle = "2.8.7"
 core-ktx = "1.15.0"
+publish-sdk = "0.32.0"
 
 [libraries]
 android-billing-client = { module = "com.android.billingclient:billing-ktx", version.ref = "billing" }
@@ -26,3 +27,4 @@ android-library = { id = "com.android.library", version.ref = "build-tools" }
 android-kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka-plugin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-jvm" }
+maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "publish-sdk" }

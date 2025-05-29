@@ -17,6 +17,12 @@ The **Botsi Android SDK** enables seamless integration of in-app purchases, user
 
 ## 📦 Installation
 
+<p align="center">
+<a href="https://jitpack.io/#BotsiTeam/BotsiSDK-Android"><img src="https://jitpack.io/v/BotsiTeam/BotsiSDK-Android.svg"></a>
+<a href="https://central.sonatype.com/artifact/com.botsi/sdk/versions"><img src="https://img.shields.io/maven-central/v/com.botsi/sdk"></a>
+<a href="https://www.apache.org/licenses/LICENSE-2.0.txt"><img src="https://img.shields.io/badge/license-Apache-brightgreen.svg"></a>
+</p>
+
 Add the SDK dependency in your `build.gradle`:
 
 ```groovy
@@ -25,7 +31,7 @@ dependencies {
 }
 ```
 
-Replace `<latest-version>` with the latest release from the [Releases](https://github.com/your-org/botsi-android-sdk/releases) page.
+Replace `<latest-version>` with the latest release from the [Releases](https://central.sonatype.com/artifact/com.botsi/sdk/versions) page.
 
 ---
 
@@ -184,17 +190,17 @@ We welcome contributions! Please:
 - Make your changes in a separate branch
 - Submit a pull request with a clear description
 
-📢 Found a bug or have a feature request? Submit an issue in [Issues](https://github.com/your-org/botsi-android-sdk/issues)
+📢 Found a bug or have a feature request? Submit an issue in [Issues](https://github.com/swytapp/BotsiSDK-Kotlin/issues)
 
 ---
 
 ## 📄 License
 
-This SDK is released under the [MIT License](LICENSE).
+This SDK is released under the [The Apache Software License](https://www.apache.org/licenses/LICENSE-2.0.txt).
 
 ---
 
 ## 📫 Support
 
-Need help? Contact us at [support@botsi.app](mailto:support@botsi.app)  
-Or visit our [Developer Portal](https://botsi.app) for more tools and documentation.
+Need help? Contact us at [hello@botsi.com](mailto:hello@botsi.com)  
+Or visit our [Developer Portal](https://botsi.com) for more tools and documentation.
