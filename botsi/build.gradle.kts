@@ -9,7 +9,7 @@ plugins {
     `maven-publish`
 }
 
-val versionName = "0.0.1-beta"
+val versionName = "0.0.2-beta"
 val botsiArtifactId = "sdk"
 val botsiGroupId = "com.botsi"
 val mavenUrl = "https://maven.pkg.github.com/BotsiTeam/BotsiSDK-Android"
@@ -48,10 +48,6 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = true
-        }
-
-        debug {
         }
     }
 }
