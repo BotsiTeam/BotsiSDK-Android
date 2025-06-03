@@ -13,6 +13,7 @@ import com.botsi.data.model.dto.BotsiPurchaseRecordDto
 import com.botsi.data.model.dto.BotsiUpdateProfileParametersDto
 import com.botsi.data.model.response.BotsiBaseResponse
 import com.botsi.data.model.response.BotsiResponse
+import com.google.gson.JsonElement
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
 
@@ -95,6 +96,21 @@ internal class BotsiHttpManager(
         )
         when (response) {
             is BotsiResponse.Success -> return response.body.data
+            is BotsiResponse.Error -> throw response.error
+        }
+    }
+
+    fun getPaywallViewConfiguration(
+        placementId: String,
+        paywallId: Long,
+        profileId: String,
+    ): JsonElement {
+        val response = httpClient.newRequest<JsonElement>(
+            requestFactory.getViewConfigurationRequest(placementId, paywallId, profileId),
+            getReflectType<JsonElement>(),
+        )
+        when (response) {
+            is BotsiResponse.Success -> return response.body
             is BotsiResponse.Error -> throw response.error
         }
     }

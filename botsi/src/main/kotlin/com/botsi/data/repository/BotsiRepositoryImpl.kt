@@ -11,6 +11,7 @@ import com.botsi.data.model.dto.BotsiPurchaseRecordDto
 import com.botsi.data.model.dto.BotsiUpdateProfileParametersDto
 import com.botsi.data.service.BotsiInstallationMetaRetrieverService
 import com.botsi.data.storage.BotsiStorageManager
+import com.google.gson.JsonElement
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -90,6 +91,10 @@ internal class BotsiRepositoryImpl(
 
     override fun getPaywall(placementId: String): Flow<BotsiPaywallDto> {
         return flow { emit(httpManager.getPaywall(placementId, storageManager.profileId)) }
+    }
+
+    override fun getPaywallViewConfiguration(placementId: String, paywallId: Long): Flow<JsonElement> {
+        return flow { emit(httpManager.getPaywallViewConfiguration(placementId, paywallId, storageManager.profileId)) }
     }
 
     override fun syncPurchases(details: List<Pair<BotsiPurchaseRecordDto, ProductDetails>>): Flow<BotsiProfileDto> {

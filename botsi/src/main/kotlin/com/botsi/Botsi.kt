@@ -10,6 +10,7 @@ import com.botsi.domain.model.BotsiProduct
 import com.botsi.domain.model.BotsiProfile
 import com.botsi.domain.model.BotsiSubscriptionUpdateParameters
 import com.botsi.domain.model.BotsiUpdateProfileParameters
+import com.google.gson.JsonElement
 
 object Botsi {
 
@@ -127,6 +128,18 @@ object Botsi {
     ) {
         checkActivation()
         facade.getPaywall(placementId, successCallback, errorCallback)
+    }
+
+    @JvmStatic
+    @JvmOverloads
+    fun getPaywallViewConfiguration(
+        placementId: String,
+        paywallId: Long,
+        successCallback: (JsonElement) -> Unit,
+        errorCallback: ((Throwable) -> Unit)? = null,
+    ) {
+        checkActivation()
+        facade.getPaywallViewConfiguration(paywallId, placementId, successCallback, errorCallback)
     }
 
     @JvmStatic

@@ -15,6 +15,7 @@ import com.botsi.domain.model.BotsiProfile
 import com.botsi.domain.model.BotsiSubscriptionUpdateParameters
 import com.botsi.domain.model.BotsiUpdateProfileParameters
 import com.botsi.scope.launch
+import com.google.gson.JsonElement
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
@@ -171,6 +172,21 @@ internal class BotsiFacade(
         launch {
             profileInteractor.doOnProfileReady(
                 productsInteractor.getPaywall(placementId)
+            )
+                .catch { errorCallback?.invoke(it) }
+                .collect { successCallback?.invoke(it) }
+        }
+    }
+
+    fun getPaywallViewConfiguration(
+        paywallId: Long,
+        placementId: String,
+        successCallback: ((JsonElement) -> Unit)? = null,
+        errorCallback: ((Throwable) -> Unit)? = null
+    ) {
+        launch {
+            profileInteractor.doOnProfileReady(
+                productsInteractor.getPaywallViewConfiguration(placementId, paywallId)
             )
                 .catch { errorCallback?.invoke(it) }
                 .collect { successCallback?.invoke(it) }

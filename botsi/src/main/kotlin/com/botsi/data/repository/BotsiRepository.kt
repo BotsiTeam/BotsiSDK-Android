@@ -8,6 +8,7 @@ import com.botsi.data.model.dto.BotsiProfileDto
 import com.botsi.data.model.dto.BotsiPurchasableProductDto
 import com.botsi.data.model.dto.BotsiPurchaseRecordDto
 import com.botsi.data.model.dto.BotsiUpdateProfileParametersDto
+import com.google.gson.JsonElement
 import kotlinx.coroutines.flow.Flow
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
@@ -27,7 +28,11 @@ internal interface BotsiRepository {
     fun getProductIds(): Flow<List<String>>
 
     fun getPaywall(placementId: String): Flow<BotsiPaywallDto>
+
+    fun getPaywallViewConfiguration(placementId: String, paywallId: Long): Flow<JsonElement>
+
     fun syncPurchases(details: List<Pair<BotsiPurchaseRecordDto, ProductDetails>>): Flow<BotsiProfileDto>
+
     fun clearCache()
 
 }

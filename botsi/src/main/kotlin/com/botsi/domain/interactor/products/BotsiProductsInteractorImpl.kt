@@ -6,6 +6,7 @@ import com.botsi.data.google_store.BotsiGoogleStoreManager
 import com.botsi.data.repository.BotsiRepository
 import com.botsi.domain.model.BotsiPaywall
 import com.botsi.domain.model.BotsiProduct
+import com.google.gson.JsonElement
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -101,5 +102,9 @@ internal class BotsiProductsInteractorImpl(
                     )
                 }
             }
+    }
+
+    override fun getPaywallViewConfiguration(placementId: String, paywallId: Long): Flow<JsonElement> {
+        return repository.getPaywallViewConfiguration(placementId, paywallId)
     }
 }
