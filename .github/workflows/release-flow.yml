@@ -27,10 +27,16 @@ jobs:
       - name: Build AAR
         run: ./gradlew :botsi:assembleRelease
 
+      - name: List generated files (debug)
+        run: |
+          echo "Contents of botsi/build/outputs/aar/:"
+          ls -la botsi/build/outputs/aar/ || echo "Directory not found"
+          find . -name "*.aar" -type f
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: botsi/build/outputs/aar/*.aar
+          files: botsi/build/outputs/aar/botsi-release.aar
           body: ${{ env.RELEASE_NAME }}
           draft: false
           prerelease: false

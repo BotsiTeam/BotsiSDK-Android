@@ -5,6 +5,7 @@ object BotsiGlobalVars {
     val jvmTarget = "17"
     val nameSpace = "com.botsi"
     val sdkVersion = "0.0.3-beta"
+    val viewSdkVersion = "0.0.1-beta"
     val artifactId = "sdk"
     val groupId = "com.botsi"
     val githubMavenUrl = "https://maven.pkg.github.com/BotsiTeam/BotsiSDK-Android"

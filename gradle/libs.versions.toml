@@ -11,6 +11,11 @@ billing = "7.1.1"
 lifecycle = "2.8.7"
 core-ktx = "1.15.0"
 publish-sdk = "0.32.0"
+junit = "4.13.2"
+junit-version = "1.2.1"
+espresso-core = "3.6.1"
+appcompat = "1.7.0"
+material = "1.12.0"
 
 [libraries]
 android-billing-client = { module = "com.android.billingclient:billing-ktx", version.ref = "billing" }
@@ -20,6 +25,11 @@ kotlin-bom = { module = "org.jetbrains.kotlin:kotlin-bom", version.ref = "kotlin
 android-lifecycle = { module = "androidx.lifecycle:lifecycle-process", version.ref = "lifecycle" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junit-version" }
+espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "build-tools" }

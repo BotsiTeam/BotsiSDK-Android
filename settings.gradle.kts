@@ -19,4 +19,5 @@ dependencyResolutionManagement {
 
 include(":app")
 include(":botsi")
+include(":botsi-view")
 rootProject.name = "BotsiExample"

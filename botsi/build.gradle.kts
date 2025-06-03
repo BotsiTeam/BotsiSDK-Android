@@ -28,7 +28,6 @@ android {
     defaultConfig {
         minSdk = BotsiGlobalVars.minSdk
         buildConfigField("String", "VERSION_NAME", "\"$versionName\"")
-        consumerProguardFiles("consumer-rules.pro")
     }
 
     compileOptions {
