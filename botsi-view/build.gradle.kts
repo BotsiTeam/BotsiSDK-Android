@@ -37,5 +37,11 @@ android {
 }
 
 dependencies {
-    implementation("com.github.BotsiTeam:BotsiSDK-Android:${BotsiGlobalVars.sdkVersion}")
+    if (findProject(":botsi") != null) {
+        // Local build - use project dependency
+        compileOnly(project(":botsi"))
+    } else {
+        // External consumer - use JitPack dependency
+        implementation("com.github.BotsiTeam:BotsiSDK-Android:${BotsiGlobalVars.sdkVersion}")
+    }
 }
