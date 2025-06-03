@@ -9,10 +9,10 @@ plugins {
     `maven-publish`
 }
 
-val versionName = "0.0.2-beta"
-val botsiArtifactId = "sdk"
-val botsiGroupId = "com.botsi"
-val mavenUrl = "https://maven.pkg.github.com/BotsiTeam/BotsiSDK-Android"
+val versionName = BotsiGlobalVars.sdkVersion
+val botsiArtifactId = BotsiGlobalVars.artifactId
+val botsiGroupId = BotsiGlobalVars.groupId
+val mavenUrl = BotsiGlobalVars.githubMavenUrl
 
 val localProperties = Properties().apply {
     val localPropertiesFile = rootProject.file("local.properties")
@@ -40,7 +40,7 @@ android {
         buildConfig = true
     }
 
-    namespace = "com.botsi"
+    namespace = BotsiGlobalVars.nameSpace
 
     kotlinOptions {
         jvmTarget = BotsiGlobalVars.jvmTarget
@@ -51,6 +51,7 @@ android {
         }
     }
 }
+
 afterEvaluate {
     publishing {
         repositories {
@@ -75,33 +76,33 @@ mavenPublishing {
     )
 
     pom {
-        name.set("Botsi SDK Android")
-        description.set("An Android SDK for payments processing flow from scratch")
-        url.set("https://github.com/BotsiTeam/BotsiSDK-Android")
+        name.set(BotsiGlobalVars.pomName)
+        description.set(BotsiGlobalVars.pomDescription)
+        url.set(BotsiGlobalVars.pomUrl)
 
         licenses {
             license {
-                name.set("The Apache Software License, Version 2.0")
-                url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
-                distribution.set("repo")
+                name.set(BotsiGlobalVars.pomLicenceName)
+                url.set(BotsiGlobalVars.pomLicenceUrl)
+                distribution.set(BotsiGlobalVars.pomLicenceDistribution)
             }
         }
 
         // ← **this is required** by Sonatype
         developers {
             developer {
-                id.set("swtp-markevych")
-                name.set("Bohdan Markevych")
-                email.set("b.markevych@swytapp.com")
-                organization.set("Botsi")
-                organizationUrl.set("https://botsi.com")
+                id.set(BotsiGlobalVars.pomName)
+                name.set(BotsiGlobalVars.pomDeveloperName)
+                email.set(BotsiGlobalVars.pomDeveloperEmail)
+                organization.set(BotsiGlobalVars.pomDeveloperOrganization)
+                organizationUrl.set(BotsiGlobalVars.pomDeveloperOrganizationUrl)
             }
         }
 
         scm {
-            connection.set("scm:git:git://github.com/BotsiTeam/BotsiSDK-Android.git")
-            developerConnection.set("scm:git:ssh://git@github.com/BotsiTeam/BotsiSDK-Android.git")
-            url.set("https://github.com/BotsiTeam/BotsiSDK-Android")
+            connection.set(BotsiGlobalVars.pomScmConnection)
+            developerConnection.set(BotsiGlobalVars.pomScmDeveloperConnection)
+            url.set(BotsiGlobalVars.pomScmUrl)
         }
     }
 
