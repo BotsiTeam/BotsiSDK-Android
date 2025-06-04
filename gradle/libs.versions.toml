@@ -1,5 +1,6 @@
 [versions]
 build-tools = "8.7.3"
+compose-bom = "2025.05.01"
 dokka-plugin = "1.7.20"
 kotlin = "2.1.10"
 kotlin-coroutines = "2.1.10"
@@ -16,11 +17,14 @@ junit-version = "1.2.1"
 espresso-core = "3.6.1"
 appcompat = "1.7.0"
 material = "1.12.0"
+compose-plugin = "2.0.0"
+coroutines = "1.10.1"
 
 [libraries]
 android-billing-client = { module = "com.android.billingclient:billing-ktx", version.ref = "billing" }
 android-ads-identifier = { module = "com.google.android.gms:play-services-ads-identifier", version.ref = "ads-identifier" }
 android-appset = { module = "com.google.android.gms:play-services-appset", version.ref = "appset" }
+compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
 kotlin-bom = { module = "org.jetbrains.kotlin:kotlin-bom", version.ref = "kotlin-coroutines" }
 android-lifecycle = { module = "androidx.lifecycle:lifecycle-process", version.ref = "lifecycle" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
@@ -30,9 +34,11 @@ ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junit-
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "build-tools" }
+android-compose-plugin = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "compose-plugin" }
 android-library = { id = "com.android.library", version.ref = "build-tools" }
 android-kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka-plugin" }

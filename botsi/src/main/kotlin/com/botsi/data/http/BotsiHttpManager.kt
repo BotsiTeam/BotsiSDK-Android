@@ -1,5 +1,6 @@
 package com.botsi.data.http
 
+import android.content.Context
 import androidx.annotation.RestrictTo
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
@@ -13,12 +14,16 @@ import com.botsi.data.model.dto.BotsiPurchaseRecordDto
 import com.botsi.data.model.dto.BotsiUpdateProfileParametersDto
 import com.botsi.data.model.response.BotsiBaseResponse
 import com.botsi.data.model.response.BotsiResponse
+import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.reflect.TypeToken
+import java.io.BufferedReader
+import java.io.InputStreamReader
 import java.lang.reflect.Type
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 internal class BotsiHttpManager(
+    private val context: Context,
     private val requestFactory: BotsiRequestFactory,
     private val httpClient: BotsiHttpClient,
 ) {
@@ -105,9 +110,19 @@ internal class BotsiHttpManager(
         paywallId: Long,
         profileId: String,
     ): JsonElement {
-        val response = httpClient.newRequest<JsonElement>(
-            requestFactory.getViewConfigurationRequest(placementId, paywallId, profileId),
-            getReflectType<JsonElement>(),
+//        val response = httpClient.newRequest<JsonElement>(
+//            requestFactory.getViewConfigurationRequest(placementId, paywallId, profileId),
+//            getReflectType<JsonElement>(),
+//        )
+
+        val json = readFileFromAssets("view_config_response.json")
+
+        val response = BotsiResponse.Success<JsonElement>(
+            body = Gson().fromJson(json, JsonElement::class.java) ?: object : JsonElement() {
+                override fun deepCopy(): JsonElement? {
+                    return this
+                }
+            }
         )
         when (response) {
             is BotsiResponse.Success -> return response.body
@@ -151,6 +166,30 @@ internal class BotsiHttpManager(
             is BotsiResponse.Success -> return response.body.data
             is BotsiResponse.Error -> throw response.error
         }
+    }
+
+    private fun readFileFromAssets(filename: String): String {
+
+        //We will build the string line by line from *.txt file
+        val builder = StringBuilder()
+
+        //BufferedReader is needed to read the *.txt file
+        //Create and Initialize BufferedReader
+        val reader = BufferedReader(InputStreamReader(context.assets.open(filename)))
+
+        //This variable will contain the text
+        var line: String?
+
+        //check if there is a more line available
+        while (reader.readLine().also { line = it } != null) {
+            builder.append(line).append("\n")
+        }
+
+        //Need to close the BufferedReader
+        reader.close()
+
+        //just return the String of the *.txt file
+        return builder.toString()
     }
 
     private inline fun <reified T> getReflectType(): Type {

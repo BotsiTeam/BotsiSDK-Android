@@ -11,7 +11,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         if (savedInstanceState == null) {
-            addFragment(BotsiFragment.newInstance(), false)
+            addFragment(BotsiViewFragment.newInstance(), false)
         }
     }
 
