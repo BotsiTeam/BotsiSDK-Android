@@ -8,8 +8,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import com.botsi.Botsi
-import com.competo.botsi.view.BotsiViewConfig
-import com.competo.botsi.view.ui.compose.entry_point.BotsiPaywallEntryPoint
+import com.botsi.view.BotsiViewConfig
+import com.botsi.view.ui.compose.entry_point.BotsiPaywallEntryPoint
 
 class BotsiViewFragment : Fragment() {
 

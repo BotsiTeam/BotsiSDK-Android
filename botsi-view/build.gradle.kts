@@ -45,6 +45,7 @@ dependencies {
     implementation(libs.coroutines)
     implementation(libs.android.lifecycle)
     implementation(libs.core.ktx)
+    implementation(libs.ui.text.google.fonts)
     implementation("androidx.compose.material3:material3") {
         exclude(module = "androidx.lifecycle:lifecycle-livedata-core")
     }
