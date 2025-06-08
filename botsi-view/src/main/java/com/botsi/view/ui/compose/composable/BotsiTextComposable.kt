@@ -12,6 +12,7 @@ import com.botsi.view.model.content.BotsiAlign
 import com.botsi.view.model.content.BotsiText
 import com.botsi.view.model.content.BotsiTextContent
 import com.botsi.view.utils.toColor
+import com.botsi.view.utils.toFontSize
 import com.botsi.view.utils.toPaddings
 import com.botsi.view.utils.toTextStyle
 
@@ -42,7 +43,7 @@ internal fun BotsiTextComposable(
         text = text.text.orEmpty(),
         style = text.font.toTextStyle(),
         color = text.color.toColor(text.opacity),
-        fontSize = ((text.size ?: 14f) * 1.2f).sp,
+        fontSize = text.size.toFontSize(),
         textAlign = when (text.align) {
             BotsiAlign.Left -> TextAlign.Left
             BotsiAlign.Right -> TextAlign.Right
@@ -50,5 +51,6 @@ internal fun BotsiTextComposable(
             else -> TextAlign.Left
         },
         maxLines = maxLines,
+        softWrap = maxLines > 1
     )
 }

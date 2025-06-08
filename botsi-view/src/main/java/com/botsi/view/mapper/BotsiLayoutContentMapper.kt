@@ -11,6 +11,8 @@ import com.botsi.view.model.content.BotsiIconStyle
 import com.botsi.view.model.content.BotsiLayoutContent
 import com.botsi.view.model.content.BotsiTemplate
 import com.botsi.view.model.content.BotsiTopButton
+import com.botsi.view.utils.toCapitalizedString
+import com.botsi.view.utils.toIntList
 import com.google.gson.JsonElement
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -50,7 +52,7 @@ internal class BotsiLayoutContentMapper(
     private fun mapContentLayout(jsonElement: JsonElement): BotsiContentLayout {
         return with(jsonElement.asJsonObject) {
             BotsiContentLayout(
-                margin = runCatching { get("margin").asString.split(" ").map { it.toInt() } }.getOrNull(),
+                margin = runCatching { get("margin").toIntList() }.getOrNull(),
                 spacing = runCatching { get("spacing").asInt }.getOrNull()
             )
         }
@@ -72,15 +74,15 @@ internal class BotsiLayoutContentMapper(
                 with(item.asJsonObject) {
                     BotsiTopButton(
                         action = runCatching {
-                            BotsiButtonAction.valueOf(get("action").asString.capitalize())
+                            BotsiButtonAction.valueOf(get("action").toCapitalizedString())
                         }.getOrDefault(BotsiButtonAction.None),
                         enabled = runCatching { get("enabled").asBoolean }.getOrNull(),
                         actionId = runCatching { get("actionId").asString }.getOrNull(),
                         buttonType = runCatching {
-                            BotsiButtonType.valueOf(get("button_type").asString.capitalize())
+                            BotsiButtonType.valueOf(get("button_type").toCapitalizedString())
                         }.getOrDefault(BotsiButtonType.Icon),
                         buttonAlign = runCatching {
-                            BotsiAlign.valueOf(get("button_align").asString.capitalize())
+                            BotsiAlign.valueOf(get("button_align").toCapitalizedString())
                         }.getOrDefault(BotsiAlign.Left),
                         delay = runCatching { get("delay").asFloat }.getOrNull(),
                         style = runCatching { buttonStyleMapper.map(get("style")) }.getOrNull(),
@@ -89,7 +91,7 @@ internal class BotsiLayoutContentMapper(
                             with(get("icon").asJsonObject) {
                                 BotsiIconStyle(
                                     type = runCatching {
-                                        BotsiButtonIconType.valueOf(get("type").asString.capitalize())
+                                        BotsiButtonIconType.valueOf(get("type").toCapitalizedString())
                                     }.getOrDefault(BotsiButtonIconType.None),
                                     color = runCatching { get("color").asString }.getOrNull(),
                                     opacity = runCatching { get("opacity").asFloat }.getOrNull(),

@@ -4,9 +4,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -14,11 +16,11 @@ import com.botsi.view.R
 import com.botsi.view.model.content.BotsiButtonIconType
 import com.botsi.view.model.content.BotsiButtonType
 import com.botsi.view.model.content.BotsiTopButton
-import com.botsi.view.utils.clipToShape
 import com.botsi.view.utils.toAlignment
 import com.botsi.view.utils.toBackground
 import com.botsi.view.utils.toBorder
 import com.botsi.view.utils.toColor
+import com.botsi.view.utils.toShape
 
 @Composable
 internal fun BoxScope.BotsiTopButtonComposable(
@@ -38,7 +40,7 @@ internal fun BoxScope.BotsiTopButtonComposable(
                         modifier = modifier
                             .size(32.dp)
                             .align(topButton.buttonAlign.toAlignment())
-                            .then(topButton.style.clipToShape())
+                            .clip(topButton.style.toShape())
                             .then(topButton.style.toBackground())
                             .then(topButton.style.toBorder())
                             .clickable(onClick = { topButtonClick(topButton) })
@@ -51,7 +53,20 @@ internal fun BoxScope.BotsiTopButtonComposable(
             }
 
             BotsiButtonType.Text -> {
-
+                topButton.text?.let {
+                    BotsiTextComposable(
+                        modifier = modifier
+                            .wrapContentHeight()
+                            .align(topButton.buttonAlign.toAlignment())
+                            .clip(topButton.style.toShape())
+                            .then(topButton.style.toBackground())
+                            .then(topButton.style.toBorder())
+                            .clickable(onClick = { topButtonClick(topButton) })
+                            .padding(vertical = 4.dp, horizontal = 16.dp),
+                        text = it,
+                        maxLines = 1,
+                    )
+                }
             }
 
             else -> {}

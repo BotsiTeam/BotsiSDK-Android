@@ -1,6 +1,7 @@
 package com.botsi.view.mapper
 
 import com.botsi.view.model.content.BotsiButtonStyle
+import com.botsi.view.utils.toIntList
 import com.google.gson.JsonElement
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -16,7 +17,7 @@ internal class BotsiButtonStyleMapper {
                     borderColor = runCatching { get("border_color").asString }.getOrNull(),
                     borderOpacity = runCatching { get("border_opacity").asFloat }.getOrNull(),
                     borderThickness = runCatching { get("border_thickness").asFloat }.getOrNull(),
-                    radius = runCatching { get("radius").asString.split(" ").map { it.toInt() } }.getOrNull(),
+                    radius = runCatching { get("radius").toIntList() }.getOrNull(),
                 )
             }
         }

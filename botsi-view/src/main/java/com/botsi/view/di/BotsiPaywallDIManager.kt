@@ -6,10 +6,14 @@ import com.botsi.view.delegate.BotsiPaywallDelegateImpl
 import com.botsi.view.mapper.BotsiBlockMetaMapper
 import com.botsi.view.mapper.BotsiButtonContentMapper
 import com.botsi.view.mapper.BotsiButtonStyleMapper
+import com.botsi.view.mapper.BotsiCardContentMapper
+import com.botsi.view.mapper.BotsiCarouselContentMapper
 import com.botsi.view.mapper.BotsiFontMapper
 import com.botsi.view.mapper.BotsiFooterContentMapper
 import com.botsi.view.mapper.BotsiHeroImageContentMapper
+import com.botsi.view.mapper.BotsiImageContentMapper
 import com.botsi.view.mapper.BotsiLayoutContentMapper
+import com.botsi.view.mapper.BotsiLinksContentMapper
 import com.botsi.view.mapper.BotsiListContentMapper
 import com.botsi.view.mapper.BotsiListNestedContentMapper
 import com.botsi.view.mapper.BotsiPaywallBlocksMapper
@@ -25,6 +29,7 @@ internal class BotsiPaywallDIManager {
     init {
         with(dependencies) {
             put(BotsiFontMapper::class.java, BotsiFontMapper())
+            put(BotsiImageContentMapper::class.java, BotsiImageContentMapper())
             put(BotsiButtonStyleMapper::class.java, BotsiButtonStyleMapper())
             put(BotsiBlockMetaMapper::class.java, BotsiBlockMetaMapper())
             put(BotsiFooterContentMapper::class.java, BotsiFooterContentMapper())
@@ -34,6 +39,7 @@ internal class BotsiPaywallDIManager {
                 )
             )
             put(BotsiHeroImageContentMapper::class.java, BotsiHeroImageContentMapper())
+            put(BotsiCardContentMapper::class.java, BotsiCardContentMapper())
             put(
                 BotsiButtonContentMapper::class.java,
                 BotsiButtonContentMapper(
@@ -48,8 +54,22 @@ internal class BotsiPaywallDIManager {
                     textMapper = inject(),
                 )
             )
-            put(BotsiListContentMapper::class.java, BotsiListContentMapper())
-            put(BotsiListNestedContentMapper::class.java, BotsiListNestedContentMapper())
+            put(
+                BotsiListContentMapper::class.java, BotsiListContentMapper(
+                    textMapper = inject()
+                )
+            )
+            put(
+                BotsiLinksContentMapper::class.java, BotsiLinksContentMapper(
+                    fontMapper = inject()
+                )
+            )
+            put(
+                BotsiListNestedContentMapper::class.java, BotsiListNestedContentMapper(
+                    textMapper = inject()
+                )
+            )
+            put(BotsiCarouselContentMapper::class.java, BotsiCarouselContentMapper())
             put(BotsiProductItemContentMapper::class.java, BotsiProductItemContentMapper())
             put(BotsiProductsContentMapper::class.java, BotsiProductsContentMapper())
             put(
@@ -69,6 +89,10 @@ internal class BotsiPaywallDIManager {
                     productItemContentMapper = inject(),
                     listNestedContentMapper = inject(),
                     buttonContentMapper = inject(),
+                    imageContentMapper = inject(),
+                    cardContentMapper = inject(),
+                    linksContentMapper = inject(),
+                    carouselContentMapper = inject()
                 )
             )
             put(

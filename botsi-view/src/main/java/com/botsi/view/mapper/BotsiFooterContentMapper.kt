@@ -2,6 +2,7 @@ package com.botsi.view.mapper
 
 import com.botsi.view.model.content.BotsiFooterContent
 import com.botsi.view.model.content.BotsiFooterStyle
+import com.botsi.view.utils.toIntList
 import com.google.gson.JsonElement
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -12,9 +13,7 @@ internal class BotsiFooterContentMapper {
         return withContext(Dispatchers.Default) {
             with(json.asJsonObject) {
                 BotsiFooterContent(
-                    padding = runCatching {
-                        get("padding").asString.split(" ").map { it.toInt() }
-                    }.getOrNull(),
+                    padding = runCatching { get("padding").toIntList() }.getOrNull(),
                     spacing = runCatching { get("spacing").asInt }.getOrNull(),
                     style = runCatching { mapStyle(get("style")) }.getOrNull(),
                 )
@@ -30,7 +29,7 @@ internal class BotsiFooterContentMapper {
                 borderThickness = runCatching { get("border_thickness").asInt }.getOrNull(),
                 color = runCatching { get("color").asString }.getOrNull(),
                 opacity = runCatching { get("opacity").asFloat }.getOrNull(),
-                radius = runCatching { get("radius").asString.split(" ").map { it.toInt() } }.getOrNull(),
+                radius = runCatching { get("radius").toIntList() }.getOrNull(),
             )
         }
     }

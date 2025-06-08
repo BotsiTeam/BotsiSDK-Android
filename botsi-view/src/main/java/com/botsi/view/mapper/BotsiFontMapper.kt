@@ -3,6 +3,7 @@ package com.botsi.view.mapper
 import com.botsi.view.model.content.BotsiFont
 import com.botsi.view.model.content.BotsiFontStyleType
 import com.botsi.view.model.content.BotsiFontType
+import com.botsi.view.utils.toCapitalizedString
 import com.google.gson.JsonElement
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -31,7 +32,7 @@ internal class BotsiFontMapper {
                         id = runCatching { get("id").asString }.getOrNull(),
                         fontWeight = runCatching { get("fontWeight").asInt }.getOrNull(),
                         fontStyle = runCatching {
-                            BotsiFontStyleType.valueOf(get("fontStyle").asString.capitalize())
+                            BotsiFontStyleType.valueOf(get("fontStyle").toCapitalizedString())
                         }.getOrNull(),
                         isSelected = runCatching { get("isSelected").asBoolean }.getOrNull(),
                     )

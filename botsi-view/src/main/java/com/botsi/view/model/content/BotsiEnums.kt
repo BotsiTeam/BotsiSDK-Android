@@ -4,12 +4,8 @@ internal enum class BotsiAlign {
     Left,
     Right,
     Center,
-}
-
-internal enum class BotsiButtonAction {
-    None,
-    Close,
-    Custom,
+    Top,
+    Bottom,
 }
 
 internal enum class BotsiButtonIconType {
@@ -40,6 +36,28 @@ internal enum class BotsiOnOverflowBehavior {
     Scale,
 }
 
+internal enum class BotsiImageAspect {
+    Fill,
+    Fit,
+    Stretch,
+}
+
+internal enum class BotsiDefaultIcon {
+    Tick,
+    Checkmark,
+    Dot,
+}
+
+internal enum class BotsiLayoutDirection {
+    Vertical,
+    Horizontal,
+}
+
+internal enum class BotsiCarouselPageControlType {
+    Overlay,
+    Outside,
+}
+
 internal enum class BotsiContentType(val key: String) {
     Layout("layout"),
     HeroImage("hero_image"),
@@ -49,9 +67,36 @@ internal enum class BotsiContentType(val key: String) {
     Footer("footer"),
     Products("products"),
     ProductItem("product_item"),
-    Button("button");
+    Button("button"),
+    Card("card"),
+    Links("links"),
+    Carousel("carousel"),
+    Image("image");
 
     companion object {
         fun findByKey(key: String): BotsiContentType? = entries.find { it.key == key }
+    }
+}
+
+
+internal sealed interface BotsiButtonAction {
+    data object None : BotsiButtonAction
+    data object Close : BotsiButtonAction
+    data object Login : BotsiButtonAction
+    data object Restore : BotsiButtonAction
+    data object Custom : BotsiButtonAction
+
+    // internal usage
+    data class Link(val url: String) : BotsiButtonAction
+
+    companion object {
+        fun valueOf(value: String): BotsiButtonAction =
+            when (value) {
+                "Close" -> Close
+                "Login" -> Login
+                "Restore" -> Restore
+                "Custom" -> Custom
+                else -> None
+            }
     }
 }

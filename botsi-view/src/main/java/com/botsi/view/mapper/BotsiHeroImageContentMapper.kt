@@ -5,6 +5,8 @@ import com.botsi.view.model.content.BotsiHeroImageContent
 import com.botsi.view.model.content.BotsiHeroLayout
 import com.botsi.view.model.content.BotsiShape
 import com.botsi.view.model.content.BotsiTint
+import com.botsi.view.utils.toCapitalizedString
+import com.botsi.view.utils.toIntList
 import com.google.gson.JsonElement
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -17,11 +19,11 @@ internal class BotsiHeroImageContentMapper {
                 BotsiHeroImageContent(
                     type = runCatching { get("type").asString }.getOrNull(),
                     style = runCatching {
-                        BotsiContentStyle.valueOf(get("style").asString.capitalize())
+                        BotsiContentStyle.valueOf(get("style").toCapitalizedString())
                     }.getOrDefault(BotsiContentStyle.Overlay),
                     height = runCatching { get("height").asFloat }.getOrNull(),
                     shape = runCatching {
-                        BotsiShape.valueOf(get("shape").asString.capitalize())
+                        BotsiShape.valueOf(get("shape").toCapitalizedString())
                     }.getOrDefault(BotsiShape.Rectangle),
                     tint = runCatching { mapTint(get("tint")) }.getOrNull(),
                     layout = runCatching { mapLayout(get("layout")) }.getOrNull(),
@@ -42,7 +44,7 @@ internal class BotsiHeroImageContentMapper {
     private fun mapLayout(jsonElement: JsonElement): BotsiHeroLayout {
         return with(jsonElement.asJsonObject) {
             BotsiHeroLayout(
-                padding = runCatching { get("padding").asString.split(" ").map { it.toInt() } }.getOrNull(),
+                padding = runCatching { get("padding").toIntList() }.getOrNull(),
                 verticalOffset = runCatching { get("vertical_offset").asInt }.getOrNull()
             )
         }

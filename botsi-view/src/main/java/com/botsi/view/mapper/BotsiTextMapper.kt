@@ -2,6 +2,7 @@ package com.botsi.view.mapper
 
 import com.botsi.view.model.content.BotsiAlign
 import com.botsi.view.model.content.BotsiText
+import com.botsi.view.utils.toCapitalizedString
 import com.google.gson.JsonElement
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -20,7 +21,7 @@ internal class BotsiTextMapper(
                     color = runCatching { get("color").asString }.getOrNull(),
                     opacity = runCatching { get("opacity").asFloat }.getOrNull(),
                     align = runCatching {
-                        BotsiAlign.valueOf(get("align").asString.capitalize())
+                        BotsiAlign.valueOf(get("align").toCapitalizedString())
                     }.getOrNull(),
                 )
             }

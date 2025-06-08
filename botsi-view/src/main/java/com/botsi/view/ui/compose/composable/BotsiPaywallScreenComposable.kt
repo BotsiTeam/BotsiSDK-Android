@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -27,9 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.botsi.view.model.content.BotsiFooterContent
 import com.botsi.view.model.content.BotsiLayoutContent
-import com.botsi.view.model.content.BotsiTextContent
 import com.botsi.view.model.ui.BotsiPaywallUiAction
 import com.botsi.view.model.ui.BotsiPaywallUiState
 import com.botsi.view.utils.toArrangement
@@ -67,13 +63,28 @@ internal fun BotsiPaywallScreenComposable(
             }
 
             is BotsiPaywallUiState.Success -> {
-                Box(modifier = Modifier.fillMaxSize()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(it),
+                ) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        contentPadding = contentLayout?.contentLayout.toPaddings(),
+                        verticalArrangement = contentLayout?.contentLayout.toArrangement()
+                    ) {
+                        BotsiScopedContent(
+                            children = uiState.content.content.orEmpty()
+                        )
+                    }
+
                     contentLayout?.topButtons
                         ?.let {
                             Box(
                                 modifier = modifier
                                     .fillMaxWidth()
-                                    .padding(16.dp)
+                                    .padding(16.dp),
                             ) {
                                 it.forEach { button ->
                                     BotsiTopButtonComposable(
@@ -83,17 +94,6 @@ internal fun BotsiPaywallScreenComposable(
                                 }
                             }
                         }
-                    LazyColumn(
-                        modifier = Modifier
-                            .padding(it)
-                            .fillMaxSize()
-                            .padding(contentLayout?.contentLayout.toPaddings()),
-                        verticalArrangement = contentLayout?.contentLayout.toArrangement()
-                    ) {
-                        BotsiContentComposable(
-                            children = uiState.content.content.orEmpty()
-                        )
-                    }
                 }
             }
 
