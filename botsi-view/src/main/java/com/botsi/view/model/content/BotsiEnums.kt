@@ -58,6 +58,24 @@ internal enum class BotsiCarouselPageControlType {
     Outside,
 }
 
+internal enum class BotsiTimerFormat(val format: String) {
+    Ss("ss"),
+    MmSs("mm ss"),
+    HhMmSs("hh mm ss"),
+    DdHhMmSs("dd hh mm ss");
+
+    companion object {
+        fun findByFormat(key: String): BotsiTimerFormat? = BotsiTimerFormat.entries.find { it.format == key }
+    }
+}
+
+internal enum class BotsiTimerSeparator {
+    Colon,
+    Dash,
+    Space,
+    Letter
+}
+
 internal enum class BotsiContentType(val key: String) {
     Layout("layout"),
     HeroImage("hero_image"),
@@ -71,6 +89,7 @@ internal enum class BotsiContentType(val key: String) {
     Card("card"),
     Links("links"),
     Carousel("carousel"),
+    Timer("timer"),
     Image("image");
 
     companion object {

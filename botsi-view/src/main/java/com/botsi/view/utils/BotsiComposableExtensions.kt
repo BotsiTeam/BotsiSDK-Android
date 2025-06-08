@@ -44,6 +44,7 @@ import com.botsi.view.model.content.BotsiLinksContent
 import com.botsi.view.model.content.BotsiLinksContentLayout
 import com.botsi.view.model.content.BotsiListContent
 import com.botsi.view.model.content.BotsiTextContent
+import com.botsi.view.model.content.BotsiTimerContent
 
 private val provider = GoogleFont.Provider(
     providerAuthority = "com.google.android.gms.fonts",
@@ -237,8 +238,8 @@ internal fun BotsiCarouselStyle?.toPaddings(): PaddingValues {
 }
 
 @Composable
-internal fun BotsiCarouselContent?.toArrangement(alignment: Alignment.Vertical): Arrangement.Vertical {
-    return this?.spacing.toArrangement(alignment)
+internal fun BotsiTimerContent?.toPaddings(): PaddingValues {
+    return this?.padding.toPaddings()
 }
 
 @Composable

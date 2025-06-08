@@ -10,6 +10,7 @@ import com.botsi.view.model.content.BotsiImageContent
 import com.botsi.view.model.content.BotsiLinksContent
 import com.botsi.view.model.content.BotsiPaywallBlock
 import com.botsi.view.model.content.BotsiTextContent
+import com.botsi.view.model.content.BotsiTimerContent
 
 internal fun LazyListScope.BotsiScopedContent(children: List<BotsiPaywallBlock>) {
     items(children) { item ->
@@ -71,6 +72,13 @@ internal fun BotsiContentComposable(
                 modifier = modifier,
                 content = content,
                 onClick = {}
+            )
+        }
+
+        BotsiContentType.Timer -> (item.content as? BotsiTimerContent)?.let { content ->
+            BotsiTimerComposable(
+                modifier = modifier,
+                content = content,
             )
         }
 

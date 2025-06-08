@@ -21,6 +21,7 @@ import com.botsi.view.mapper.BotsiProductItemContentMapper
 import com.botsi.view.mapper.BotsiProductsContentMapper
 import com.botsi.view.mapper.BotsiTextContentMapper
 import com.botsi.view.mapper.BotsiTextMapper
+import com.botsi.view.mapper.BotsiTimerContentMapper
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 internal class BotsiPaywallDIManager {
@@ -69,6 +70,11 @@ internal class BotsiPaywallDIManager {
                     textMapper = inject()
                 )
             )
+            put(
+                BotsiTimerContentMapper::class.java, BotsiTimerContentMapper(
+                    textMapper = inject()
+                )
+            )
             put(BotsiCarouselContentMapper::class.java, BotsiCarouselContentMapper())
             put(BotsiProductItemContentMapper::class.java, BotsiProductItemContentMapper())
             put(BotsiProductsContentMapper::class.java, BotsiProductsContentMapper())
@@ -92,7 +98,8 @@ internal class BotsiPaywallDIManager {
                     imageContentMapper = inject(),
                     cardContentMapper = inject(),
                     linksContentMapper = inject(),
-                    carouselContentMapper = inject()
+                    carouselContentMapper = inject(),
+                    timerContentMapper = inject()
                 )
             )
             put(

@@ -214,6 +214,68 @@
     },
     {
       "meta": {
+        "block_name": "Timer",
+        "id": "timer20",
+        "type": "timer",
+        "icon": "timer",
+        "parentId": ""
+      },
+      "content": {
+        "format": "mm ss",
+        "separator": "dash",
+        "start_text": "10-00",
+        "before_text": "start in",
+        "after_text": "after",
+        "before_text_fallback": "",
+        "after_text_fallback": "",
+        "style": {
+          "font": {
+            "id": "0",
+            "name": "System (SF Pro, Roboto) Regular",
+            "isSelected": false,
+            "types": [
+              {
+                "name": "Regular",
+                "id": "0",
+                "fontWeight": 400,
+                "fontStyle": "normal",
+                "isSelected": true
+              },
+              {
+                "name": "Bold",
+                "id": "1",
+                "fontWeight": 700,
+                "fontStyle": "normal",
+                "isSelected": false
+              },
+              {
+                "name": "Regular Italic",
+                "id": "2",
+                "fontWeight": 400,
+                "fontStyle": "italic",
+                "isSelected": false
+              },
+              {
+                "name": "Bold Italic",
+                "id": "3",
+                "fontWeight": 700,
+                "fontStyle": "italic",
+                "isSelected": false
+              }
+            ]
+          },
+          "size": "16",
+          "align": "center",
+          "color": "#ffffff",
+          "opacity": 100
+        },
+        "padding": "0",
+        "vertical_offset": 0
+      },
+      "children": []
+    },
+    {
+      "meta": {
         "block_name": "Carousel",
         "id": "carousel13",
         "type": "carousel",

@@ -24,6 +24,7 @@ internal class BotsiPaywallBlocksMapper(
     private val cardContentMapper: BotsiCardContentMapper,
     private val linksContentMapper: BotsiLinksContentMapper,
     private val carouselContentMapper: BotsiCarouselContentMapper,
+    private val timerContentMapper: BotsiTimerContentMapper,
 ) {
 
     suspend fun map(jsonElement: JsonElement): BotsiPaywallContentStructure {
@@ -69,6 +70,7 @@ internal class BotsiPaywallBlocksMapper(
                             BotsiContentType.Card -> cardContentMapper.map(contentJson)
                             BotsiContentType.Links -> linksContentMapper.map(contentJson)
                             BotsiContentType.Carousel -> carouselContentMapper.map(contentJson)
+                            BotsiContentType.Timer -> timerContentMapper.map(contentJson)
 //                                "localization" -> buttonContentMapper.map(contentJson)
                             else -> null
                         },
