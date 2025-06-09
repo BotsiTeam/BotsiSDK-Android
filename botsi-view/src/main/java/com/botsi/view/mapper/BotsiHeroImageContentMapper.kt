@@ -1,6 +1,6 @@
 package com.botsi.view.mapper
 
-import com.botsi.view.model.content.BotsiContentStyle
+import com.botsi.view.model.content.BotsiHeroImageContentStyle
 import com.botsi.view.model.content.BotsiHeroImageContent
 import com.botsi.view.model.content.BotsiHeroLayout
 import com.botsi.view.model.content.BotsiShape
@@ -19,9 +19,10 @@ internal class BotsiHeroImageContentMapper {
                 BotsiHeroImageContent(
                     type = runCatching { get("type").asString }.getOrNull(),
                     style = runCatching {
-                        BotsiContentStyle.valueOf(get("style").toCapitalizedString())
-                    }.getOrDefault(BotsiContentStyle.Overlay),
+                        BotsiHeroImageContentStyle.valueOf(get("style").toCapitalizedString())
+                    }.getOrDefault(BotsiHeroImageContentStyle.Overlay),
                     height = runCatching { get("height").asFloat }.getOrNull(),
+                    backgroundImage = runCatching { get("background_image").asString }.getOrNull(),
                     shape = runCatching {
                         BotsiShape.valueOf(get("shape").toCapitalizedString())
                     }.getOrDefault(BotsiShape.Rectangle),

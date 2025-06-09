@@ -7,17 +7,21 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.googlefonts.Font
 import androidx.compose.ui.text.googlefonts.GoogleFont
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -38,6 +42,8 @@ import com.botsi.view.model.content.BotsiFont
 import com.botsi.view.model.content.BotsiFontStyleType
 import com.botsi.view.model.content.BotsiFooterContent
 import com.botsi.view.model.content.BotsiFooterStyle
+import com.botsi.view.model.content.BotsiHeroImageContent
+import com.botsi.view.model.content.BotsiHeroLayout
 import com.botsi.view.model.content.BotsiImageAspect
 import com.botsi.view.model.content.BotsiImageContent
 import com.botsi.view.model.content.BotsiLinksContent
@@ -51,6 +57,20 @@ private val provider = GoogleFont.Provider(
     providerPackage = "com.google.android.gms",
     certificates = R.array.com_google_android_gms_fonts_certs
 )
+
+@Composable
+internal fun BotsiHeroImageContent?.toImageHeightPx(): Float {
+    val configuration = LocalWindowInfo.current
+    val screenHeightPx = configuration.containerSize.height
+
+    return remember(this) { screenHeightPx * ((this?.height ?: 0f) / 100f) }
+}
+
+@Composable
+internal fun BotsiHeroImageContent?.toImageHeightDp(): Dp {
+    val density = LocalDensity.current
+    return with(density) { toImageHeightPx().toDp() }
+}
 
 @Composable
 internal fun BotsiBackgroundColor?.toColor(): Color {
@@ -173,8 +193,8 @@ internal fun BotsiCardStyle?.toShape(): Shape {
 }
 
 @Composable
-internal fun BotsiContentLayout?.toPaddings(): PaddingValues {
-    return this?.margin.toPaddings()
+internal fun BotsiContentLayout?.toPaddings(extraTopPadding: Dp = Dp.Hairline): PaddingValues {
+    return this?.margin.toPaddings(extraTopPadding)
 }
 
 @Composable
@@ -239,6 +259,11 @@ internal fun BotsiCarouselStyle?.toPaddings(): PaddingValues {
 
 @Composable
 internal fun BotsiTimerContent?.toPaddings(): PaddingValues {
+    return this?.padding.toPaddings()
+}
+
+@Composable
+internal fun BotsiHeroLayout?.toPaddings(): PaddingValues {
     return this?.padding.toPaddings()
 }
 
@@ -334,12 +359,17 @@ internal fun BotsiImageContent?.toContentScale(): ContentScale {
 }
 
 @Composable
-private fun List<Int>?.toPaddings(): PaddingValues = this?.let {
+private fun List<Int>?.toPaddings(extraTopPadding: Dp = Dp.Hairline): PaddingValues = this?.let {
     if (it.size == 1) {
-        PaddingValues(it.getOrElse(0) { 0 }.dp)
+        PaddingValues(
+            top = it.getOrElse(0) { 0 }.dp + extraTopPadding,
+            bottom = it.getOrElse(0) { 0 }.dp,
+            start = it.getOrElse(0) { 0 }.dp,
+            end = it.getOrElse(0) { 0 }.dp,
+        )
     } else {
         PaddingValues(
-            top = it.getOrElse(0) { 0 }.dp,
+            top = it.getOrElse(0) { 0 }.dp + extraTopPadding,
             end = it.getOrElse(1) { 0 }.dp,
             bottom = it.getOrElse(2) { 0 }.dp,
             start = it.getOrElse(3) { 0 }.dp,

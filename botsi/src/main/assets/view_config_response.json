@@ -198,9 +198,9 @@
       },
       "content": {
         "type": "image",
-        "style": "overlay",
-        "background_image": null,
-        "height": 0,
+        "style": "flat",
+        "background_image": "https://botsi-dev.s3.us-east-2.amazonaws.com/paywall-imgs/botsi_banner_nologo_1024x500-1749500427075-92.png",
+        "height": 25,
         "shape": "convex_mask",
         "tint": {
           "opacity": 0,
@@ -542,7 +542,7 @@
         "padding": "16",
         "vertical_offset": 0,
         "content_layout": {
-          "layout": "Vertical",
+          "layout": "Horizontal",
           "spacing": 0
         }
       },

@@ -17,8 +17,10 @@ internal enum class BotsiShape {
     Rectangle,
 }
 
-internal enum class BotsiContentStyle {
+internal enum class BotsiHeroImageContentStyle {
     Overlay,
+    Transparent,
+    Flat,
 }
 
 internal enum class BotsiButtonType {
