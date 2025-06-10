@@ -198,12 +198,12 @@
       },
       "content": {
         "type": "image",
-        "style": "flat",
+        "style": "transparent",
         "background_image": "https://botsi-dev.s3.us-east-2.amazonaws.com/paywall-imgs/botsi_banner_nologo_1024x500-1749500427075-92.png",
         "height": 25,
-        "shape": "leaf",
+        "shape": "concave_mask",
         "tint": {
-          "opacity": 100,
+          "opacity": 0,
           "fill_color": "#ffffff"
         },
         "layout": {

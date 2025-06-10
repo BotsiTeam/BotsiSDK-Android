@@ -77,12 +77,10 @@ internal fun BotsiHeroImageContent?.toImageHeightDp(): Dp {
     return with(density) { toImageHeightPx().toDp() }
 }
 
-@Composable
 internal fun BotsiBackgroundColor?.toColor(): Color {
-    return this?.background?.let { Color(it.toColorInt()).copy(alpha = (opacity ?: 100f) / 100f) } ?: Color.Unspecified
+    return this?.background?.toColor(opacity) ?: Color.Unspecified
 }
 
-@Composable
 internal fun String?.toColor(opacity: Float? = null): Color {
     return this?.let { Color(it.toColorInt()).copy(alpha = (opacity ?: 100f) / 100f) } ?: Color.Unspecified
 }
@@ -120,7 +118,6 @@ internal fun BotsiCardStyle?.toBorder(): Modifier {
     } ?: Modifier
 }
 
-@Composable
 internal fun BotsiButtonStyle?.toBorderStroke(): BorderStroke? {
     return this?.let { style ->
         BorderStroke(
@@ -160,7 +157,6 @@ internal fun BotsiFooterStyle?.toBackground(): Modifier {
     } ?: Modifier
 }
 
-@Composable
 internal fun BotsiAlign?.toAlignment(): Alignment {
     return when (this) {
         BotsiAlign.Left -> Alignment.CenterStart
@@ -172,7 +168,6 @@ internal fun BotsiAlign?.toAlignment(): Alignment {
     }
 }
 
-@Composable
 internal fun BotsiAlign?.toAlignmentHorizontal(): Alignment.Horizontal {
     return when (this) {
         BotsiAlign.Left -> Alignment.Start
@@ -182,7 +177,6 @@ internal fun BotsiAlign?.toAlignmentHorizontal(): Alignment.Horizontal {
     }
 }
 
-@Composable
 internal fun BotsiHeroImageContent?.toShape(offsetValue: Float = 0f): Shape {
     return this?.shape?.let {
         if (this.style == BotsiHeroImageContentStyle.Overlay && offsetValue <= 0f) {
@@ -250,136 +244,107 @@ internal fun BotsiHeroImageContent?.toShape(offsetValue: Float = 0f): Shape {
                 close()
             }
 
-            BotsiHeroImageShape.Leaf -> GenericShape { size, _ ->
-                close()
-            }
-
             else -> RectangleShape
         }
     } ?: RectangleShape
 }
 
-@Composable
 internal fun BotsiButtonStyle?.toShape(): Shape {
     return this?.radius.toShape()
 }
 
-@Composable
 internal fun BotsiFooterStyle?.toShape(): Shape {
     return this?.radius.toShape()
 }
 
-@Composable
 internal fun BotsiCardStyle?.toShape(): Shape {
     return this?.radius.toShape()
 }
 
-@Composable
 internal fun BotsiContentLayout?.toPaddings(extraTopPadding: Dp = Dp.Hairline): PaddingValues {
     return this?.margin.toPaddings(extraTopPadding)
 }
 
-@Composable
 internal fun BotsiFooterContent?.toPaddings(): PaddingValues {
     return this?.padding.toPaddings()
 }
 
-@Composable
 internal fun BotsiTextContent?.toPaddings(): PaddingValues {
     return this?.margin.toPaddings()
 }
 
-@Composable
 internal fun BotsiImageContent?.toPaddings(): PaddingValues {
     return this?.padding.toPaddings()
 }
 
-@Composable
 internal fun BotsiButtonContent?.toPaddings(): PaddingValues {
     return this?.margin.toPaddings()
 }
 
-@Composable
 internal fun BotsiButtonContentLayout?.toPaddings(): PaddingValues {
     return this?.padding.toPaddings()
 }
 
-@Composable
 internal fun BotsiListContent?.toPaddings(): PaddingValues {
     return this?.padding.toPaddings()
 }
 
-@Composable
 internal fun BotsiCardContent?.toPaddings(): PaddingValues {
     return this?.margin.toPaddings()
 }
 
-@Composable
 internal fun BotsiCardContentLayout?.toPaddings(): PaddingValues {
     return this?.padding.toPaddings()
 }
 
-@Composable
 internal fun BotsiLinksContent?.toPaddings(): PaddingValues {
     return this?.padding.toPaddings()
 }
 
-@Composable
 internal fun BotsiCarouselContent?.toPaddings(): PaddingValues {
     return this?.padding.toPaddings()
 }
 
-@Composable
 internal fun BotsiCarouselContent?.toContentPaddings(): PaddingValues {
     return this?.contentPadding.toPaddings()
 }
 
-@Composable
 internal fun BotsiCarouselStyle?.toPaddings(): PaddingValues {
     return this?.padding.toPaddings()
 }
 
-@Composable
 internal fun BotsiTimerContent?.toPaddings(): PaddingValues {
     return this?.padding.toPaddings()
 }
 
-@Composable
 internal fun BotsiHeroLayout?.toPaddings(): PaddingValues {
     return this?.padding.toPaddings()
 }
 
-@Composable
 internal fun BotsiCarouselStyle?.toArrangement(alignment: Alignment.Horizontal): Arrangement.Horizontal {
     return this?.spacing.toArrangementHorizontal(alignment)
 }
 
-@Composable
 internal fun BotsiContentLayout?.toArrangement(): Arrangement.Vertical {
     return this?.spacing.toArrangement()
 }
 
-@Composable
 internal fun BotsiFooterContent?.toArrangement(): Arrangement.Vertical {
     return this?.spacing.toArrangement()
 }
 
-@Composable
 internal fun BotsiListContent?.toArrangement(): Arrangement.Vertical {
     return this?.itemSpacing.toArrangement()
 }
 
-@Composable
 internal fun BotsiLinksContentLayout?.toArrangement(): Arrangement.Vertical {
     return ((this?.spacing ?: 4) + 4).toArrangement()
 }
 
-@Composable
 internal fun BotsiLinksContentLayout?.toArrangementHorizontal(): Arrangement.Horizontal {
     return ((this?.spacing ?: 4) + 4).toArrangementHorizontal()
 }
 
-@Composable
 internal fun BotsiCardContentLayout?.toAlignment(): Alignment.Horizontal {
     return this?.align.toAlignmentHorizontal()
 }
@@ -388,7 +353,6 @@ internal fun Float?.toFontSize(): TextUnit {
     return ((this?.toFloat() ?: 14f) * 1.2f).sp
 }
 
-@Composable
 internal fun BotsiFont?.toTextStyle(): TextStyle {
     return this?.let {
         val selectedType = types?.find { it.isSelected == true }
@@ -428,7 +392,6 @@ internal fun BotsiFont?.toTextStyle(): TextStyle {
     } ?: TextStyle()
 }
 
-@Composable
 internal fun BotsiImageContent?.toContentScale(): ContentScale {
     return this?.let {
         when (it.aspect) {
@@ -440,7 +403,6 @@ internal fun BotsiImageContent?.toContentScale(): ContentScale {
     } ?: ContentScale.Fit
 }
 
-@Composable
 private fun List<Int>?.toPaddings(extraTopPadding: Dp = Dp.Hairline): PaddingValues = this?.let {
     if (it.size == 1) {
         PaddingValues(
@@ -459,7 +421,6 @@ private fun List<Int>?.toPaddings(extraTopPadding: Dp = Dp.Hairline): PaddingVal
     }
 } ?: PaddingValues()
 
-@Composable
 private fun List<Int>?.toShape(): Shape = this?.let {
     if (it.size == 1) {
         RoundedCornerShape((it.getOrNull(0) ?: 0).dp)
@@ -473,10 +434,8 @@ private fun List<Int>?.toShape(): Shape = this?.let {
     }
 } ?: RoundedCornerShape(0.dp)
 
-@Composable
 private fun Int?.toArrangement(alignment: Alignment.Vertical = Alignment.Top): Arrangement.Vertical =
     Arrangement.spacedBy((this ?: 0).dp, alignment)
 
-@Composable
 private fun Int?.toArrangementHorizontal(alignment: Alignment.Horizontal = Alignment.Start): Arrangement.Horizontal =
     Arrangement.spacedBy((this ?: 0).dp, alignment)

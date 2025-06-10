@@ -22,14 +22,15 @@ internal fun BotsiFooterComposable(
     val footerContent = remember(footerBlock) {
         footerBlock.content as? BotsiFooterContent
     }
-
+    val paddings = remember(footerContent) { footerContent.toPaddings() }
+    val arrangement = remember(footerContent) { footerContent.toArrangement() }
     LazyColumn(
         modifier = modifier
             .fillMaxWidth()
             .then(footerContent?.style.toBackground())
             .then(footerContent?.style.toBorder())
-            .padding(footerContent.toPaddings()),
-        verticalArrangement = footerContent.toArrangement(),
+            .padding(paddings),
+        verticalArrangement = arrangement,
     ) {
         BotsiScopedContent(
             children = footerBlock.children.orEmpty()

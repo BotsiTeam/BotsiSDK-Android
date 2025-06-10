@@ -44,15 +44,20 @@ internal fun BotsiListComposable(
 ) {
     val content = listBlock.content as? BotsiListContent
     if (!listBlock.children.isNullOrEmpty()) {
+        val paddings = remember(content) { content.toPaddings() }
+        val verticalOffset = remember(content) { (content?.verticalOffset ?: 0).dp }
+        val arrangement = remember(content) { content.toArrangement() }
         Column(
             modifier = modifier
-                .padding(content.toPaddings())
-                .offset(y = (content?.verticalOffset ?: 0).dp),
-            verticalArrangement = content.toArrangement(),
+                .padding(paddings)
+                .offset(y = verticalOffset),
+            verticalArrangement = arrangement,
         ) {
-            val childrenContent = listBlock.children
-                .map { it.content }
-                .filterIsInstance<BotsiListNestedContent>()
+            val childrenContent = remember(listBlock) {
+                listBlock.children
+                    .map { it.content }
+                    .filterIsInstance<BotsiListNestedContent>()
+            }
 
             childrenContent.forEach { child ->
                 var itemHeight by remember(child.titleText) { mutableIntStateOf(0) }
@@ -61,34 +66,47 @@ internal fun BotsiListComposable(
                     modifier = Modifier.onSizeChanged { itemHeight = it.height },
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
+                    val itemHeightDp = remember(content) { with(density) { itemHeight.toDp() } }
+                    val connectorThickness = remember(content) { (content?.connectorThickness ?: 0).dp }
+                    val connectorColor = remember(content) {
+                        content?.connectorColor.toColor(content?.connectorOpacity)
+                    }
+                    val contentAlignment = remember(content) { content?.iconPlacement.toAlignment() }
                     Box(
-                        modifier = Modifier.height(with(density) { itemHeight.toDp() }),
+                        modifier = Modifier.height(itemHeightDp),
                         contentAlignment = Alignment.BottomCenter
                     ) {
                         VerticalDivider(
                             modifier = Modifier
                                 .padding(top = 8.dp, bottom = 4.dp)
-                                .height(with(density) { itemHeight.toDp() })
+                                .height(itemHeightDp)
                                 .clip(CircleShape),
-                            thickness = (content?.connectorThickness ?: 0).dp,
-                            color = content?.connectorColor.toColor(content?.connectorOpacity)
+                            thickness = connectorThickness,
+                            color = connectorColor
                         )
                         Box(
-                            modifier = Modifier.height(with(density) { itemHeight.toDp() }),
-                            contentAlignment = content?.iconPlacement.toAlignment()
+                            modifier = Modifier.height(itemHeightDp),
+                            contentAlignment = contentAlignment
                         ) {
-                            if (!child.icon.isNullOrEmpty()) {
+                            val icon = remember(child) { child.icon }
+                            val iconHeight = remember(content) { content?.height?.dp ?: Dp.Unspecified }
+                            val iconWidth = remember(content) { content?.width?.dp ?: Dp.Unspecified }
+                            if (!icon.isNullOrEmpty()) {
                                 AsyncImage(
                                     modifier = Modifier.size(
-                                        width = content?.width?.dp ?: Dp.Unspecified,
-                                        height = content?.height?.dp ?: Dp.Unspecified,
+                                        width = iconWidth,
+                                        height = iconHeight,
                                     ),
-                                    model = child.icon,
+                                    model = icon,
                                     contentDescription = null,
                                 )
                             } else {
+                                val defaultIcon = remember(content) { content?.defaultIcon }
+                                val iconTint = remember(content) {
+                                    content?.defaultColor.toColor(content?.defaultOpacity)
+                                }
                                 val painter = painterResource(
-                                    when (content?.defaultIcon) {
+                                    when (defaultIcon) {
                                         BotsiDefaultIcon.Tick -> R.drawable.ic_tick_24
                                         BotsiDefaultIcon.Checkmark -> R.drawable.ic_checkmark_24
                                         BotsiDefaultIcon.Dot -> R.drawable.ic_dot_6
@@ -97,28 +115,33 @@ internal fun BotsiListComposable(
                                 )
                                 Icon(
                                     modifier = Modifier.size(
-                                        width = content?.width?.dp ?: Dp.Unspecified,
-                                        height = content?.height?.dp ?: Dp.Unspecified,
+                                        width = iconWidth,
+                                        height = iconHeight,
                                     ),
                                     painter = painter,
                                     contentDescription = null,
-                                    tint = content?.defaultColor.toColor(content?.defaultOpacity)
+                                    tint = iconTint
                                 )
                             }
                         }
                     }
 
                     Column {
-                        if (!child.titleText.isNullOrEmpty()) {
-                            child.titleTextStyle?.let {
+                        val contentSpacing = remember(content) { (content?.textSpacing ?: 0).dp }
+                        val childTitleText = remember(child) { child.titleText }
+                        val childCaptionText = remember(child) { child.captionText }
+                        val childTitleTextStyle = remember(child) { child.titleTextStyle }
+                        val childCaptionTextStyle = remember(child) { child.captionTextStyle }
+                        if (!childTitleText.isNullOrEmpty()) {
+                            childTitleTextStyle?.let {
                                 BotsiTextComposable(
-                                    text = it.copy(text = child.titleText),
+                                    text = it.copy(text = childTitleText),
                                 )
                             }
                         }
-                        Spacer(modifier = Modifier.height((content?.textSpacing ?: 0).dp))
-                        if (!child.captionText.isNullOrEmpty()) {
-                            child.captionTextStyle?.let {
+                        Spacer(modifier = Modifier.height(contentSpacing))
+                        if (!childCaptionText.isNullOrEmpty()) {
+                            childCaptionTextStyle?.let {
                                 BotsiTextComposable(
                                     text = it.copy(text = child.captionText),
                                 )

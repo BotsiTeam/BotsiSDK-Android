@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -21,13 +22,18 @@ internal fun BotsiTextComposable(
     modifier: Modifier = Modifier,
     textContent: BotsiTextContent,
 ) {
-    textContent.text?.let { text ->
+    val text = remember(textContent) { textContent.text }
+    val padding = remember(textContent) { textContent.toPaddings() }
+    val verticalOffset = remember(textContent) { (textContent.verticalOffset ?: 0).dp }
+    val maxLines = remember(textContent) { textContent.maxLines ?: Int.MAX_VALUE }
+
+    text?.let { text ->
         BotsiTextComposable(
             modifier = modifier
-                .padding(textContent.toPaddings())
-                .offset(y = (textContent.verticalOffset ?: 0).dp),
+                .padding(padding)
+                .offset(y = verticalOffset),
             text = text,
-            maxLines = textContent.maxLines ?: Int.MAX_VALUE
+            maxLines = maxLines
         )
     }
 }
@@ -38,18 +44,26 @@ internal fun BotsiTextComposable(
     text: BotsiText,
     maxLines: Int = Int.MAX_VALUE
 ) {
-    Text(
-        modifier = modifier,
-        text = text.text.orEmpty(),
-        style = text.font.toTextStyle(),
-        color = text.color.toColor(text.opacity),
-        fontSize = text.size.toFontSize(),
-        textAlign = when (text.align) {
+    val textString = remember(text) { text.text.orEmpty() }
+    val textStyle = remember(text) { text.font.toTextStyle() }
+    val textColor = remember(text) { text.color.toColor(text.opacity) }
+    val textSize = remember(text) { text.size.toFontSize() }
+    val textAlign = remember(text) {
+        when (text.align) {
             BotsiAlign.Left -> TextAlign.Left
             BotsiAlign.Right -> TextAlign.Right
             BotsiAlign.Center -> TextAlign.Center
             else -> TextAlign.Left
-        },
+        }
+    }
+
+    Text(
+        modifier = modifier,
+        text = textString,
+        style = textStyle,
+        color = textColor,
+        fontSize = textSize,
+        textAlign = textAlign,
         maxLines = maxLines,
         softWrap = maxLines > 1
     )

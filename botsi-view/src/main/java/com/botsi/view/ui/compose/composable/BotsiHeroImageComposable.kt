@@ -5,9 +5,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -22,9 +23,10 @@ internal fun BotsiHeroImageOverlayComposable(
     modifier: Modifier = Modifier,
     content: BotsiHeroImageContent,
 ) {
+    val image = remember(content) { content.backgroundImage }
     AsyncImage(
         modifier = modifier.height(content.toImageHeightDp()),
-        model = content.backgroundImage,
+        model = image,
         contentDescription = null,
         contentScale = ContentScale.Crop,
     )
@@ -35,16 +37,23 @@ internal fun BotsiHeroImageTransparentComposable(
     modifier: Modifier = Modifier,
     content: BotsiHeroImageContent,
 ) {
+    val image = remember(content) { content.backgroundImage }
+    val color = remember(content.tint) {
+        content.tint?.fillColor.toColor()
+    }
+    val alpha = remember(content.tint) {
+        (content.tint?.opacity ?: 100f) / 100f
+    }
     AsyncImage(
-        modifier = modifier.fillMaxSize(),
-        model = content.backgroundImage,
+        modifier = modifier
+            .fillMaxSize()
+            .drawWithContent {
+                drawContent()
+                drawRect(color = color, alpha = alpha)
+            },
+        model = image,
         contentDescription = null,
         contentScale = ContentScale.FillHeight,
-        colorFilter = ColorFilter.tint(
-            color = content.tint?.fillColor.toColor(
-                content.tint?.opacity
-            )
-        )
     )
 }
 
@@ -53,13 +62,18 @@ internal fun BotsiHeroImageFlatComposable(
     modifier: Modifier = Modifier,
     content: BotsiHeroImageContent,
 ) {
+    val image = remember(content) { content.backgroundImage }
+    val shape = remember(content) { content.toShape() }
+    val paddings = remember(content) { content.layout.toPaddings() }
+    val verticalOffset = remember(content) { (content.layout?.verticalOffset ?: 0).dp }
+
     AsyncImage(
         modifier = modifier
-            .padding(content.layout.toPaddings())
+            .padding(paddings)
             .height(content.toImageHeightDp())
-            .clip(content.toShape())
-            .offset(y = (content.layout?.verticalOffset ?: 0).dp),
-        model = content.backgroundImage,
+            .clip(shape)
+            .offset(y = verticalOffset),
+        model = image,
         contentDescription = null,
         contentScale = ContentScale.FillHeight
     )

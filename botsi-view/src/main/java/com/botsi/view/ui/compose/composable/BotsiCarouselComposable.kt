@@ -25,10 +25,12 @@ import coil3.compose.AsyncImage
 import com.botsi.view.model.content.BotsiCarouselContent
 import com.botsi.view.model.content.BotsiCarouselPageControlType
 import com.botsi.view.model.content.BotsiPaywallBlock
+import com.botsi.view.utils.toAlignment
 import com.botsi.view.utils.toArrangement
 import com.botsi.view.utils.toColor
 import com.botsi.view.utils.toContentPaddings
 import com.botsi.view.utils.toPaddings
+import com.botsi.view.utils.toShape
 
 @Composable
 internal fun BotsiCarouselComposable(
@@ -40,7 +42,16 @@ internal fun BotsiCarouselComposable(
         val state = rememberPagerState { carousel.children.count() }
 
         carouselContent?.let { content ->
+            val sizeOption = remember(content) { content.style?.sizeOption }
+
             val carouselContentComposable = @Composable {
+                val outerPaddings = remember(content) { content.toPaddings() }
+                val innerPaddings = remember(content) { content.toContentPaddings() }
+                val verticalOffset = remember(content) { (content.verticalOffset ?: 0).dp }
+                val image = remember(content) { content.backgroundImage }
+                val pagerHeight = remember(content) { (content.height ?: 0).dp }
+                val pageSpacing = remember(content) { (content.spacing ?: 0).dp }
+
                 Box(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center,
@@ -49,7 +60,7 @@ internal fun BotsiCarouselComposable(
                         AsyncImage(
                             modifier = modifier
                                 .fillMaxSize(),
-                            model = content.backgroundImage,
+                            model = image,
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
                             alignment = Alignment.TopCenter
@@ -58,14 +69,14 @@ internal fun BotsiCarouselComposable(
 
                     HorizontalPager(
                         modifier = modifier
-                            .padding(content.toPaddings())
+                            .padding(outerPaddings)
                             .fillMaxWidth()
-                            .height((content.height ?: 0).dp)
-                            .offset(y = (content.verticalOffset ?: 0).dp),
-                        contentPadding = content.toContentPaddings(),
+                            .height(pagerHeight)
+                            .offset(y = verticalOffset),
+                        contentPadding = innerPaddings,
                         state = state,
                         pageSize = PageSize.Fill,
-                        pageSpacing = (content.spacing ?: 0).dp
+                        pageSpacing = pageSpacing
                     ) {
                         Column(
                             modifier = Modifier.fillMaxSize(),
@@ -78,29 +89,35 @@ internal fun BotsiCarouselComposable(
             }
             val carouselPageControlComposable = @Composable {
                 if (content.pageControl == true) {
+                    val paddings = remember(content) { content.style.toPaddings() }
+                    val arrangement = remember(content) { content.style.toArrangement(Alignment.CenterHorizontally) }
                     Row(
                         Modifier
                             .fillMaxWidth()
-                            .padding(content.style.toPaddings()),
-                        horizontalArrangement = content.style.toArrangement(Alignment.CenterHorizontally),
+                            .padding(paddings),
+                        horizontalArrangement = arrangement,
                     ) {
                         repeat(state.pageCount) { iteration ->
-                            val color = if (state.currentPage == iteration) {
-                                content.style?.activeColor.toColor(content.style?.activeOpacity)
-                            } else {
-                                content.style?.defaultColor.toColor(content.style?.defaultOpacity)
+                            val color = remember(state.currentPage, content) {
+                                if (state.currentPage == iteration) {
+                                    content.style?.activeColor.toColor(content.style?.activeOpacity)
+                                } else {
+                                    content.style?.defaultColor.toColor(content.style?.defaultOpacity)
+                                }
                             }
+                            val size = remember { (content.style?.size ?: 0).dp }
+
                             Box(
                                 modifier = Modifier
                                     .clip(CircleShape)
                                     .background(color = color)
-                                    .size((content.style?.size ?: 0).dp)
+                                    .size(size)
                             )
                         }
                     }
                 }
             }
-            when (content.style?.sizeOption) {
+            when (sizeOption) {
                 BotsiCarouselPageControlType.Overlay -> {
                     Box(contentAlignment = Alignment.BottomCenter) {
                         carouselContentComposable()

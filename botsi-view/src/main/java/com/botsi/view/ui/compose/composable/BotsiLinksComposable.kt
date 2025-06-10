@@ -59,13 +59,16 @@ internal fun BotsiLinksComposable(
         if (content.hasRestoreButton == true) items.add(content.restoreButton to BotsiButtonAction.Restore)
         items.filter { it.first != null }
     }
-    val containerArrangement = content.contentLayout.toArrangement()
+    val containerArrangement = remember(content) { content.contentLayout.toArrangement() }
+    val containerPaddings = remember(content) { content.toPaddings() }
+    val verticalOffset = remember(content) { (content.verticalOffset ?: 0).dp }
+    val contentAlignment = remember(content) { content.contentLayout?.layout }
 
     val hostModifier = modifier
         .fillMaxWidth()
-        .padding(content.toPaddings())
+        .padding(containerPaddings)
         .onSizeChanged { containerSize = it }
-        .offset(y = (content.verticalOffset ?: 0).dp)
+        .offset(y = verticalOffset)
 
     val isDividersVisible = remember(content) { (content.style?.dividersThickness ?: 0) > 0 }
     LaunchedEffect(containerSize, items) {
@@ -126,12 +129,15 @@ internal fun BotsiLinksComposable(
     }
 
     val contentComposable: @Composable () -> Unit = {
-        val textHeight = calculatedTextSize?.let {
-            textMeasurer.measure(
-                text = items.first().first?.text.orEmpty(),
-                style = TextStyle(fontSize = it)
-            ).size.height
-        } ?: 0
+        val textHeight = remember(content) {
+            calculatedTextSize?.let {
+                textMeasurer.measure(
+                    text = items.first().first?.text.orEmpty(),
+                    style = TextStyle(fontSize = it)
+                ).size.height
+            } ?: 0
+        }
+        val textHeightDp = remember(content) { with(density) { textHeight.toDp() } }
 
         items.forEachIndexed { index, item ->
             item.first?.let {
@@ -147,25 +153,30 @@ internal fun BotsiLinksComposable(
                     staticFontSize = calculatedTextSize
                 )
 
+
                 if (index != items.lastIndex &&
                     isDividersVisible &&
                     !content.style?.dividersColor.isNullOrEmpty()
                 ) {
-                    when (content.contentLayout?.layout) {
+                    val dividerThickness = remember(content) { (content.style.dividersThickness ?: 0).dp }
+                    val dividerColor = remember(content) {
+                        content.style.dividersColor.toColor(content.style.dividersOpacity)
+                    }
+                    when (contentAlignment) {
                         BotsiLayoutDirection.Vertical -> {
                             HorizontalDivider(
                                 modifier = Modifier.fillMaxWidth(),
-                                thickness = (content.style.dividersThickness ?: 0).dp,
-                                color = content.style.dividersColor.toColor(content.style.dividersOpacity)
+                                thickness = dividerThickness,
+                                color = dividerColor
                             )
                         }
 
                         else -> {
                             VerticalDivider(
                                 modifier = Modifier
-                                    .height(with(density) { textHeight.toDp() }),
-                                thickness = (content.style.dividersThickness ?: 0).dp,
-                                color = content.style.dividersColor.toColor(content.style.dividersOpacity)
+                                    .height(textHeightDp),
+                                thickness = dividerThickness,
+                                color = dividerColor
                             )
                         }
                     }
@@ -175,17 +186,19 @@ internal fun BotsiLinksComposable(
     }
 
     if (content.contentLayout?.layout == BotsiLayoutDirection.Vertical) {
+        val arrangement = remember(content) { content.contentLayout.toArrangement() }
         Column(
             modifier = hostModifier,
-            verticalArrangement = content.contentLayout.toArrangement(),
+            verticalArrangement = arrangement,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             contentComposable()
         }
     } else {
+        val arrangement = remember(content) { content.contentLayout.toArrangementHorizontal() }
         Row(
             modifier = hostModifier,
-            horizontalArrangement = content.contentLayout.toArrangementHorizontal(),
+            horizontalArrangement = arrangement,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             contentComposable()
@@ -200,14 +213,19 @@ private fun BotsiLinksTextComposable(
     style: BotsiLinksStyle?,
     staticFontSize: TextUnit? = null
 ) {
-    content.text?.let {
+    val contentText = remember(content) { content.text }
+    val color = remember(content) { style?.color.toColor(style?.opacity) }
+    val textStyle = remember(content) {
+        style?.font.toTextStyle().copy(
+            fontSize = staticFontSize ?: style?.size.toFontSize()
+        )
+    }
+    if (!contentText.isNullOrEmpty()) {
         Text(
             modifier = modifier,
-            text = it,
-            style = style?.font.toTextStyle().copy(
-                fontSize = staticFontSize ?: style?.size.toFontSize()
-            ),
-            color = style?.color.toColor(style?.opacity),
+            text = contentText,
+            style = textStyle,
+            color = color,
         )
     }
 }

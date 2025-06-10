@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,26 +27,33 @@ internal fun BotsiCardComposable(
     modifier: Modifier = Modifier,
     cardBlock: BotsiPaywallBlock,
 ) {
-    val content = cardBlock.content as? BotsiCardContent
+    val content = remember(cardBlock) { cardBlock.content as? BotsiCardContent }
+    val shape = remember(content) { content?.style.toShape() }
+    val outerPaddings = remember(content) { content.toPaddings() }
+    val innerPaddings = remember(content) { content?.contentLayout.toPaddings() }
+    val verticalOffset = remember(content) { (content?.verticalOffset ?: 0).dp }
+    val alignment = remember(content) { content?.contentLayout.toAlignment() }
+    val image = remember(content) { content?.backgroundImage }
+
     if (content != null) {
         val contentComposable = @Composable {
             Column(
                 modifier = modifier
-                    .padding(content.toPaddings())
+                    .padding(outerPaddings)
                     .fillMaxWidth()
-                    .clip(content.style.toShape())
+                    .clip(shape)
                     .then(content.style.toBackground())
                     .then(content.style.toBorder())
-                    .padding(content.contentLayout.toPaddings())
-                    .offset(y = (content.verticalOffset ?: 0).dp),
-                horizontalAlignment = content.contentLayout.toAlignment(),
+                    .padding(innerPaddings)
+                    .offset(y = verticalOffset),
+                horizontalAlignment = alignment,
             ) {
                 cardBlock.children.orEmpty().forEach { child ->
                     BotsiContentComposable(item = child)
                 }
             }
         }
-        if (content.backgroundImage != null) {
+        if (image != null) {
             Box(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center,
@@ -53,7 +61,7 @@ internal fun BotsiCardComposable(
                 AsyncImage(
                     modifier = modifier
                         .fillMaxSize(),
-                    model = content.backgroundImage,
+                    model = image,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     alignment = Alignment.TopCenter

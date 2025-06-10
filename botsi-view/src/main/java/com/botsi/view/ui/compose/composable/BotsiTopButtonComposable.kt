@@ -39,6 +39,10 @@ internal fun BotsiTopButtonComposable(
     topButtonClick: (BotsiTopButton) -> Unit
 ) {
     if (topButton.enabled == true) {
+        val iconType = remember(topButton) { topButton.icon?.type }
+        val alignment = remember(topButton) { topButton.buttonAlign.toAlignment() }
+        val shape = remember(topButton) { topButton.style.toShape() }
+
         val delayMillis = remember(topButton.delay) { topButton.delay ?: 0 }
         var isVisible by remember(delayMillis) {
             mutableStateOf(false)
@@ -59,36 +63,38 @@ internal fun BotsiTopButtonComposable(
             ) {
                 when (topButton.buttonType) {
                     BotsiButtonType.Icon -> {
-                        val painter: Painter? = when (topButton.icon?.type) {
+                        val painter: Painter? = when (iconType) {
                             BotsiButtonIconType.Close -> painterResource(R.drawable.ic_close_24)
                             BotsiButtonIconType.Next -> painterResource(R.drawable.ic_next_24)
                             BotsiButtonIconType.Prev -> painterResource(R.drawable.ic_prev_24)
                             else -> null
                         }
                         painter?.let {
+                            val iconTint = remember(topButton) { topButton.icon?.color.toColor() }
                             Icon(
                                 modifier = Modifier
                                     .size(32.dp)
-                                    .align(topButton.buttonAlign.toAlignment())
-                                    .clip(topButton.style.toShape())
+                                    .align(alignment)
+                                    .clip(shape)
                                     .then(topButton.style.toBackground())
                                     .then(topButton.style.toBorder())
                                     .clickable(onClick = { topButtonClick(topButton) })
                                     .padding(8.dp),
                                 painter = it,
                                 contentDescription = topButton.actionId,
-                                tint = topButton.icon?.color.toColor(),
+                                tint = iconTint,
                             )
                         }
                     }
 
                     BotsiButtonType.Text -> {
-                        topButton.text?.let {
+                        val buttonText = remember(topButton) { topButton.text }
+                        buttonText?.let {
                             BotsiTextComposable(
                                 modifier = Modifier
                                     .wrapContentHeight()
-                                    .align(topButton.buttonAlign.toAlignment())
-                                    .clip(topButton.style.toShape())
+                                    .align(alignment)
+                                    .clip(shape)
                                     .then(topButton.style.toBackground())
                                     .then(topButton.style.toBorder())
                                     .clickable(onClick = { topButtonClick(topButton) })

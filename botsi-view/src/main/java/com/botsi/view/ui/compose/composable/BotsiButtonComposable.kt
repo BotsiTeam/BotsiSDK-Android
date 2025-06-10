@@ -8,9 +8,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.botsi.view.model.content.BotsiAlign
 import com.botsi.view.model.content.BotsiButtonContent
@@ -25,29 +25,41 @@ internal fun BotsiButtonComposable(
     buttonContent: BotsiButtonContent,
     onClick: () -> Unit,
 ) {
+    val outerPaddings = remember(buttonContent) { buttonContent.toPaddings() }
+    val innerPaddings = remember(buttonContent) { buttonContent.contentLayout.toPaddings() }
+    val verticalOffset = remember(buttonContent) { (buttonContent.verticalOffset ?: 0).dp }
+    val buttonColor = remember(buttonContent) {
+        buttonContent.style?.color.toColor(
+            buttonContent.style?.opacity
+        )
+    }
+    val buttonBorder = remember(buttonContent) { buttonContent.style.toBorderStroke() }
+    val buttonShape = remember(buttonContent) { buttonContent.style.toShape() }
+    val buttonContentAlignment = remember(buttonContent) {
+        when (buttonContent.contentLayout?.align) {
+            BotsiAlign.Left -> Alignment.Start
+            BotsiAlign.Right -> Alignment.End
+            BotsiAlign.Center -> Alignment.CenterHorizontally
+            else -> Alignment.Start
+        }
+    }
+
     Button(
         modifier = modifier
-            .padding(buttonContent.toPaddings())
+            .padding(outerPaddings)
             .fillMaxWidth()
-            .padding(buttonContent.contentLayout.toPaddings())
-            .offset(y = (buttonContent.verticalOffset ?: 0).dp),
+            .padding(innerPaddings)
+            .offset(y = verticalOffset),
         onClick = onClick,
         colors = ButtonDefaults.textButtonColors(
-            containerColor = buttonContent.style?.color.toColor(
-                buttonContent.style?.opacity
-            ),
+            containerColor = buttonColor,
         ),
-        border = buttonContent.style.toBorderStroke(),
-        shape = buttonContent.style.toShape()
+        border = buttonBorder,
+        shape = buttonShape
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = when (buttonContent.contentLayout?.align) {
-                BotsiAlign.Left -> Alignment.Start
-                BotsiAlign.Right -> Alignment.End
-                BotsiAlign.Center -> Alignment.CenterHorizontally
-                else -> Alignment.Start
-            },
+            horizontalAlignment = buttonContentAlignment,
             verticalArrangement = Arrangement.Center,
         ) {
             buttonContent.text?.let { text ->
