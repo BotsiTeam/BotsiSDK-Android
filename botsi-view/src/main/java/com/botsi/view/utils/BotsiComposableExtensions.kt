@@ -5,12 +5,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
@@ -43,6 +46,8 @@ import com.botsi.view.model.content.BotsiFontStyleType
 import com.botsi.view.model.content.BotsiFooterContent
 import com.botsi.view.model.content.BotsiFooterStyle
 import com.botsi.view.model.content.BotsiHeroImageContent
+import com.botsi.view.model.content.BotsiHeroImageContentStyle
+import com.botsi.view.model.content.BotsiHeroImageShape
 import com.botsi.view.model.content.BotsiHeroLayout
 import com.botsi.view.model.content.BotsiImageAspect
 import com.botsi.view.model.content.BotsiImageContent
@@ -175,6 +180,83 @@ internal fun BotsiAlign?.toAlignmentHorizontal(): Alignment.Horizontal {
         BotsiAlign.Center -> Alignment.CenterHorizontally
         else -> Alignment.Start
     }
+}
+
+@Composable
+internal fun BotsiHeroImageContent?.toShape(offsetValue: Float = 0f): Shape {
+    return this?.shape?.let {
+        if (this.style == BotsiHeroImageContentStyle.Overlay && offsetValue <= 0f) {
+            return RectangleShape
+        }
+        when (it) {
+            BotsiHeroImageShape.Circle -> GenericShape { size, _ ->
+                val radius = minOf(size.width, size.height) / 2f
+                val centerX = size.width / 2f
+                val centerY = size.height / 2f
+                addOval(
+                    Rect(
+                        left = centerX - radius,
+                        top = centerY - radius,
+                        right = centerX + radius,
+                        bottom = centerY + radius
+                    )
+                )
+            }
+
+            BotsiHeroImageShape.Leaf -> RoundedCornerShape(
+                topStart = 150.dp,
+                bottomEnd = 150.dp,
+            )
+
+            BotsiHeroImageShape.RoundedRectangle -> {
+                if (this.style == BotsiHeroImageContentStyle.Overlay) {
+                    RoundedCornerShape(
+                        topStart = 16.dp,
+                        topEnd = 16.dp,
+                    )
+                } else {
+                    RoundedCornerShape(24.dp)
+                }
+            }
+
+            BotsiHeroImageShape.ConcaveMask -> GenericShape { size, _ ->
+                val ovalDepth = size.height * 0.02f
+                moveTo(0f, 0f)
+                cubicTo(
+                    size.width * 0.25f, ovalDepth,
+                    size.width * 0.75f, ovalDepth,
+                    size.width, 0f
+                )
+                lineTo(size.width, size.height)
+                lineTo(0f, size.height)
+                close()
+            }
+
+            BotsiHeroImageShape.ConvexMask -> GenericShape { size, _ ->
+                val ovalHeight = size.height * 0.02f
+                val ovalWidth = size.width
+                val ovalLeft = (size.width - ovalWidth) / 2f
+                val ovalRight = ovalLeft + ovalWidth
+                moveTo(0f, ovalHeight)
+                lineTo(ovalLeft, ovalHeight)
+                cubicTo(
+                    ovalLeft, ovalHeight * 0.5f,
+                    ovalRight, ovalHeight * 0.5f,
+                    ovalRight, ovalHeight
+                )
+                lineTo(size.width, ovalHeight)
+                lineTo(size.width, size.height)
+                lineTo(0f, size.height)
+                close()
+            }
+
+            BotsiHeroImageShape.Leaf -> GenericShape { size, _ ->
+                close()
+            }
+
+            else -> RectangleShape
+        }
+    } ?: RectangleShape
 }
 
 @Composable

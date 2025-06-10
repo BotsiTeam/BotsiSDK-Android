@@ -11,10 +11,22 @@ internal enum class BotsiAlign {
 internal enum class BotsiButtonIconType {
     None,
     Close,
+    Prev,
+    Next,
 }
 
-internal enum class BotsiShape {
-    Rectangle,
+internal enum class BotsiHeroImageShape(val key: String) {
+    Rectangle("rectangle"),
+    Circle("circle"),
+    Leaf("leaf"),
+    RoundedRectangle("rounded_rectangle"),
+    ConvexMask("convex_mask"),
+    ConcaveMask("concave_mask");
+
+    companion object {
+        fun findByKey(key: String): BotsiHeroImageShape =
+            entries.find { it.key == key } ?: Rectangle
+    }
 }
 
 internal enum class BotsiHeroImageContentStyle {

@@ -25,8 +25,10 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
@@ -42,6 +44,7 @@ import com.botsi.view.utils.toArrangement
 import com.botsi.view.utils.toColor
 import com.botsi.view.utils.toImageHeightPx
 import com.botsi.view.utils.toPaddings
+import com.botsi.view.utils.toShape
 
 @Composable
 @RestrictTo(RestrictTo.Scope.LIBRARY)
@@ -114,6 +117,7 @@ private fun Content(
     contentLayout: BotsiLayoutContent,
     structure: BotsiPaywallContentStructure,
 ) {
+    val density = LocalDensity.current
     val heroImageContent = structure.heroImage?.let {
         it.content as? BotsiHeroImageContent
     }
@@ -124,8 +128,9 @@ private fun Content(
         heroImageContent?.style == BotsiHeroImageContentStyle.Flat
     }
     val heroImageHeight = heroImageContent.toImageHeightPx().takeIf { isImageHeroOverlay } ?: 0f
+    val heroImageContentOffset = remember(heroImageHeight) { heroImageHeight - with(density) { 16.dp.toPx() } }
     val heroImageScrollOffsetState = remember(heroImageHeight) {
-        mutableFloatStateOf(heroImageHeight)
+        mutableFloatStateOf(heroImageContentOffset)
     }
 
     val contentListScrollState = rememberLazyListState()
@@ -133,7 +138,7 @@ private fun Content(
     val heroImageScrollConnection = remember(heroImageContent) {
         BotsiHeroImageOverlayNestedScroll(
             scrollState = contentListScrollState,
-            initialOffset = heroImageHeight,
+            initialOffset = heroImageContentOffset,
             offsetStateFlow = heroImageScrollOffsetState,
         )
     }
@@ -168,7 +173,10 @@ private fun Content(
                                 x = 0
                             )
                         }
-                            .background(color = contentLayout.backgroundColor.toColor())
+                            .background(
+                                color = contentLayout.backgroundColor.toColor(),
+                                shape = heroImageContent.toShape(heroImageScrollOffsetState.floatValue)
+                            )
                     } else {
                         this
                     }
@@ -194,17 +202,11 @@ private fun Content(
 
         contentLayout.topButtons
             ?.let {
-                Box(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                ) {
-                    it.forEach { button ->
-                        BotsiTopButtonComposable(
-                            topButton = button,
-                            topButtonClick = {}
-                        )
-                    }
+                it.forEach { button ->
+                    BotsiTopButtonComposable(
+                        topButton = button,
+                        topButtonClick = {}
+                    )
                 }
             }
     }

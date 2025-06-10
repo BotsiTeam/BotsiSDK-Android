@@ -84,7 +84,7 @@ internal class BotsiLayoutContentMapper(
                         buttonAlign = runCatching {
                             BotsiAlign.valueOf(get("button_align").toCapitalizedString())
                         }.getOrDefault(BotsiAlign.Left),
-                        delay = runCatching { get("delay").asFloat }.getOrNull(),
+                        delay = runCatching { get("delay").asLong }.getOrNull(),
                         style = runCatching { buttonStyleMapper.map(get("style")) }.getOrNull(),
                         text = runCatching { textMapper.map(get("text")) }.getOrNull(),
                         icon = runCatching {

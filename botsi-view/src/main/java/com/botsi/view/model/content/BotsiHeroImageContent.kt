@@ -5,7 +5,7 @@ internal data class BotsiHeroImageContent(
     val style: BotsiHeroImageContentStyle? = null,
     val backgroundImage: String? = null,
     val height: Float? = null,
-    val shape: BotsiShape? = null,
+    val shape: BotsiHeroImageShape? = null,
     val tint: BotsiTint? = null,
     val layout: BotsiHeroLayout? = null
 ): BotsiBlockContent

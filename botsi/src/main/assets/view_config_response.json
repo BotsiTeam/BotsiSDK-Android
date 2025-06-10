@@ -62,7 +62,7 @@
             "actionId": "Close",
             "button_type": "Icon",
             "button_align": "left",
-            "delay": 0,
+            "delay": 100,
             "style": {
               "color": "#2a5fdc",
               "opacity": 100,
@@ -124,7 +124,7 @@
             "actionId": "Close",
             "button_type": "Text",
             "button_align": "center",
-            "delay": 0,
+            "delay": 100,
             "style": {
               "color": "#000000",
               "opacity": 100,
@@ -201,10 +201,10 @@
         "style": "flat",
         "background_image": "https://botsi-dev.s3.us-east-2.amazonaws.com/paywall-imgs/botsi_banner_nologo_1024x500-1749500427075-92.png",
         "height": 25,
-        "shape": "convex_mask",
+        "shape": "leaf",
         "tint": {
-          "opacity": 0,
-          "fill_color": ""
+          "opacity": 100,
+          "fill_color": "#ffffff"
         },
         "layout": {
           "padding": "",

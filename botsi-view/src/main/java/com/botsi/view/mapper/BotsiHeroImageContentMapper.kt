@@ -3,7 +3,7 @@ package com.botsi.view.mapper
 import com.botsi.view.model.content.BotsiHeroImageContentStyle
 import com.botsi.view.model.content.BotsiHeroImageContent
 import com.botsi.view.model.content.BotsiHeroLayout
-import com.botsi.view.model.content.BotsiShape
+import com.botsi.view.model.content.BotsiHeroImageShape
 import com.botsi.view.model.content.BotsiTint
 import com.botsi.view.utils.toCapitalizedString
 import com.botsi.view.utils.toIntList
@@ -24,8 +24,8 @@ internal class BotsiHeroImageContentMapper {
                     height = runCatching { get("height").asFloat }.getOrNull(),
                     backgroundImage = runCatching { get("background_image").asString }.getOrNull(),
                     shape = runCatching {
-                        BotsiShape.valueOf(get("shape").toCapitalizedString())
-                    }.getOrDefault(BotsiShape.Rectangle),
+                        BotsiHeroImageShape.findByKey(get("shape").asString)
+                    }.getOrDefault(BotsiHeroImageShape.Rectangle),
                     tint = runCatching { mapTint(get("tint")) }.getOrNull(),
                     layout = runCatching { mapLayout(get("layout")) }.getOrNull(),
                 )
