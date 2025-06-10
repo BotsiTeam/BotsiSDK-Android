@@ -27,7 +27,7 @@ internal data class BotsiCarouselStyle(
 internal data class BotsiCarouselTiming(
     val timing: Long? = null,
     val initialTiming: Long? = null,
-    val lastOption: String? = null,
+    val lastOption: BotsiCarouselLastOption? = null,
     val transition: Long? = null,
-    val interactive: String? = null,
+    val interactive: BotsiCarouselInteractive? = null,
 )

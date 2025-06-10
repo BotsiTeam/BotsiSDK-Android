@@ -299,9 +299,9 @@
         "timing": {
           "timing": 3000,
           "initial_timing": 3000,
-          "last_option": "",
+          "last_option": "start over",
           "transition": 1000,
-          "interactive": ""
+          "interactive": "without_affect"
         },
         "background_image": "",
         "padding": "0",

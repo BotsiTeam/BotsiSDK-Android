@@ -1,6 +1,8 @@
 package com.botsi.view.ui.compose.composable
 
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,22 +17,30 @@ import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.botsi.view.model.content.BotsiCarouselContent
+import com.botsi.view.model.content.BotsiCarouselInteractive
+import com.botsi.view.model.content.BotsiCarouselLastOption
 import com.botsi.view.model.content.BotsiCarouselPageControlType
 import com.botsi.view.model.content.BotsiPaywallBlock
-import com.botsi.view.utils.toAlignment
 import com.botsi.view.utils.toArrangement
 import com.botsi.view.utils.toColor
 import com.botsi.view.utils.toContentPaddings
 import com.botsi.view.utils.toPaddings
-import com.botsi.view.utils.toShape
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun BotsiCarouselComposable(
@@ -40,9 +50,54 @@ internal fun BotsiCarouselComposable(
     if (!carousel.children.isNullOrEmpty()) {
         val carouselContent = remember(carousel) { carousel.content as? BotsiCarouselContent }
         val state = rememberPagerState { carousel.children.count() }
+        val scope = rememberCoroutineScope()
 
         carouselContent?.let { content ->
+            val isSlideShowActive = remember(content) { content.slideShow == true }
             val sizeOption = remember(content) { content.style?.sizeOption }
+            val interactive = remember(content) { content.timing?.interactive }
+            var isSlideShowRunning by remember { mutableStateOf(true) }
+
+            if (isSlideShowActive) {
+                val slideTiming = remember(content) { content.timing?.transition ?: 0 }
+                val slidePause = remember(content) { content.timing?.timing ?: 0 }
+                val initialSlidePause = remember(content) { content.timing?.initialTiming ?: 0 }
+                val lastOption = remember(content) { content.timing?.lastOption }
+                var isInitialTimingFired by remember { mutableStateOf(false) }
+                val slideAnimation = remember { tween<Float>(durationMillis = slideTiming.toInt()) }
+
+                LaunchedEffect(initialSlidePause, slideTiming, slidePause, isSlideShowRunning) {
+                    if (!isInitialTimingFired) {
+                        delay(initialSlidePause)
+                        isInitialTimingFired = true
+                    }
+                    while (isSlideShowRunning) {
+                        if (state.currentPage != state.pageCount - 1) {
+                            state.animateScrollToPage(
+                                page = state.currentPage + 1,
+                                animationSpec = slideAnimation
+                            )
+                        } else {
+                            when (lastOption) {
+                                BotsiCarouselLastOption.Stop -> {
+                                    isSlideShowRunning = false
+                                    break
+                                }
+
+                                BotsiCarouselLastOption.StartOver -> {
+                                    state.animateScrollToPage(
+                                        page = 0,
+                                        animationSpec = slideAnimation
+                                    )
+                                }
+
+                                else -> {}
+                            }
+                        }
+                        delay(slidePause)
+                    }
+                }
+            }
 
             val carouselContentComposable = @Composable {
                 val outerPaddings = remember(content) { content.toPaddings() }
@@ -56,7 +111,7 @@ internal fun BotsiCarouselComposable(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center,
                 ) {
-                    if (content.backgroundImage != null) {
+                    if (image != null) {
                         AsyncImage(
                             modifier = modifier
                                 .fillMaxSize(),
@@ -69,6 +124,29 @@ internal fun BotsiCarouselComposable(
 
                     HorizontalPager(
                         modifier = modifier
+                            .pointerInput(Unit) {
+                                detectTapGestures(
+                                    onTap = {
+                                        if (isSlideShowActive) {
+                                            when (interactive) {
+                                                BotsiCarouselInteractive.Pause -> {
+                                                    scope.launch {
+                                                        isSlideShowRunning = false
+                                                        delay(500)
+                                                        isSlideShowRunning = true
+                                                    }
+                                                }
+
+                                                BotsiCarouselInteractive.Stop -> {
+                                                    isSlideShowRunning = false
+                                                }
+
+                                                else -> {}
+                                            }
+                                        }
+                                    },
+                                )
+                            }
                             .padding(outerPaddings)
                             .fillMaxWidth()
                             .height(pagerHeight)

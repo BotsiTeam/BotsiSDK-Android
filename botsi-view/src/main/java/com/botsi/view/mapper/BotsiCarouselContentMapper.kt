@@ -1,6 +1,8 @@
 package com.botsi.view.mapper
 
 import com.botsi.view.model.content.BotsiCarouselContent
+import com.botsi.view.model.content.BotsiCarouselInteractive
+import com.botsi.view.model.content.BotsiCarouselLastOption
 import com.botsi.view.model.content.BotsiCarouselPageControlType
 import com.botsi.view.model.content.BotsiCarouselStyle
 import com.botsi.view.model.content.BotsiCarouselTiming
@@ -55,9 +57,9 @@ internal class BotsiCarouselContentMapper {
             BotsiCarouselTiming(
                 timing = runCatching { get("timing").asLong }.getOrNull(),
                 initialTiming = runCatching { get("initial_timing").asLong }.getOrNull(),
-                lastOption = runCatching { get("last_option").asString }.getOrNull(),
+                lastOption = runCatching { BotsiCarouselLastOption.findByKey(get("last_option").asString) }.getOrNull(),
                 transition = runCatching { get("transition").asLong }.getOrNull(),
-                interactive = runCatching { get("interactive").asString }.getOrNull(),
+                interactive = runCatching { BotsiCarouselInteractive.findByKey(get("interactive").asString) }.getOrNull(),
             )
         }
     }

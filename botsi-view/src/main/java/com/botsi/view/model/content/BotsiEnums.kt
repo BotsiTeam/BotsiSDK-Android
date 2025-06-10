@@ -1,5 +1,7 @@
 package com.botsi.view.model.content
 
+import com.botsi.view.model.content.BotsiHeroImageShape.Rectangle
+
 internal enum class BotsiAlign {
     Left,
     Right,
@@ -33,6 +35,27 @@ internal enum class BotsiHeroImageContentStyle {
     Overlay,
     Transparent,
     Flat,
+}
+
+internal enum class BotsiCarouselLastOption(val key: String) {
+    StartOver("start over"),
+    Stop("stop slide show");
+
+    companion object {
+        fun findByKey(key: String): BotsiCarouselLastOption =
+            entries.find { it.key == key } ?: Stop
+    }
+}
+
+internal enum class BotsiCarouselInteractive(val key: String) {
+    WithoutAffect("without_affect"),
+    Stop("stop"),
+    Pause("pause");
+
+    companion object {
+        fun findByKey(key: String): BotsiCarouselInteractive =
+            entries.find { it.key == key } ?: WithoutAffect
+    }
 }
 
 internal enum class BotsiButtonType {
