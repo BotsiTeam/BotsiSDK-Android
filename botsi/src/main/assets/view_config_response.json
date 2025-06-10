@@ -198,7 +198,7 @@
       },
       "content": {
         "type": "image",
-        "style": "transparent",
+        "style": "overlay",
         "background_image": "https://botsi-dev.s3.us-east-2.amazonaws.com/paywall-imgs/botsi_banner_nologo_1024x500-1749500427075-92.png",
         "height": 25,
         "shape": "concave_mask",
@@ -802,7 +802,7 @@
         "width": "30",
         "height": "30",
         "default_icon": "tick",
-        "icon_placement": "center",
+        "icon_placement": "top",
         "default_color": "#ffffff",
         "default_opacity": 100,
         "connector_thickness": "1",

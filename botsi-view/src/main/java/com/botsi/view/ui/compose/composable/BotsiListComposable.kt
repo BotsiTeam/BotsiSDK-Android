@@ -66,7 +66,7 @@ internal fun BotsiListComposable(
                     modifier = Modifier.onSizeChanged { itemHeight = it.height },
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    val itemHeightDp = remember(content) { with(density) { itemHeight.toDp() } }
+                    val itemHeightDp = remember(itemHeight) { with(density) { itemHeight.toDp() } }
                     val connectorThickness = remember(content) { (content?.connectorThickness ?: 0).dp }
                     val connectorColor = remember(content) {
                         content?.connectorColor.toColor(content?.connectorOpacity)
@@ -78,7 +78,6 @@ internal fun BotsiListComposable(
                     ) {
                         VerticalDivider(
                             modifier = Modifier
-                                .padding(top = 8.dp, bottom = 4.dp)
                                 .height(itemHeightDp)
                                 .clip(CircleShape),
                             thickness = connectorThickness,
