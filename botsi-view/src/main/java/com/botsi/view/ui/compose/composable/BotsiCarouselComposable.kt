@@ -160,7 +160,10 @@ internal fun BotsiCarouselComposable(
                             modifier = Modifier.fillMaxSize(),
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
-                            BotsiContentComposable(item = carousel.children[it])
+                            BotsiContentComposable(
+                                item = carousel.children[it],
+                                scope = scope
+                            )
                         }
                     }
                 }

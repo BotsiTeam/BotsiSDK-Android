@@ -21,11 +21,13 @@ import com.botsi.view.utils.toBackground
 import com.botsi.view.utils.toBorder
 import com.botsi.view.utils.toPaddings
 import com.botsi.view.utils.toShape
+import kotlinx.coroutines.CoroutineScope
 
 @Composable
 internal fun BotsiCardComposable(
     modifier: Modifier = Modifier,
     cardBlock: BotsiPaywallBlock,
+    scope: CoroutineScope
 ) {
     val content = remember(cardBlock) { cardBlock.content as? BotsiCardContent }
     val shape = remember(content) { content?.style.toShape() }
@@ -49,7 +51,7 @@ internal fun BotsiCardComposable(
                 horizontalAlignment = alignment,
             ) {
                 cardBlock.children.orEmpty().forEach { child ->
-                    BotsiContentComposable(item = child)
+                    BotsiContentComposable(item = child, scope = scope)
                 }
             }
         }

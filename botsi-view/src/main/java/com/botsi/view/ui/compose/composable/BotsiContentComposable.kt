@@ -11,12 +11,17 @@ import com.botsi.view.model.content.BotsiLinksContent
 import com.botsi.view.model.content.BotsiPaywallBlock
 import com.botsi.view.model.content.BotsiTextContent
 import com.botsi.view.model.content.BotsiTimerContent
+import kotlinx.coroutines.CoroutineScope
 
-internal fun LazyListScope.BotsiScopedContent(children: List<BotsiPaywallBlock>) {
+internal fun LazyListScope.BotsiScopedContent(
+    children: List<BotsiPaywallBlock>,
+    scope: CoroutineScope
+) {
     items(children) { item ->
         BotsiContentComposable(
             modifier = Modifier.animateItem(),
-            item = item
+            item = item,
+            scope = scope
         )
     }
 }
@@ -25,6 +30,7 @@ internal fun LazyListScope.BotsiScopedContent(children: List<BotsiPaywallBlock>)
 internal fun BotsiContentComposable(
     modifier: Modifier = Modifier,
     item: BotsiPaywallBlock,
+    scope: CoroutineScope
 ) {
     when (item.meta?.type) {
         BotsiContentType.Text -> (item.content as? BotsiTextContent)
@@ -59,7 +65,8 @@ internal fun BotsiContentComposable(
 
         BotsiContentType.Card -> BotsiCardComposable(
             modifier = modifier,
-            cardBlock = item
+            cardBlock = item,
+            scope = scope
         )
 
         BotsiContentType.Carousel -> BotsiCarouselComposable(
@@ -79,6 +86,7 @@ internal fun BotsiContentComposable(
             BotsiTimerComposable(
                 modifier = modifier,
                 content = content,
+                scope = scope
             )
         }
 

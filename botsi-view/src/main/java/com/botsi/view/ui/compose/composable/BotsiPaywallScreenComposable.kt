@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,6 +44,7 @@ import com.botsi.view.utils.toColor
 import com.botsi.view.utils.toImageHeightPx
 import com.botsi.view.utils.toPaddings
 import com.botsi.view.utils.toShape
+import kotlinx.coroutines.CoroutineScope
 
 @Composable
 @RestrictTo(RestrictTo.Scope.LIBRARY)
@@ -52,6 +54,7 @@ internal fun BotsiPaywallScreenComposable(
     uiState: BotsiPaywallUiState,
     onAction: (BotsiPaywallUiAction) -> Unit
 ) {
+    val scope = rememberCoroutineScope()
     val contentLayout = remember(uiState) {
         (uiState as? BotsiPaywallUiState.Success)?.content?.layout?.content as? BotsiLayoutContent
     }
@@ -82,7 +85,10 @@ internal fun BotsiPaywallScreenComposable(
         },
         bottomBar = {
             (uiState as? BotsiPaywallUiState.Success)?.content?.footer?.let {
-                BotsiFooterComposable(footerBlock = it)
+                BotsiFooterComposable(
+                    footerBlock = it,
+                    scope = scope
+                )
             }
         }
     ) { paddings ->
@@ -97,7 +103,8 @@ internal fun BotsiPaywallScreenComposable(
                     Content(
                         modifier = Modifier.padding(paddings),
                         contentLayout = it,
-                        structure = uiState.content
+                        structure = uiState.content,
+                        scope = scope
                     )
                 }
             }
@@ -114,6 +121,7 @@ private fun Content(
     modifier: Modifier = Modifier,
     contentLayout: BotsiLayoutContent,
     structure: BotsiPaywallContentStructure,
+    scope: CoroutineScope
 ) {
     val density = LocalDensity.current
     val heroImageContent = structure.heroImage?.let {
@@ -196,7 +204,8 @@ private fun Content(
                 }
             }
             BotsiScopedContent(
-                children = structure.content.orEmpty()
+                children = structure.content.orEmpty(),
+                scope = scope
             )
         }
 

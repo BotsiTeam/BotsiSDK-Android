@@ -12,12 +12,14 @@ import com.botsi.view.utils.toArrangement
 import com.botsi.view.utils.toBackground
 import com.botsi.view.utils.toBorder
 import com.botsi.view.utils.toPaddings
+import kotlinx.coroutines.CoroutineScope
 import kotlin.collections.orEmpty
 
 @Composable
 internal fun BotsiFooterComposable(
     modifier: Modifier = Modifier,
     footerBlock: BotsiPaywallBlock,
+    scope: CoroutineScope
 ) {
     val footerContent = remember(footerBlock) {
         footerBlock.content as? BotsiFooterContent
@@ -33,7 +35,8 @@ internal fun BotsiFooterComposable(
         verticalArrangement = arrangement,
     ) {
         BotsiScopedContent(
-            children = footerBlock.children.orEmpty()
+            children = footerBlock.children.orEmpty(),
+            scope = scope
         )
     }
 }
