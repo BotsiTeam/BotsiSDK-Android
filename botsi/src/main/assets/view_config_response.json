@@ -221,9 +221,9 @@
         "parentId": ""
       },
       "content": {
-        "format": "mm ss",
-        "separator": "dash",
-        "start_text": "10-00",
+        "format": "dd hh mm ss",
+        "separator": "colon",
+        "start_text": "16:00:00:00",
         "before_text": "start in",
         "after_text": "after",
         "before_text_fallback": "",

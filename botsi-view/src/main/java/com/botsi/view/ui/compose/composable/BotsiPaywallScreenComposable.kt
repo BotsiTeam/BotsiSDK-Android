@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -25,7 +24,6 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
@@ -128,7 +126,9 @@ private fun Content(
         heroImageContent?.style == BotsiHeroImageContentStyle.Flat
     }
     val heroImageHeight = heroImageContent.toImageHeightPx().takeIf { isImageHeroOverlay } ?: 0f
-    val heroImageContentOffset = remember(heroImageHeight) { heroImageHeight - with(density) { 16.dp.toPx() } }
+    val heroImageContentOffset = remember(heroImageHeight) {
+        heroImageHeight - (with(density) { 16.dp.toPx() })
+    }
     val heroImageScrollOffsetState = remember(heroImageHeight) {
         mutableFloatStateOf(heroImageContentOffset)
     }

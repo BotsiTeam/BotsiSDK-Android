@@ -106,11 +106,11 @@ internal enum class BotsiTimerFormat(val format: String) {
     }
 }
 
-internal enum class BotsiTimerSeparator {
-    Colon,
-    Dash,
-    Space,
-    Letter
+internal enum class BotsiTimerSeparator(val symbol: String) {
+    Colon(":"),
+    Dash("-"),
+    Space(" "),
+    Letter("D H M S")
 }
 
 internal enum class BotsiContentType(val key: String) {
