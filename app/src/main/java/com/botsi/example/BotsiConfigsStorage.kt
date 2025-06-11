@@ -35,7 +35,7 @@ class BotsiConfigsStorage(
                 putLong(PAYWALL_ID, value)
             }
         }
-        get() = preferences.getLong(PAYWALL_ID, 151L)
+        get() = preferences.getLong(PAYWALL_ID, 1L)
 
     companion object {
         private const val APP_KEY = "APP_KEY"

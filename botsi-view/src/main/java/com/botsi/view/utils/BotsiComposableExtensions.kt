@@ -82,7 +82,9 @@ internal fun BotsiBackgroundColor?.toColor(): Color {
 }
 
 internal fun String?.toColor(opacity: Float? = null): Color {
-    return this?.let { Color(it.toColorInt()).copy(alpha = (opacity ?: 100f) / 100f) } ?: Color.Unspecified
+    return runCatching {
+        this?.let { Color(it.toColorInt()).copy(alpha = (opacity ?: 100f) / 100f) } ?: Color.Unspecified
+    }.getOrDefault(Color.Unspecified)
 }
 
 @Composable

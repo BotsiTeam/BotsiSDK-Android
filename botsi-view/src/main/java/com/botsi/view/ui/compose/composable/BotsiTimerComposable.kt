@@ -60,13 +60,15 @@ internal fun BotsiTimerComposable(
 }
 
 private fun formatDate(content: BotsiTimerContent, timerValue: Long): String {
-    val formattedDate = content.dateFormat?.format(Date(timerValue)).orEmpty()
-    return if (content.noJavaFormatSupportSeparatorValues != null) {
-        formattedDate
-            .split(" ")
-            .mapIndexed { index, value -> "$value${content.noJavaFormatSupportSeparatorValues[index]}" }
-            .joinToString(" ")
-    } else {
-        formattedDate
-    }
+    return runCatching {
+        val formattedDate = content.dateFormat?.format(Date(timerValue)).orEmpty()
+        if (content.noJavaFormatSupportSeparatorValues != null) {
+            formattedDate
+                .split(" ")
+                .mapIndexed { index, value -> "$value${content.noJavaFormatSupportSeparatorValues[index]}" }
+                .joinToString(" ")
+        } else {
+            formattedDate
+        }
+    }.getOrElse { Date(timerValue).toString() }
 }
