@@ -105,25 +105,12 @@ internal class BotsiHttpManager(
         }
     }
 
-    fun getPaywallViewConfiguration(
-        placementId: String,
-        paywallId: Long,
-        profileId: String,
-    ): JsonElement {
-//        val response = httpClient.newRequest<JsonElement>(
-//            requestFactory.getViewConfigurationRequest(placementId, paywallId, profileId),
-//            getReflectType<JsonElement>(),
-//        )
-
-        val json = readFileFromAssets("view_config_response.json")
-
-        val response = BotsiResponse.Success<JsonElement>(
-            body = Gson().fromJson(json, JsonElement::class.java) ?: object : JsonElement() {
-                override fun deepCopy(): JsonElement? {
-                    return this
-                }
-            }
+    fun getPaywallViewConfiguration(paywallId: Long): JsonElement {
+        val response = httpClient.newRequest<JsonElement>(
+            requestFactory.getViewConfigurationRequest(paywallId),
+            getReflectType<JsonElement>(),
         )
+
         when (response) {
             is BotsiResponse.Success -> return response.body
             is BotsiResponse.Error -> throw response.error

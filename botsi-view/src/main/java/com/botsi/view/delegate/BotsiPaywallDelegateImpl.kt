@@ -56,7 +56,6 @@ internal class BotsiPaywallDelegateImpl(
                 _uiState.update { BotsiPaywallUiState.Loading }
 
                 Botsi.getPaywallViewConfiguration(
-                    placementId = action.placementId,
                     paywallId = action.paywallId,
                     successCallback = {
                         coroutineScope.launch {

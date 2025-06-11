@@ -11,14 +11,24 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         if (savedInstanceState == null) {
-            addFragment(BotsiViewFragment.newInstance(), false)
+            addFragment(BotsiAppSetupFragment.newInstance(), false)
         }
     }
 
-    fun addFragment(fragment: Fragment, addToBackStack: Boolean) {
+    fun addFragment(
+        fragment: Fragment,
+        addToBackStack: Boolean,
+        replace: Boolean = false,
+    ) {
         supportFragmentManager
             .beginTransaction()
-            .add(R.id.container, fragment)
+            .run {
+                if (replace) {
+                    replace(R.id.container, fragment)
+                } else {
+                    add(R.id.container, fragment)
+                }
+            }
             .apply { if (addToBackStack) this.addToBackStack(null) }
             .commit()
     }

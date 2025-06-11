@@ -35,7 +35,6 @@ fun BotsiPaywallEntryPoint(viewConfig: BotsiViewConfig) {
             delegate.onAction(
                 BotsiPaywallUiAction.Load(
                     viewConfig.paywallId,
-                    viewConfig.placementId
                 )
             )
         }

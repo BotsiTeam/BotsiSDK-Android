@@ -28,20 +28,14 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,7 +49,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -97,10 +90,6 @@ class BotsiFragment : Fragment() {
         var isConfigsVisible = remember { mutableStateOf(false) }
 
         LaunchedEffect(Unit) {
-            Botsi.activate(
-                context = requireContext(),
-                apiKey = app.botsiStorage.appKey,
-            )
             Botsi.getProducts({}, {})
             Botsi.getPaywall(
                 placementId = app.botsiStorage.placementId,
@@ -353,39 +342,9 @@ class BotsiFragment : Fragment() {
                             )
                         }
                     }
-
-                    if (BuildConfig.DEBUG) {
-                        Button(
-                            modifier = Modifier
-                                .padding(horizontal = 24.dp)
-                                .fillMaxWidth(),
-                            contentPadding = PaddingValues(vertical = 16.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA2A2A2)),
-                            onClick = {
-                                isConfigsVisible.value = true
-                            },
-                        ) {
-                            Text(
-                                text = "Configs",
-                                style = TextStyle(
-                                    fontWeight = FontWeight.Medium
-                                ),
-                                fontSize = 16.sp,
-                            )
-                        }
-                    }
                 }
             }
         }
-
-        ConfigsBottomSheetModal(
-            isVisible = isConfigsVisible,
-            storage = app.botsiStorage,
-            recreate = {
-                Botsi.clearCache()
-                requireActivity().recreate()
-            }
-        )
     }
 
     @Composable
@@ -470,79 +429,6 @@ class BotsiFragment : Fragment() {
                 lineHeight = 14.sp,
                 textAlign = TextAlign.Center,
                 color = Color(0xFF9B9EA1)
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ConfigsBottomSheetModal(
-    modifier: Modifier = Modifier,
-    isVisible: MutableState<Boolean>,
-    storage: BotsiConfigsStorage,
-    recreate: () -> Unit,
-) {
-    if (isVisible.value) {
-        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-        var appKey by remember { mutableStateOf(TextFieldValue(storage.appKey)) }
-        var placementId by remember { mutableStateOf(TextFieldValue(storage.placementId)) }
-
-        ModalBottomSheet(
-            modifier = modifier,
-            onDismissRequest = {
-                isVisible.value = false
-
-                val hasChanged = storage.appKey != appKey.text || storage.placementId != placementId.text
-                storage.appKey = appKey.text
-                storage.placementId = placementId.text
-
-                if (hasChanged) {
-                    recreate()
-                }
-            },
-            sheetState = sheetState,
-            properties = ModalBottomSheetProperties(shouldDismissOnBackPress = true),
-            containerColor = Color.White,
-        ) {
-            TextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = 16.dp,
-                    ),
-                onValueChange = {
-                    appKey = it
-                },
-                label = {
-                    Text(
-                        text = "App key",
-                        style = TextStyle(
-                            fontWeight = FontWeight.Medium
-                        ),
-                    )
-                },
-                value = appKey,
-            )
-            TextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = 16.dp,
-                        vertical = 16.dp
-                    ),
-                onValueChange = {
-                    placementId = it
-                },
-                label = {
-                    Text(
-                        text = "Placement id",
-                        style = TextStyle(
-                            fontWeight = FontWeight.Medium
-                        ),
-                    )
-                },
-                value = placementId,
             )
         }
     }

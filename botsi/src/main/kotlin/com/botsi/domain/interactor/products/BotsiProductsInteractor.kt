@@ -12,5 +12,5 @@ import kotlinx.coroutines.flow.Flow
 internal interface BotsiProductsInteractor {
     fun getProductsIds(): Flow<List<ProductDetails>>
     fun getPaywall(placementId: String): Flow<BotsiPaywall>
-    fun getPaywallViewConfiguration(placementId: String, paywallId: Long): Flow<JsonElement>
+    fun getPaywallViewConfiguration(paywallId: Long): Flow<JsonElement>
 }

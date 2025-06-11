@@ -18,16 +18,11 @@ class BotsiViewFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return ComposeView(context = requireContext()).apply {
-            Botsi.activate(
-                context = requireContext(),
-                apiKey = app.botsiStorage.appKey,
-            )
             setContent {
                 MaterialTheme {
                     BotsiPaywallEntryPoint(
                         BotsiViewConfig(
-                            paywallId = 1,
-                            placementId = "1"
+                            paywallId = app.botsiStorage.paywallId,
                         )
                     )
                 }

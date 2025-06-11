@@ -93,8 +93,8 @@ internal class BotsiRepositoryImpl(
         return flow { emit(httpManager.getPaywall(placementId, storageManager.profileId)) }
     }
 
-    override fun getPaywallViewConfiguration(placementId: String, paywallId: Long): Flow<JsonElement> {
-        return flow { emit(httpManager.getPaywallViewConfiguration(placementId, paywallId, storageManager.profileId)) }
+    override fun getPaywallViewConfiguration(paywallId: Long): Flow<JsonElement> {
+        return flow { emit(httpManager.getPaywallViewConfiguration(paywallId)) }
     }
 
     override fun syncPurchases(details: List<Pair<BotsiPurchaseRecordDto, ProductDetails>>): Flow<BotsiProfileDto> {

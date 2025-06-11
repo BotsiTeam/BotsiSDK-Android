@@ -133,13 +133,12 @@ object Botsi {
     @JvmStatic
     @JvmOverloads
     fun getPaywallViewConfiguration(
-        placementId: String,
         paywallId: Long,
         successCallback: (JsonElement) -> Unit,
         errorCallback: ((Throwable) -> Unit)? = null,
     ) {
         checkActivation()
-        facade.getPaywallViewConfiguration(paywallId, placementId, successCallback, errorCallback)
+        facade.getPaywallViewConfiguration(paywallId, successCallback, errorCallback)
     }
 
     @JvmStatic

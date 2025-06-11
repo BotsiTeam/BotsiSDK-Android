@@ -29,9 +29,18 @@ class BotsiConfigsStorage(
             .orEmpty()
             .ifEmpty { "botsi-test-app-placement" }
 
+    var paywallId: Long
+        set(value) {
+            preferences.edit {
+                putLong(PAYWALL_ID, value)
+            }
+        }
+        get() = preferences.getLong(PAYWALL_ID, 151L)
+
     companion object {
         private const val APP_KEY = "APP_KEY"
         private const val PLACEMENT_ID = "PLACEMENT_ID"
+        private const val PAYWALL_ID = "PAYWALL_ID"
     }
 
 }

@@ -104,7 +104,7 @@ internal class BotsiProductsInteractorImpl(
             }
     }
 
-    override fun getPaywallViewConfiguration(placementId: String, paywallId: Long): Flow<JsonElement> {
-        return repository.getPaywallViewConfiguration(placementId, paywallId)
+    override fun getPaywallViewConfiguration(paywallId: Long): Flow<JsonElement> {
+        return repository.getPaywallViewConfiguration(paywallId)
     }
 }

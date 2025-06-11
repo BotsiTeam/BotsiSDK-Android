@@ -180,13 +180,12 @@ internal class BotsiFacade(
 
     fun getPaywallViewConfiguration(
         paywallId: Long,
-        placementId: String,
         successCallback: ((JsonElement) -> Unit)? = null,
         errorCallback: ((Throwable) -> Unit)? = null
     ) {
         launch {
             profileInteractor.doOnProfileReady(
-                productsInteractor.getPaywallViewConfiguration(placementId, paywallId)
+                productsInteractor.getPaywallViewConfiguration(paywallId)
             )
                 .catch { errorCallback?.invoke(it) }
                 .collect { successCallback?.invoke(it) }
