@@ -33,7 +33,6 @@ internal data class BotsiProductTextStyle(
     val selectedOpacity: Int? = null
 )
 
-
 internal data class BotsiButtonStyle(
     val color: String? = null,
     val opacity: Float? = null,

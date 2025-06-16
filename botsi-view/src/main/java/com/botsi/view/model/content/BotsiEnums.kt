@@ -1,7 +1,5 @@
 package com.botsi.view.model.content
 
-import com.botsi.view.model.content.BotsiHeroImageShape.Rectangle
-
 internal enum class BotsiAlign {
     Left,
     Right,

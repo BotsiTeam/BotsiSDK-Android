@@ -23,6 +23,7 @@ internal class BotsiHeroImageOverlayNestedScroll(
         val delta = available.y
         val currentOffset = offsetStateFlow.value
         val newOffset = currentOffset + delta
+        if (newOffset < 0f || initialOffset < 0f) return Offset.Zero
         val clampedOffset = newOffset.coerceIn(0f, initialOffset)
         val consumed = clampedOffset - currentOffset
         offsetStateFlow.value = clampedOffset

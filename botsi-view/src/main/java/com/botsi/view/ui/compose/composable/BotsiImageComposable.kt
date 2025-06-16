@@ -28,9 +28,9 @@ internal fun BotsiImageComposable(
     if (!imageUrl.isNullOrEmpty()) {
         AsyncImage(
             modifier = modifier
-                .padding(paddings)
-                .fillMaxWidth()
                 .height(height)
+                .fillMaxWidth()
+                .padding(paddings)
                 .offset(y = verticalOffset),
             model = imageUrl,
             contentDescription = null,

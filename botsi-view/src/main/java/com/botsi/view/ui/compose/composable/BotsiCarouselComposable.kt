@@ -3,11 +3,14 @@ package com.botsi.view.ui.compose.composable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -28,6 +31,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.botsi.view.model.content.BotsiCarouselContent
@@ -105,7 +111,7 @@ internal fun BotsiCarouselComposable(
                 val verticalOffset = remember(content) { (content.verticalOffset ?: 0).dp }
                 val image = remember(content) { content.backgroundImage }
                 val pagerHeight = remember(content) { (content.height ?: 0).dp }
-                val pageSpacing = remember(content) { (content.spacing ?: 0).dp }
+                val pageSpacing = remember(content) { (content.spacing ?: 0).dp + 4.dp }
 
                 Box(
                     modifier = Modifier.fillMaxWidth(),
@@ -154,7 +160,8 @@ internal fun BotsiCarouselComposable(
                         contentPadding = innerPaddings,
                         state = state,
                         pageSize = PageSize.Fill,
-                        pageSpacing = pageSpacing
+                        pageSpacing = pageSpacing,
+                        snapPosition = SnapPosition.Center
                     ) {
                         Column(
                             modifier = Modifier.fillMaxSize(),
@@ -209,6 +216,7 @@ internal fun BotsiCarouselComposable(
                 BotsiCarouselPageControlType.Outside -> {
                     Column {
                         carouselContentComposable()
+                        Spacer(Modifier.height(8.dp))
                         carouselPageControlComposable()
                     }
                 }

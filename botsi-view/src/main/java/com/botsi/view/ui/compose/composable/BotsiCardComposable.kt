@@ -1,5 +1,6 @@
 package com.botsi.view.ui.compose.composable
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -49,6 +50,7 @@ internal fun BotsiCardComposable(
                     .padding(innerPaddings)
                     .offset(y = verticalOffset),
                 horizontalAlignment = alignment,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 cardBlock.children.orEmpty().forEach { child ->
                     BotsiContentComposable(item = child, scope = scope)

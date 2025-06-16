@@ -9,7 +9,11 @@ import kotlinx.coroutines.withContext
 internal class BotsiProductsContentMapper {
     suspend fun map(json: JsonElement): BotsiProductsContent {
         return withContext(Dispatchers.Default) {
-            BotsiProductsContent()
+            with(json.asJsonObject) {
+                BotsiProductsContent(
+
+                )
+            }
         }
     }
 }

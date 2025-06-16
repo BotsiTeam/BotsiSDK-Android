@@ -186,7 +186,11 @@ internal fun BotsiLinksComposable(
     }
 
     if (content.contentLayout?.layout == BotsiLayoutDirection.Vertical) {
-        val arrangement = remember(content) { content.contentLayout.toArrangement() }
+        val arrangement = remember(content) {
+            content.contentLayout.toArrangement(
+                Alignment.CenterVertically
+            )
+        }
         Column(
             modifier = hostModifier,
             verticalArrangement = arrangement,
@@ -195,7 +199,11 @@ internal fun BotsiLinksComposable(
             contentComposable()
         }
     } else {
-        val arrangement = remember(content) { content.contentLayout.toArrangementHorizontal() }
+        val arrangement = remember(content) {
+            content.contentLayout.toArrangementHorizontal(
+                Alignment.CenterHorizontally
+            )
+        }
         Row(
             modifier = hostModifier,
             horizontalArrangement = arrangement,

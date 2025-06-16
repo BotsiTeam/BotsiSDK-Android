@@ -53,7 +53,7 @@ internal fun BotsiHeroImageTransparentComposable(
             },
         model = image,
         contentDescription = null,
-        contentScale = ContentScale.FillHeight,
+        contentScale = ContentScale.Crop,
     )
 }
 

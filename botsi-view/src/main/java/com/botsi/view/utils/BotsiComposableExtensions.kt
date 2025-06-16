@@ -339,12 +339,12 @@ internal fun BotsiListContent?.toArrangement(): Arrangement.Vertical {
     return this?.itemSpacing.toArrangement()
 }
 
-internal fun BotsiLinksContentLayout?.toArrangement(): Arrangement.Vertical {
-    return ((this?.spacing ?: 4) + 4).toArrangement()
+internal fun BotsiLinksContentLayout?.toArrangement(alignment: Alignment.Vertical = Alignment.Top): Arrangement.Vertical {
+    return ((this?.spacing ?: 4) + 4).toArrangement(alignment)
 }
 
-internal fun BotsiLinksContentLayout?.toArrangementHorizontal(): Arrangement.Horizontal {
-    return ((this?.spacing ?: 4) + 4).toArrangementHorizontal()
+internal fun BotsiLinksContentLayout?.toArrangementHorizontal(alignment: Alignment.Horizontal = Alignment.Start): Arrangement.Horizontal {
+    return ((this?.spacing ?: 4) + 4).toArrangementHorizontal(alignment)
 }
 
 internal fun BotsiCardContentLayout?.toAlignment(): Alignment.Horizontal {
