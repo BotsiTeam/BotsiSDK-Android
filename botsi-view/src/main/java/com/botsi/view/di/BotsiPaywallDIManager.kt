@@ -77,7 +77,7 @@ internal class BotsiPaywallDIManager {
             )
             put(BotsiCarouselContentMapper::class.java, BotsiCarouselContentMapper())
             put(BotsiProductItemContentMapper::class.java, BotsiProductItemContentMapper())
-            put(BotsiProductsContentMapper::class.java, BotsiProductsContentMapper())
+            put(BotsiProductsContentMapper::class.java, BotsiProductsContentMapper(inject()))
             put(
                 BotsiTextContentMapper::class.java, BotsiTextContentMapper(
                     textMapper = inject()
