@@ -10,23 +10,23 @@ internal data class BotsiProductsContent(
     val text2: BotsiProductTextStyle? = null,
     val text3: BotsiProductTextStyle? = null,
     val text4: BotsiProductTextStyle? = null,
-    val padding: String? = null,
+    val padding: List<Int>? = null,
     val verticalOffset: Int? = null,
     val contentLayout: BotsiProductContentLayout? = null
 ) : BotsiBlockContent
 
 internal data class BotsiProductStyle(
     val borderColor: String? = null,
-    val borderOpacity: Int? = null,
+    val borderOpacity: Float? = null,
     val borderThickness: Int? = null,
     val color: String? = null,
-    val opacity: Int? = null,
+    val opacity: Float? = null,
     val radius: String? = null
 )
 
-data class BotsiProductContentLayout(
+internal data class BotsiProductContentLayout(
     val layout: String? = null,
-    val align: String? = null,
-    val padding: String? = null,
+    val align: BotsiAlign? = null,
+    val padding: List<Int>? = null,
     val spacing: Int? = null
 )
