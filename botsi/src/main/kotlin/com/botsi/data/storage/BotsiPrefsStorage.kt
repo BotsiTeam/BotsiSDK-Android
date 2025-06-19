@@ -5,6 +5,7 @@ import androidx.annotation.RestrictTo
 import com.google.gson.Gson
 import androidx.core.content.edit
 import com.google.gson.reflect.TypeToken
+import java.lang.reflect.Type
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 internal class BotsiPrefsStorage(
@@ -78,13 +79,11 @@ internal class BotsiPrefsStorage(
         }
 
     @JvmSynthetic
-    inline fun <reified T> getData(key: String, classOfT: Class<T>? = null): T? {
+    inline fun <reified T> getData(key: String): T? {
         return prefs.getString(key, null)?.takeIf(::isNotEmpty)?.let {
             try {
-                classOfT?.let { classOfT ->
-                    gson.fromJson(it, classOfT)
-                } ?: gson.fromJson<T>(it, object : TypeToken<T>() {}.type)
-            } catch (e: Exception) {
+                gson.fromJson<T>(it, object : TypeToken<T>() {}.type)
+            } catch (_: Exception) {
                 null
             }
         }

@@ -7,6 +7,7 @@ import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.botsi.BotsiException
 import com.botsi.data.google_store.BotsiGoogleStoreManager
+import com.botsi.data.model.dto.BotsiUnsyncPurchaseDto
 import com.botsi.data.repository.BotsiRepository
 import com.botsi.domain.interactor.profile.BotsiProfileInteractor
 import com.botsi.domain.mapper.toDomain
@@ -20,14 +21,15 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onEmpty
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -65,26 +67,27 @@ internal class BotsiPurchaseInteractorImpl(
                         )
                     )
                 }
+                    .catch { error ->
+                        if (error is BotsiException && error.code == BillingResponseCode.ITEM_UNAVAILABLE) {
+                            emit(null)
+                        } else {
+                            throw error
+                        }
+                    }
                     .flatMapConcat { purchase ->
                         if (purchase != null) {
                             validatePurchase(purchase, purchasableProduct)
                         } else {
-                            flowOf(null)
-                        }
-                    }
-                    .catch { error ->
-                        if (error is BotsiException && error.code == BillingResponseCode.ITEM_UNAVAILABLE) {
-                            emitAll(
-                                googlePlayManager.findActivePurchaseForProduct(
-                                    product.productId,
-                                    product.type,
-                                ).flatMapConcat { purchase ->
-                                    if (purchase == null) throw error
-                                    validatePurchase(purchase, purchasableProduct)
-                                }
-                            )
-                        } else {
-                            throw error
+                            googlePlayManager.findActivePurchaseForProduct(
+                                product.productId,
+                                product.type,
+                            ).flatMapConcat { purchase ->
+                                if (purchase == null) throw BotsiException(
+                                    message = "Purchase is null",
+                                    code = BillingResponseCode.BILLING_UNAVAILABLE
+                                )
+                                validatePurchase(purchase, purchasableProduct)
+                            }
                         }
                     }
             }
@@ -103,6 +106,16 @@ internal class BotsiPurchaseInteractorImpl(
                     .collect()
             }
             .map { profile -> profile.toDomain() to purchase }
+            .catch {
+                val unsyncedPurchases = repository.getUnsyncedPurchases().toMutableList()
+                unsyncedPurchases.add(
+                    BotsiUnsyncPurchaseDto(
+                        purchase = purchase,
+                        product = product,
+                    )
+                )
+                repository.saveUnsyncedPurchases(unsyncedPurchases)
+            }
 
     private suspend fun makePurchase(
         activity: Activity,
@@ -124,38 +137,52 @@ internal class BotsiPurchaseInteractorImpl(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun syncPurchases(): Flow<BotsiProfile> {
-        return googlePlayManager.getPurchaseHistoryDataToRestore()
-            .map { history ->
-                val profile = repository.profileStateFlow.first()
-
-                val alreadyPurchased = profile.subscriptions.orEmpty()
-                    .mapNotNull { it.value.sourceProductId } +
-                        profile.nonSubscriptions.orEmpty()
-                            .map { it.value.sourceProductId }
-
-                history.filter { item ->
-                    item.products.none { product ->
-                        alreadyPurchased.contains(product)
-                    }
+        return flow { emit(repository.getUnsyncedPurchases()) }
+            .flatMapLatest { unsyncPurchases ->
+                if (unsyncPurchases.isNotEmpty()) {
+                    merge(
+                        *unsyncPurchases.map {
+                            validatePurchase(it.purchase, it.product)
+                        }.toTypedArray()
+                    )
+                } else {
+                    flowOf(null)
                 }
             }
-            .filter { it.isNotEmpty() }
-            .flatMapLatest {
-                googlePlayManager.queryProductDetails(
-                    it.mapNotNull { it.products.firstOrNull() }
-                ).map { products ->
-                    products.map { product ->
-                        it.first { history ->
-                            history.products.contains(product.productId)
-                        } to product
+            .flatMapMerge {
+                googlePlayManager.getPurchaseHistoryDataToRestore()
+                    .map { history ->
+                        val profile = repository.profileStateFlow.first()
+
+                        val alreadyPurchased = profile.subscriptions.orEmpty()
+                            .mapNotNull { it.value.sourceProductId } +
+                                profile.nonSubscriptions.orEmpty()
+                                    .map { it.value.sourceProductId }
+
+                        history.filter { item ->
+                            item.products.none { product ->
+                                alreadyPurchased.contains(product)
+                            }
+                        }
                     }
-                }
+                    .filter { it.isNotEmpty() }
+                    .flatMapLatest {
+                        googlePlayManager.queryProductDetails(
+                            it.mapNotNull { it.products.firstOrNull() }
+                        ).map { products ->
+                            products.map { product ->
+                                it.first { history ->
+                                    history.products.contains(product.productId)
+                                } to product
+                            }
+                        }
+                    }
+                    .flatMapLatest {
+                        repository.syncPurchases(it)
+                    }
+                    .map { it.toDomain() }
+                    .onEmpty { emit(profileInteractor.profileFlow.first()) }
             }
-            .flatMapLatest {
-                repository.syncPurchases(it)
-            }
-            .map { it.toDomain() }
-            .onEmpty { emit(profileInteractor.profileFlow.first()) }
     }
 
 }

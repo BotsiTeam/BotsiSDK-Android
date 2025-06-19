@@ -8,6 +8,7 @@ import com.botsi.data.model.dto.BotsiPaywallDto
 import com.botsi.data.model.dto.BotsiProfileDto
 import com.botsi.data.model.dto.BotsiPurchasableProductDto
 import com.botsi.data.model.dto.BotsiPurchaseRecordDto
+import com.botsi.data.model.dto.BotsiUnsyncPurchaseDto
 import com.botsi.data.model.dto.BotsiUpdateProfileParametersDto
 import com.botsi.data.service.BotsiInstallationMetaRetrieverService
 import com.botsi.data.storage.BotsiStorageManager
@@ -105,6 +106,14 @@ internal class BotsiRepositoryImpl(
                 storageManager.profile = it
                 _profileStateFlow.tryEmit(it)
             }
+    }
+
+    override fun saveUnsyncedPurchases(purchases: List<BotsiUnsyncPurchaseDto>) {
+        storageManager.unsyncedPurchases = purchases
+    }
+
+    override fun getUnsyncedPurchases(): List<BotsiUnsyncPurchaseDto> {
+        return storageManager.unsyncedPurchases.orEmpty()
     }
 
     override fun clearCache() {

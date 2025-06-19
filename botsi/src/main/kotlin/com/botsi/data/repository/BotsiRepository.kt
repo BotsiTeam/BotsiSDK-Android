@@ -7,6 +7,7 @@ import com.botsi.data.model.dto.BotsiPaywallDto
 import com.botsi.data.model.dto.BotsiProfileDto
 import com.botsi.data.model.dto.BotsiPurchasableProductDto
 import com.botsi.data.model.dto.BotsiPurchaseRecordDto
+import com.botsi.data.model.dto.BotsiUnsyncPurchaseDto
 import com.botsi.data.model.dto.BotsiUpdateProfileParametersDto
 import com.google.gson.JsonElement
 import kotlinx.coroutines.flow.Flow
@@ -32,6 +33,9 @@ internal interface BotsiRepository {
     fun getPaywallViewConfiguration(paywallId: Long): Flow<JsonElement>
 
     fun syncPurchases(details: List<Pair<BotsiPurchaseRecordDto, ProductDetails>>): Flow<BotsiProfileDto>
+
+    fun saveUnsyncedPurchases(purchases: List<BotsiUnsyncPurchaseDto>)
+    fun getUnsyncedPurchases(): List<BotsiUnsyncPurchaseDto>
 
     fun clearCache()
 
