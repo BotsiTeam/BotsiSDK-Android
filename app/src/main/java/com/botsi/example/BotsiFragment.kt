@@ -193,7 +193,9 @@ class BotsiFragment : Fragment() {
                                     Botsi.restoreProducts(
                                         successCallback = {
                                             isLoading = false
-                                            isSuccessPayment = true
+                                            lifecycleScope.launch {
+                                                snackbarHostState.showSnackbar("Success")
+                                            }
                                         },
                                         errorCallback = {
                                             isLoading = false
