@@ -1,8 +1,7 @@
 plugins {
-    id("org.jetbrains.kotlin.plugin.compose") version ("2.0.0")
+    alias(libs.plugins.android.compose.plugin)
     alias(libs.plugins.android.application)
     alias(libs.plugins.android.kotlin)
-    id("com.google.gms.google-services")
 }
 
 android {
@@ -14,7 +13,7 @@ android {
         applicationId = "com.botsi.example"
         minSdk = BotsiGlobalVars.minSdk
         targetSdk = BotsiGlobalVars.targetSdk
-        versionCode = 21
+        versionCode = 22
         versionName = "1.0"
         multiDexEnabled = true
     }
@@ -43,13 +42,12 @@ android {
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to "*.jar")))
     implementation(project(":botsi"))
+    implementation(project(":botsi-view"))
     implementation(platform(libs.kotlin.bom))
-//    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.0.0"
-//    implementation 'androidx.appcompat:appcompat:1.3.0'
     implementation("androidx.multidex:multidex:2.0.1")
     implementation("androidx.appcompat:appcompat:1.3.0")
     implementation(libs.android.billing.client)
-    implementation(platform("androidx.compose:compose-bom:2024.12.01"))
+    implementation(platform(libs.compose.bom))
     implementation("androidx.compose.material3:material3") {
         exclude(module = "androidx.lifecycle:lifecycle-livedata-core")
     }

@@ -3,6 +3,7 @@ package com.botsi.domain.interactor.purchase
 import android.app.Activity
 import androidx.annotation.RestrictTo
 import com.android.billingclient.api.BillingClient.BillingResponseCode
+import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.botsi.BotsiException
 import com.botsi.data.google_store.BotsiGoogleStoreManager
@@ -43,6 +44,7 @@ internal class BotsiPurchaseInteractorImpl(
     override fun makePurchase(
         activity: Activity,
         product: BotsiProduct,
+        offer: ProductDetails.SubscriptionOfferDetails?,
         subscriptionUpdateParams: BotsiSubscriptionUpdateParameters?,
         isOfferPersonalized: Boolean
     ): Flow<Pair<BotsiProfile, Purchase?>?> {
@@ -51,6 +53,7 @@ internal class BotsiPurchaseInteractorImpl(
                 val purchasableProduct = product
                     .toPurchasableProduct(
                         productDetails,
+                        offer,
                         isOfferPersonalized
                     )
                 flow {

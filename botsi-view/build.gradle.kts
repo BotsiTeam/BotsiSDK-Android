@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.dokka)
     alias(libs.plugins.android.kotlin)
+    alias(libs.plugins.android.compose.plugin)
 }
 
 val versionName = BotsiGlobalVars.viewSdkVersion
@@ -22,9 +23,10 @@ android {
 
     buildFeatures {
         buildConfig = true
+        compose = true
     }
 
-    namespace = BotsiGlobalVars.nameSpace
+    namespace = BotsiGlobalVars.viewNameSpace
 
     kotlinOptions {
         jvmTarget = BotsiGlobalVars.jvmTarget
@@ -37,6 +39,18 @@ android {
 }
 
 dependencies {
+    implementation(libs.gson)
+    implementation(platform(libs.compose.bom))
+    implementation(platform(libs.kotlin.bom))
+    implementation(libs.coroutines)
+    implementation(libs.android.lifecycle)
+    implementation(libs.core.ktx)
+    implementation(libs.ui.text.google.fonts)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+    implementation("androidx.compose.material3:material3") {
+        exclude(module = "androidx.lifecycle:lifecycle-livedata-core")
+    }
     if (findProject(":botsi") != null) {
         // Local build - use project dependency
         compileOnly(project(":botsi"))

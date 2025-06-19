@@ -113,14 +113,14 @@ internal class BotsiRequestFactory(
     fun sendAnalyticsEventsRequest(events: List<AnalyticsEvent>) =
         buildRequest {
             method = BotsiRequest.Method.POST
-            endPoint = "sdk/events/"
+            endPoint = "events"
             body = gson.toJson(BotsiSendEventRequest.create(events))
         }
 
     @JvmSynthetic
-    fun getViewConfigurationRequest(id: String, paywallId: Long, profileId: String) = buildRequest {
+    fun getViewConfigurationRequest(paywallId: Long) = buildRequest {
         method = BotsiRequest.Method.GET
-        endPoint = "paywalls/view_configuration/$id?profileId=$profileId&paywallId=$paywallId"
+        endPoint = "paywalls/$paywallId/builder"
     }
 
     private inline fun buildRequest(action: BotsiRequest.Builder.() -> Unit) =

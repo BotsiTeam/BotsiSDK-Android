@@ -133,13 +133,12 @@ object Botsi {
     @JvmStatic
     @JvmOverloads
     fun getPaywallViewConfiguration(
-        placementId: String,
         paywallId: Long,
         successCallback: (JsonElement) -> Unit,
         errorCallback: ((Throwable) -> Unit)? = null,
     ) {
         checkActivation()
-        facade.getPaywallViewConfiguration(paywallId, placementId, successCallback, errorCallback)
+        facade.getPaywallViewConfiguration(paywallId, successCallback, errorCallback)
     }
 
     @JvmStatic
@@ -147,13 +146,22 @@ object Botsi {
     fun makePurchase(
         activity: Activity,
         product: BotsiProduct,
+        offer: ProductDetails.SubscriptionOfferDetails? = null,
         subscriptionUpdateParams: BotsiSubscriptionUpdateParameters? = null,
         isOfferPersonalized: Boolean = false,
         callback: ((Pair<BotsiProfile, Purchase?>?) -> Unit),
         errorCallback: ((Throwable) -> Unit)? = null,
     ) {
         checkActivation()
-        facade.makePurchase(activity, product, subscriptionUpdateParams, isOfferPersonalized, callback, errorCallback)
+        facade.makePurchase(
+            activity,
+            product,
+            offer,
+            subscriptionUpdateParams,
+            isOfferPersonalized,
+            callback,
+            errorCallback
+        )
     }
 
     @JvmStatic

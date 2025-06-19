@@ -29,7 +29,7 @@ internal interface BotsiRepository {
 
     fun getPaywall(placementId: String): Flow<BotsiPaywallDto>
 
-    fun getPaywallViewConfiguration(placementId: String, paywallId: Long): Flow<JsonElement>
+    fun getPaywallViewConfiguration(paywallId: Long): Flow<JsonElement>
 
     fun syncPurchases(details: List<Pair<BotsiPurchaseRecordDto, ProductDetails>>): Flow<BotsiProfileDto>
 

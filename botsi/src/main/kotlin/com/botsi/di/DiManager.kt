@@ -47,7 +47,7 @@ internal class DiManager {
         dependencies[BotsiHttpClient::class.java] = BotsiHttpClientImpl(inject())
         dependencies[BotsiRequestDataFactory::class.java] = BotsiRequestDataFactory()
         dependencies[BotsiRequestFactory::class.java] = BotsiRequestFactory(inject(), inject(), apiKey)
-        dependencies[BotsiHttpManager::class.java] = BotsiHttpManager(inject(), inject())
+        dependencies[BotsiHttpManager::class.java] = BotsiHttpManager(context, inject(), inject())
 
         dependencies[BotsiGoogleStoreManager::class.java] = BotsiGoogleStoreManager(context)
         dependencies[BotsiAppSetIdRetriever::class.java] = BotsiAppSetIdRetriever()
