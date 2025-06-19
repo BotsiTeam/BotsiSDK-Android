@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -55,8 +56,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.android.billingclient.api.ProductDetails
 import com.botsi.Botsi
-import com.botsi.BuildConfig
 import com.botsi.domain.model.BotsiPaywall
 import com.botsi.domain.model.BotsiProduct
 import kotlinx.coroutines.launch
@@ -87,7 +88,7 @@ class BotsiFragment : Fragment() {
         var isSuccessPayment by remember { mutableStateOf(false) }
         var isError by remember { mutableStateOf(false) }
         var selectedSub by remember { mutableStateOf<BotsiProduct?>(null) }
-        var isConfigsVisible = remember { mutableStateOf(false) }
+        var selectedOffer by remember { mutableStateOf<ProductDetails.SubscriptionOfferDetails?>(null) }
 
         LaunchedEffect(Unit) {
             Botsi.getProducts({}, {})
@@ -219,18 +220,36 @@ class BotsiFragment : Fragment() {
                     } else {
                         if (!isSuccessPayment) {
                             paywall?.sourceProducts?.forEach { product ->
+                                val initialOffer = product.subscriptionOffers?.lastOrNull()
+                                val availableOffers = product.subscriptionOffers?.toMutableList()
+                                    ?.apply { removeAt(lastIndex) }
+                                    .orEmpty()
                                 SubscriptionItem(
                                     modifier = Modifier.padding(
                                         vertical = 6.dp, horizontal = 24.dp
                                     ),
                                     title = product.name,
                                     description = product.title,
-                                    price = product.subscriptionOffer?.pricingPhases?.pricingPhaseList?.firstOrNull()?.formattedPrice.orEmpty(),
+                                    price = initialOffer?.pricingPhases?.pricingPhaseList?.firstOrNull()?.formattedPrice.orEmpty(),
                                     textColor = textColor,
-                                    selected = selectedSub?.basePlanId == product.basePlanId ||
-                                            (!product.subscriptionOffer?.offerId.isNullOrEmpty() &&
-                                                    product.subscriptionOffer?.offerId == selectedSub?.subscriptionOffer?.offerId),
-                                    onClick = { selectedSub = product },
+                                    selected = selectedSub?.basePlanId == product.basePlanId,
+                                    onClick = {
+                                        if (selectedSub?.basePlanId != product.basePlanId) {
+                                            selectedOffer = null
+                                            selectedSub = product
+                                        } else {
+                                            selectedSub = null
+                                        }
+                                    },
+                                    selectedOffer = selectedOffer,
+                                    offers = availableOffers,
+                                    onOfferClick = {
+                                        selectedOffer = if (selectedOffer?.offerId == it.offerId) {
+                                            null
+                                        } else {
+                                            it
+                                        }
+                                    },
                                 )
                             }
                         } else {
@@ -276,7 +295,6 @@ class BotsiFragment : Fragment() {
                                     Spacer(Modifier.height(4.dp))
 
                                     selectedSub?.let { sub ->
-
                                         SubscriptionItem2(
                                             modifier = Modifier.padding(
                                                 vertical = 6.dp, horizontal = 48.dp
@@ -317,6 +335,7 @@ class BotsiFragment : Fragment() {
                                     Botsi.makePurchase(
                                         activity = requireActivity(),
                                         product = sub,
+                                        offer = selectedOffer,
                                         callback = {
                                             isSuccessPayment = true
                                             isLoading = false
@@ -355,45 +374,91 @@ class BotsiFragment : Fragment() {
         price: String,
         textColor: Color,
         selected: Boolean,
+        selectedOffer: ProductDetails.SubscriptionOfferDetails?,
+        offers: List<ProductDetails.SubscriptionOfferDetails>,
         onClick: () -> Unit,
+        onOfferClick: (ProductDetails.SubscriptionOfferDetails) -> Unit,
     ) {
-        Row(
+        Column(
             modifier = modifier
-                .fillMaxWidth()
-                .background(
-                    color = Color(0xFFFAFBFA), shape = RoundedCornerShape(16.dp)
-                )
-                .clip(RoundedCornerShape(16.dp))
-                .clickable(onClick = onClick)
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.End
         ) {
-            Column {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        color = Color(0xFFFAFBFA),
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    .clip(RoundedCornerShape(16.dp))
+                    .clickable(onClick = onClick)
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    Text(
+                        modifier = Modifier.widthIn(max = 150.dp),
+                        text = title,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        overflow = TextOverflow.Ellipsis,
+                        color = textColor,
+                        lineHeight = 16.sp
+                    )
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        modifier = Modifier.widthIn(max = 150.dp),
+                        text = description,
+                        fontSize = 12.sp,
+                        lineHeight = 14.sp,
+                        color = Color(0xFF9B9EA1)
+                    )
+                }
                 Text(
-                    modifier = Modifier.widthIn(max = 150.dp),
-                    text = title,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
-                    overflow = TextOverflow.Ellipsis,
-                    color = textColor,
-                    lineHeight = 16.sp
+                    text = price, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = textColor
                 )
-                Spacer(Modifier.height(2.dp))
-                Text(
-                    modifier = Modifier.widthIn(max = 150.dp),
-                    text = description,
-                    fontSize = 12.sp,
-                    lineHeight = 14.sp,
-                    color = Color(0xFF9B9EA1)
+                RadioButton(
+                    selected = selected, onClick = onClick
                 )
             }
-            Text(
-                text = price, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = textColor
-            )
-            RadioButton(
-                selected = selected, onClick = onClick
-            )
+
+            AnimatedVisibility(selected) {
+                offers.forEach { offer ->
+                    Row(
+                        modifier = Modifier
+                            .padding(top = 8.dp)
+                            .background(
+                                color = Color(0xFFFAFBFA),
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .clip(RoundedCornerShape(16.dp))
+                            .clickable { onOfferClick(offer) }
+                            .padding(horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(24.dp)
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(end = 16.dp),
+                            text = offer.offerId.orEmpty(),
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 16.sp,
+                            color = textColor
+                        )
+                        Text(
+                            text = offer.pricingPhases.pricingPhaseList.firstOrNull()?.formattedPrice.orEmpty(),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                            color = textColor
+                        )
+                        RadioButton(
+                            selected = offer.offerId == selectedOffer?.offerId,
+                            onClick = { onOfferClick(offer) }
+                        )
+                    }
+                }
+            }
         }
     }
 
