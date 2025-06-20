@@ -109,7 +109,6 @@ internal fun BotsiSubscriptionUpdateParameters.toDto(): BotsiSubscriptionUpdateP
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 internal fun BotsiProduct.toPurchasableProduct(
     productDetails: ProductDetails,
-    offer: ProductDetails.SubscriptionOfferDetails?,
     isOfferPersonalized: Boolean
 ): BotsiPurchasableProduct {
     return BotsiPurchasableProduct(
@@ -119,7 +118,7 @@ internal fun BotsiProduct.toPurchasableProduct(
         abTestId = abTestId,
         paywallId = paywallId,
         isConsumable = isConsumable,
-        currentSubOfferDetails = offer,
+        currentSubOfferDetails = subscriptionOffer,
         currentOneTmeOfferDetails = onTimePurchaseOffers,
         isOfferPersonalized = isOfferPersonalized,
         productDetails = productDetails,

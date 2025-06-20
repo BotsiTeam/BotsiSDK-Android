@@ -13,7 +13,7 @@ android {
         applicationId = "com.botsi.example"
         minSdk = BotsiGlobalVars.minSdk
         targetSdk = BotsiGlobalVars.targetSdk
-        versionCode = 22
+        versionCode = 24
         versionName = "1.0"
         multiDexEnabled = true
     }

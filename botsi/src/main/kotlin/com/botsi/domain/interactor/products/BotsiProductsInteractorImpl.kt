@@ -2,6 +2,7 @@ package com.botsi.domain.interactor.products
 
 import androidx.annotation.RestrictTo
 import com.android.billingclient.api.ProductDetails
+import com.android.billingclient.api.ProductDetails.SubscriptionOfferDetails
 import com.botsi.data.google_store.BotsiGoogleStoreManager
 import com.botsi.data.repository.BotsiRepository
 import com.botsi.domain.model.BotsiPaywall
@@ -32,26 +33,42 @@ internal class BotsiProductsInteractorImpl(
                 if (!paywall.sourceProducts.isNullOrEmpty()) {
                     googleStoreManager.queryProductDetails(paywall.sourceProducts.mapNotNull { it.sourcePoductId })
                         .map { products ->
-                            products.map { product ->
+                            val finalProducts = mutableListOf<BotsiProduct>()
+                            products.forEach { product ->
                                 val dto = paywall.sourceProducts
                                     .find { source -> source.sourcePoductId == product.productId }
 
-                                BotsiProduct(
-                                    productId = product.productId,
-                                    paywallName = paywall.name.orEmpty(),
-                                    type = product.productType,
-                                    name = product.name,
-                                    title = product.title,
-                                    description = product.description,
-                                    isConsumable = dto?.isConsumable == true,
-                                    basePlanId = dto?.basePlanId.orEmpty(),
-                                    subscriptionOffers = product.subscriptionOfferDetails,
-                                    onTimePurchaseOffers = product.oneTimePurchaseOfferDetails,
-                                    placementId = placementId,
-                                    paywallId = paywall.id ?: 0,
-                                    abTestId = paywall.abTestId ?: 0,
-                                )
+                                val offers = dto?.offerIds.orEmpty().map {
+                                    findCurrentOffer(
+                                        subOfferDetails = product.subscriptionOfferDetails.orEmpty(),
+                                        basePlanId = product.productId,
+                                        offerId = it
+                                    )
+                                }.ifEmpty {
+                                    listOf(product.subscriptionOfferDetails?.lastOrNull())
+                                }
+
+                                offers.forEach {
+                                    finalProducts.add(
+                                        BotsiProduct(
+                                            productId = product.productId,
+                                            paywallName = paywall.name.orEmpty(),
+                                            type = product.productType,
+                                            name = product.name,
+                                            title = product.title,
+                                            description = product.description,
+                                            isConsumable = dto?.isConsumable == true,
+                                            basePlanId = dto?.basePlanId.orEmpty(),
+                                            subscriptionOffer = it,
+                                            onTimePurchaseOffers = product.oneTimePurchaseOfferDetails,
+                                            placementId = placementId,
+                                            paywallId = paywall.id ?: 0,
+                                            abTestId = paywall.abTestId ?: 0,
+                                        )
+                                    )
+                                }
                             }
+                            finalProducts.toList()
                         }
                 } else {
                     flowOf(emptyList())
@@ -71,5 +88,24 @@ internal class BotsiProductsInteractorImpl(
 
     override fun getPaywallViewConfiguration(paywallId: Long): Flow<JsonElement> {
         return repository.getPaywallViewConfiguration(paywallId)
+    }
+
+    private fun findCurrentOffer(
+        subOfferDetails: List<SubscriptionOfferDetails>,
+        basePlanId: String,
+        offerId: String,
+    ): SubscriptionOfferDetails? {
+        var baseOffer: SubscriptionOfferDetails? = null
+        for (offer in subOfferDetails) {
+            if (offer.basePlanId == basePlanId) {
+                if (offer.offerId == offerId) {
+                    return offer
+                } else if (offer.offerId == null) {
+                    baseOffer = offer
+                }
+            }
+        }
+
+        return baseOffer
     }
 }

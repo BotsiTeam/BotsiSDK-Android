@@ -16,11 +16,6 @@ class BotsiApp : MultiDexApplication() {
     override fun onCreate() {
         super.onCreate()
         MultiDex.install(this)
-
-        Botsi.activate(
-            context = this,
-            apiKey = botsiStorage.appKey,
-        )
     }
 
 }

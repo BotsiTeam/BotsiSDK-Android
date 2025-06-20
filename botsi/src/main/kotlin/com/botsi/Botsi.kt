@@ -22,6 +22,7 @@ object Botsi {
     fun activate(
         context: Context,
         apiKey: String,
+        clearCache: Boolean = false,
         customerUserId: String? = null,
         successCallback: ((BotsiProfile) -> Unit)? = null,
         errorCallback: ((Throwable) -> Unit)? = null
@@ -34,6 +35,10 @@ object Botsi {
             purchaseInteractor = diManager.inject(),
             analyticsTracker = diManager.inject(),
         )
+
+        if (clearCache){
+            facade.clearCache()
+        }
 
         facade.activate(
             customerUserId,
@@ -146,7 +151,6 @@ object Botsi {
     fun makePurchase(
         activity: Activity,
         product: BotsiProduct,
-        offer: ProductDetails.SubscriptionOfferDetails? = null,
         subscriptionUpdateParams: BotsiSubscriptionUpdateParameters? = null,
         isOfferPersonalized: Boolean = false,
         callback: ((Pair<BotsiProfile, Purchase?>?) -> Unit),
@@ -156,7 +160,6 @@ object Botsi {
         facade.makePurchase(
             activity,
             product,
-            offer,
             subscriptionUpdateParams,
             isOfferPersonalized,
             callback,
@@ -168,11 +171,6 @@ object Botsi {
     fun logShowPaywall(paywall: BotsiPaywall) {
         checkActivation()
         facade.logShowPaywall(paywall)
-    }
-
-    @JvmStatic
-    fun clearCache() {
-        facade.clearCache()
     }
 
     private fun checkActivation() {

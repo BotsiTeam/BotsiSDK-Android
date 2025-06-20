@@ -96,7 +96,6 @@ class BotsiAppSetupFragment : Fragment() {
                                     containerColor = Color(0xffFF9542), disabledContainerColor = Color(0xFFFFCDA6)
                                 ),
                                 onClick = {
-                                    Botsi.clearCache()
                                     storage.appKey = appKey.text
                                     storage.placementId = placementId.text
                                     storage.paywallId = paywallId.text.toLong()
@@ -104,6 +103,7 @@ class BotsiAppSetupFragment : Fragment() {
                                     Botsi.activate(
                                         context = requireContext(),
                                         apiKey = app.botsiStorage.appKey,
+                                        clearCache = true,
                                     )
 
                                     (requireActivity() as MainActivity).addFragment(

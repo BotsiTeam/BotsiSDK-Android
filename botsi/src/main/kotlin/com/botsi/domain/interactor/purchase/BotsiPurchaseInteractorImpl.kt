@@ -46,7 +46,6 @@ internal class BotsiPurchaseInteractorImpl(
     override fun makePurchase(
         activity: Activity,
         product: BotsiProduct,
-        offer: ProductDetails.SubscriptionOfferDetails?,
         subscriptionUpdateParams: BotsiSubscriptionUpdateParameters?,
         isOfferPersonalized: Boolean
     ): Flow<Pair<BotsiProfile, Purchase?>?> {
@@ -55,7 +54,6 @@ internal class BotsiPurchaseInteractorImpl(
                 val purchasableProduct = product
                     .toPurchasableProduct(
                         productDetails,
-                        offer,
                         isOfferPersonalized
                     )
                 flow {

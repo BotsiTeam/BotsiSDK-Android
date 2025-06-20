@@ -88,7 +88,6 @@ class BotsiFragment : Fragment() {
         var isSuccessPayment by remember { mutableStateOf(false) }
         var isError by remember { mutableStateOf(false) }
         var selectedSub by remember { mutableStateOf<BotsiProduct?>(null) }
-        var selectedOffer by remember { mutableStateOf<ProductDetails.SubscriptionOfferDetails?>(null) }
 
         LaunchedEffect(Unit) {
             Botsi.getProducts({}, {})
@@ -222,34 +221,22 @@ class BotsiFragment : Fragment() {
                     } else {
                         if (!isSuccessPayment) {
                             paywall?.sourceProducts?.forEach { product ->
-                                val initialOffer = product.subscriptionOffers?.lastOrNull()
-                                val availableOffers = product.subscriptionOffers?.toMutableList()
-                                    ?.apply { removeAt(lastIndex) }
-                                    .orEmpty()
                                 SubscriptionItem(
                                     modifier = Modifier.padding(
                                         vertical = 6.dp, horizontal = 24.dp
                                     ),
                                     title = product.name,
                                     description = product.title,
-                                    price = initialOffer?.pricingPhases?.pricingPhaseList?.firstOrNull()?.formattedPrice.orEmpty(),
+                                    price = product.subscriptionOffer?.pricingPhases?.pricingPhaseList?.firstOrNull()?.formattedPrice.orEmpty(),
                                     textColor = textColor,
                                     selected = selectedSub?.basePlanId == product.basePlanId,
                                     onClick = {
-                                        if (selectedSub?.basePlanId != product.basePlanId) {
-                                            selectedOffer = null
-                                            selectedSub = product
+                                        selectedSub = if (selectedSub?.basePlanId != product.basePlanId ||
+                                            selectedSub?.subscriptionOffer?.offerId != product.subscriptionOffer?.offerId
+                                        ) {
+                                            product
                                         } else {
-                                            selectedSub = null
-                                        }
-                                    },
-                                    selectedOffer = selectedOffer,
-                                    offers = availableOffers,
-                                    onOfferClick = {
-                                        selectedOffer = if (selectedOffer?.offerId == it.offerId) {
                                             null
-                                        } else {
-                                            it
                                         }
                                     },
                                 )
@@ -337,7 +324,6 @@ class BotsiFragment : Fragment() {
                                     Botsi.makePurchase(
                                         activity = requireActivity(),
                                         product = sub,
-                                        offer = selectedOffer,
                                         callback = {
                                             isSuccessPayment = true
                                             isLoading = false
@@ -376,10 +362,7 @@ class BotsiFragment : Fragment() {
         price: String,
         textColor: Color,
         selected: Boolean,
-        selectedOffer: ProductDetails.SubscriptionOfferDetails?,
-        offers: List<ProductDetails.SubscriptionOfferDetails>,
         onClick: () -> Unit,
-        onOfferClick: (ProductDetails.SubscriptionOfferDetails) -> Unit,
     ) {
         Column(
             modifier = modifier
@@ -424,42 +407,6 @@ class BotsiFragment : Fragment() {
                 RadioButton(
                     selected = selected, onClick = onClick
                 )
-            }
-
-            AnimatedVisibility(selected) {
-                offers.forEach { offer ->
-                    Row(
-                        modifier = Modifier
-                            .padding(top = 8.dp)
-                            .background(
-                                color = Color(0xFFFAFBFA),
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                            .clip(RoundedCornerShape(16.dp))
-                            .clickable { onOfferClick(offer) }
-                            .padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(24.dp)
-                    ) {
-                        Text(
-                            modifier = Modifier.padding(end = 16.dp),
-                            text = offer.offerId.orEmpty(),
-                            fontWeight = FontWeight.Medium,
-                            fontSize = 16.sp,
-                            color = textColor
-                        )
-                        Text(
-                            text = offer.pricingPhases.pricingPhaseList.firstOrNull()?.formattedPrice.orEmpty(),
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
-                            color = textColor
-                        )
-                        RadioButton(
-                            selected = offer.offerId == selectedOffer?.offerId,
-                            onClick = { onOfferClick(offer) }
-                        )
-                    }
-                }
             }
         }
     }

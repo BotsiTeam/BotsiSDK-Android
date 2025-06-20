@@ -96,7 +96,6 @@ internal class BotsiFacade(
     fun makePurchase(
         activity: Activity,
         product: BotsiProduct,
-        offer: ProductDetails.SubscriptionOfferDetails?,
         subscriptionUpdateParams: BotsiSubscriptionUpdateParameters?,
         isOfferPersonalized: Boolean,
         successCallback: ((Pair<BotsiProfile, Purchase?>?) -> Unit)? = null,
@@ -107,7 +106,6 @@ internal class BotsiFacade(
                 purchaseInteractor.makePurchase(
                     activity,
                     product,
-                    offer,
                     subscriptionUpdateParams,
                     isOfferPersonalized
                 )

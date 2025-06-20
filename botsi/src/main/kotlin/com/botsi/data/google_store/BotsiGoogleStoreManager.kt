@@ -229,9 +229,6 @@ internal class BotsiGoogleStoreManager(
             } else {
                 flowOf(purchaseableProduct.productDetails to null)
             }
-                .catch { error ->
-                    onError(error, callback)
-                }
                 .onEach { (productDetails, billingFlowSubUpdateParams) ->
                     purchaseCallback = callback
 
@@ -250,6 +247,9 @@ internal class BotsiGoogleStoreManager(
                             }
                             .build()
                     )
+                }
+                .catch { error ->
+                    onError(error, callback)
                 }
                 .flowOnMain()
                 .collect()

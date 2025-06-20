@@ -15,7 +15,6 @@ internal interface BotsiPurchaseInteractor {
     fun makePurchase(
         activity: Activity,
         product: BotsiProduct,
-        offer: ProductDetails.SubscriptionOfferDetails?,
         subscriptionUpdateParams: BotsiSubscriptionUpdateParameters?,
         isOfferPersonalized: Boolean,
     ): Flow<Pair<BotsiProfile, Purchase?>?>
