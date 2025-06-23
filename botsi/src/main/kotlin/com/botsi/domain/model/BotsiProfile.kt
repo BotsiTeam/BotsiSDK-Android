@@ -1,7 +1,7 @@
 package com.botsi.domain.model
 
 import androidx.annotation.RestrictTo
-import com.google.gson.annotations.SerializedName
+import java.util.Date
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 class BotsiProfile(
@@ -14,58 +14,58 @@ class BotsiProfile(
 ) {
 
     data class AccessLevel(
-        val createdDate: String,
+        val createdDate: Date,
         val id: Int,
         val isActive: Boolean,
         val sourceProductId: String,
         val sourceBasePlanId: String,
         val store: String,
-        val activatedAt: String,
+        val activatedAt: Date,
         val isLifetime: Boolean,
         val isRefund: Boolean,
         val willRenew: Boolean,
         val isInGracePeriod: Boolean,
         val cancellationReason: String,
         val offerId: String,
-        val startsAt: String,
-        val renewedAt: String,
-        val expiresAt: String,
+        val startsAt: Date,
+        val renewedAt: Date,
+        val expiresAt: Date,
         val activeIntroductoryOfferType: String,
         val activePromotionalOfferType: String,
         val activePromotionalOfferId: String,
-        val unsubscribedAt: String,
-        val billingIssueDetectedAt: String,
+        val unsubscribedAt: Date,
+        val billingIssueDetectedAt: Date,
     )
 
     data class Subscription(
-        val createdDate: String,
+        val createdDate: Date,
         val id: Int,
         val isActive: Boolean,
         val sourceProductId: String,
         val sourceBasePlanId: String,
         val store: String,
-        val activatedAt: String,
+        val activatedAt: Date,
         val isLifetime: Boolean,
         val isRefund: Boolean,
         val willRenew: Boolean,
         val isInGracePeriod: Boolean,
         val cancellationReason: String,
         val offerId: String,
-        val startsAt: String,
-        val renewedAt: String,
-        val expiresAt: String,
+        val startsAt: Date,
+        val renewedAt: Date,
+        val expiresAt: Date,
         val activeIntroductoryOfferType: String,
         val activePromotionalOfferType: String,
         val activePromotionalOfferId: String,
-        val unsubscribedAt: String,
-        val billingIssueDetectedAt: String,
+        val unsubscribedAt: Date,
+        val billingIssueDetectedAt: Date,
     )
 
     data class NonSubscription(
         val isConsumable: Boolean,
         val isOneTime: Boolean,
         val isRefund: Boolean,
-        val purchasedAt: String,
+        val purchasedAt: Date,
         val purchasedId: String,
         val store: String,
         val sourceProductId: String,

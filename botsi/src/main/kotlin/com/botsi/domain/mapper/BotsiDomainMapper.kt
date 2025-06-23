@@ -11,6 +11,9 @@ import com.botsi.domain.model.BotsiProfile
 import com.botsi.domain.model.BotsiPurchasableProduct
 import com.botsi.domain.model.BotsiSubscriptionUpdateParameters
 import com.botsi.domain.model.BotsiUpdateProfileParameters
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 internal fun BotsiProfileDto.toDomain(): BotsiProfile {
@@ -27,54 +30,54 @@ internal fun BotsiProfileDto.toDomain(): BotsiProfile {
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 internal fun BotsiProfileDto.AccessLevelDto.toDomain(): BotsiProfile.AccessLevel {
     return BotsiProfile.AccessLevel(
-        createdDate = createdDate.orEmpty(),
+        createdDate = createdDate.toDate(),
         id = id ?: 0,
         isActive = isActive == true,
         sourceProductId = sourceProductId.orEmpty(),
         sourceBasePlanId = sourceBasePlanId.orEmpty(),
         store = store.orEmpty(),
-        activatedAt = activatedAt.orEmpty(),
+        activatedAt = activatedAt.toDate(),
         isLifetime = isLifetime == true,
         isRefund = isRefund == true,
         willRenew = willRenew == true,
         isInGracePeriod = isInGracePeriod == true,
         cancellationReason = cancellationReason.orEmpty(),
         offerId = offerId.orEmpty(),
-        startsAt = startsAt.orEmpty(),
-        renewedAt = renewedAt.orEmpty(),
-        expiresAt = expiresAt.orEmpty(),
+        startsAt = startsAt.toDate(),
+        renewedAt = renewedAt.toDate(),
+        expiresAt = expiresAt.toDate(),
         activeIntroductoryOfferType = activeIntroductoryOfferType.orEmpty(),
         activePromotionalOfferType = activePromotionalOfferType.orEmpty(),
         activePromotionalOfferId = activePromotionalOfferId.orEmpty(),
-        unsubscribedAt = unsubscribedAt.orEmpty(),
-        billingIssueDetectedAt = billingIssueDetectedAt.orEmpty(),
+        unsubscribedAt = unsubscribedAt.toDate(),
+        billingIssueDetectedAt = billingIssueDetectedAt.toDate(),
     )
 }
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 internal fun BotsiProfileDto.SubscriptionDto.toDomain(): BotsiProfile.Subscription {
     return BotsiProfile.Subscription(
-        createdDate = createdDate.orEmpty(),
+        createdDate = createdDate.toDate(),
         id = id ?: 0,
         isActive = isActive == true,
         sourceProductId = sourceProductId.orEmpty(),
         sourceBasePlanId = sourceBasePlanId.orEmpty(),
         store = store.orEmpty(),
-        activatedAt = activatedAt.orEmpty(),
+        activatedAt = activatedAt.toDate(),
         isLifetime = isLifetime == true,
         isRefund = isRefund == true,
         willRenew = willRenew == true,
         isInGracePeriod = isInGracePeriod == true,
         cancellationReason = cancellationReason.orEmpty(),
         offerId = offerId.orEmpty(),
-        startsAt = startsAt.orEmpty(),
-        renewedAt = renewedAt.orEmpty(),
-        expiresAt = expiresAt.orEmpty(),
+        startsAt = startsAt.toDate(),
+        renewedAt = renewedAt.toDate(),
+        expiresAt = expiresAt.toDate(),
         activeIntroductoryOfferType = activeIntroductoryOfferType.orEmpty(),
         activePromotionalOfferType = activePromotionalOfferType.orEmpty(),
         activePromotionalOfferId = activePromotionalOfferId.orEmpty(),
-        unsubscribedAt = unsubscribedAt.orEmpty(),
-        billingIssueDetectedAt = billingIssueDetectedAt.orEmpty(),
+        unsubscribedAt = unsubscribedAt.toDate(),
+        billingIssueDetectedAt = billingIssueDetectedAt.toDate(),
     )
 }
 
@@ -84,7 +87,7 @@ internal fun BotsiProfileDto.NonSubscriptionDto.toDomain(): BotsiProfile.NonSubs
         isConsumable = isConsumable == true,
         isOneTime = isOneTime == true,
         isRefund = isRefund == true,
-        purchasedAt = purchasedAt.orEmpty(),
+        purchasedAt = purchasedAt.toDate(),
         purchasedId = purchasedId.orEmpty(),
         store = store.orEmpty(),
         sourceProductId = sourceProductId.orEmpty(),
@@ -157,4 +160,12 @@ internal fun BotsiUpdateProfileParameters.toDto(): BotsiUpdateProfileParametersD
             )
         },
     )
+}
+
+internal fun String?.toDate(): Date {
+    return runCatching {
+        val dateFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault())
+        val normalizedDateString = this?.replace("T", " ")?.replace("Z", "").orEmpty()
+        dateFormatter.parse(normalizedDateString)
+    }.getOrDefault(Date())
 }

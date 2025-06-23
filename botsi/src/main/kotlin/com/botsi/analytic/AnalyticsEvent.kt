@@ -25,5 +25,4 @@ internal data class AnalyticsEvent(
     val proceedsLocal: Double? = null,
     val purchaseCurrency: String? = null,
     val cancellationReason: String? = null,
-    val subscriptionExpiresAt: String? = null
 )
