@@ -41,7 +41,7 @@ internal class BotsiProductsInteractorImpl(
                                 val offers = dto?.offerIds.orEmpty().map {
                                     findCurrentOffer(
                                         subOfferDetails = product.subscriptionOfferDetails.orEmpty(),
-                                        basePlanId = product.productId,
+                                        basePlanId = dto?.basePlanId.orEmpty(),
                                         offerId = it
                                     )
                                 }.ifEmpty {

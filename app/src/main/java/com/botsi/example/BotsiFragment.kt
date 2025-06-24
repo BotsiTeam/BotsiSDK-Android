@@ -382,9 +382,8 @@ class BotsiFragment : Fragment() {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Column {
+                Column(modifier = Modifier.widthIn(max = 150.dp)) {
                     Text(
-                        modifier = Modifier.widthIn(max = 150.dp),
                         text = title,
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp,
@@ -394,7 +393,6 @@ class BotsiFragment : Fragment() {
                     )
                     Spacer(Modifier.height(2.dp))
                     Text(
-                        modifier = Modifier.widthIn(max = 150.dp),
                         text = description,
                         fontSize = 12.sp,
                         lineHeight = 14.sp,
@@ -402,10 +400,16 @@ class BotsiFragment : Fragment() {
                     )
                 }
                 Text(
-                    text = price, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = textColor
+                    modifier = Modifier.weight(1f),
+                    text = price,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = textColor,
+                    textAlign = TextAlign.End,
                 )
                 RadioButton(
-                    selected = selected, onClick = onClick
+                    selected = selected,
+                    onClick = onClick
                 )
             }
         }
