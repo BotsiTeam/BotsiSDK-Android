@@ -1,6 +1,7 @@
 package com.botsi.view.ui.compose.composable
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -70,11 +71,12 @@ internal fun BotsiHeroImageFlatComposable(
     AsyncImage(
         modifier = modifier
             .padding(paddings)
+            .fillMaxWidth()
             .height(content.toImageHeightDp())
             .clip(shape)
             .offset(y = verticalOffset),
         model = image,
         contentDescription = null,
-        contentScale = ContentScale.FillHeight
+        contentScale = ContentScale.Crop
     )
 }
