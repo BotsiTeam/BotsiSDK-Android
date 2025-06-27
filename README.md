@@ -1,6 +1,6 @@
 # Botsi Android SDK Documentation
 
-The Botsi SDK enables seamless in-app purchases and paywall management in Android applications. This documentation covers the public API methods available for integration.
+The Botsi SDK enables seamless in-app purchases and paywall management in Android applications using Google Play Billing. This documentation covers the public API methods available for integration.
 
 ## Table of Contents
 - [Installation](#installation)
@@ -13,13 +13,19 @@ The Botsi SDK enables seamless in-app purchases and paywall management in Androi
 
 ## Installation
 
+<p align="center">
+<a href="https://jitpack.io/#BotsiTeam/BotsiSDK-Android"><img src="https://jitpack.io/v/BotsiTeam/BotsiSDK-Android.svg"></a>
+<a href="https://central.sonatype.com/artifact/com.botsi/sdk/versions"><img src="https://img.shields.io/maven-central/v/com.botsi/sdk"></a>
+<a href="https://www.apache.org/licenses/LICENSE-2.0.txt"><img src="https://img.shields.io/badge/license-Apache-brightgreen.svg"></a>
+</p>
+
 ### Maven Central
 
 To integrate the BotsiSDK into your project using Maven Central, add the following dependency to your `build.gradle` file:
 
 ```gradle
 dependencies {
-    implementation 'com.botsi:sdk:{version}'
+    implementation 'com.botsi:sdk:1.0.1'
 }
 ```
 
@@ -40,7 +46,7 @@ allprojects {
 2. **Add the dependency to your app's `build.gradle`:**
 ```gradle
 dependencies {
-    implementation 'com.github.BotsiTeam:BotsiSDK-Android:{version}'
+    implementation 'com.github.BotsiTeam:BotsiSDK-Android:1.0.1'
 }
 ```
 
@@ -48,31 +54,36 @@ dependencies {
 
 ## Initialization
 
-### `activate(context, apiKey, customerUserId?, successCallback, errorCallback)`
+### `activate(context, apiKey, clearCache?, customerUserId?, successCallback?, errorCallback?)`
 ```kotlin
+@JvmStatic
+@JvmOverloads
 fun activate(
     context: Context,
     apiKey: String,
+    clearCache: Boolean = false,
     customerUserId: String? = null,
-    successCallback: (BotsiProfile) -> Unit,
-    errorCallback: (Throwable) -> Unit
+    successCallback: ((BotsiProfile) -> Unit)? = null,
+    errorCallback: ((Throwable) -> Unit)? = null
 )
 ```
 
-Activates and initializes the Botsi SDK with your API key. Initialize early in your app lifecycle (e.g., `Application.onCreate()`).
+Activates and initializes the Botsi SDK with your API key. This method must be called before any other SDK methods can be used. Initialize early in your app lifecycle (e.g., `Application.onCreate()`).
 
 **Parameters:**
-- `context`: Application context
-- `apiKey`: Your Botsi API key
+- `context`: The Android application context
+- `apiKey`: Your Botsi API key for authenticating with Botsi services
+- `clearCache`: Whether to clear any cached data during activation (default: false)
 - `customerUserId`: Optional user identifier to link the session to a specific user
-- `successCallback`: Called when initialization succeeds with the user profile
-- `errorCallback`: Called when initialization fails
+- `successCallback`: Optional callback invoked when activation succeeds with the user profile
+- `errorCallback`: Optional callback invoked when activation fails
 
 **Example:**
 ```kotlin
 Botsi.activate(
     context = applicationContext,
     apiKey = "your_api_key",
+    clearCache = false,
     customerUserId = "user_123", // optional
     successCallback = { profile ->
         Log.d("Botsi", "SDK initialized for user: ${profile.profileId}")
@@ -84,101 +95,59 @@ Botsi.activate(
 )
 ```
 
-### `login(customerUserId, successCallback, errorCallback)`
-```kotlin
-fun login(
-    customerUserId: String,
-    successCallback: (BotsiProfile) -> Unit,
-    errorCallback: (Throwable) -> Unit
-)
-```
-
-Links the SDK session to a specific user in your system. Use this when transitioning from an anonymous session to an authenticated one, typically after user sign-up or login.
-
-**Parameters:**
-- `customerUserId`: The unique identifier for the user in your system
-- `successCallback`: Called when login succeeds with the user profile
-- `errorCallback`: Called when login fails
-
-**Example:**
-```kotlin
-val currentUserId = "user_12345"
-Botsi.login(
-    customerUserId = currentUserId,
-    successCallback = { profile ->
-        Log.d("Botsi", "User logged in successfully: ${profile.profileId}")
-        // The SDK session is now linked to the authenticated user
-    },
-    errorCallback = { error ->
-        Log.e("Botsi", "Failed to login user: ${error.message}")
-    }
-)
-```
-
-### `logout(successCallback, errorCallback)`
-```kotlin
-fun logout(
-    successCallback: (BotsiProfile) -> Unit,
-    errorCallback: (Throwable) -> Unit
-)
-```
-
-Ends the current user session and reverts the SDK to an anonymous state. Removes any stored user identifier and clears session-specific data.
-
-**Example:**
-```kotlin
-Botsi.logout(
-    successCallback = { profile ->
-        Log.d("Botsi", "User logged out successfully")
-        // The SDK session is reverted to an anonymous state
-    },
-    errorCallback = { error ->
-        Log.e("Botsi", "Failed to logout user: ${error.message}")
-    }
-)
-```
-
 ## Profile Management
 
-### `getProfile(customerUserId, callback)`
+### `getProfile(customerUserId?, successCallback)`
 ```kotlin
+@JvmStatic
 fun getProfile(
-    customerUserId: String,
-    callback: (BotsiProfile) -> Unit
+    customerUserId: String?,
+    successCallback: (BotsiProfile) -> Unit
 )
 ```
 
-Retrieves the current user's profile information.
+Retrieves the user profile from the Botsi service.
 
 **Parameters:**
-- `customerUserId`: The user identifier
-- `callback`: Called with the user's profile containing purchase and entitlement information
+- `customerUserId`: Optional user identifier. If null, uses the currently logged-in user
+- `successCallback`: Callback invoked when the profile is successfully retrieved
+
+**Throws:**
+- `IllegalStateException`: If the SDK has not been activated
 
 **Example:**
 ```kotlin
-Botsi.getProfile("user_123") { profile ->
-    Log.d("Botsi", "User profile ID: ${profile.profileId}")
-    // Access other profile properties
-}
-```
-
-### `updateProfile(customerUserId, params, successCallback, errorCallback)`
-```kotlin
-fun updateProfile(
-    customerUserId: String,
-    params: BotsiUpdateProfileParameters,
-    successCallback: (BotsiProfile) -> Unit,
-    errorCallback: (Throwable) -> Unit
+Botsi.getProfile(
+    customerUserId = "user_123", // or null for current user
+    successCallback = { profile ->
+        Log.d("Botsi", "User profile ID: ${profile.profileId}")
+        // Access other profile properties
+    }
 )
 ```
 
-Updates the user's profile with new information.
+### `updateProfile(customerUserId?, params?, successCallback?, errorCallback?)`
+```kotlin
+@JvmSynthetic
+@JvmOverloads
+fun updateProfile(
+    customerUserId: String?,
+    params: BotsiUpdateProfileParameters?,
+    successCallback: ((BotsiProfile) -> Unit)? = null,
+    errorCallback: ((Throwable) -> Unit)? = null
+)
+```
+
+Updates the user profile with the provided parameters.
 
 **Parameters:**
-- `customerUserId`: The user identifier
-- `params`: Update parameters containing the new profile data
-- `successCallback`: Called when update succeeds with the updated profile
-- `errorCallback`: Called when update fails
+- `customerUserId`: Optional user identifier. If null, uses the currently logged-in user
+- `params`: Parameters containing the profile attributes to update
+- `successCallback`: Optional callback invoked when the profile is successfully updated
+- `errorCallback`: Optional callback invoked when the update fails
+
+**Throws:**
+- `IllegalStateException`: If the SDK has not been activated
 
 **Example:**
 ```kotlin
@@ -198,29 +167,106 @@ Botsi.updateProfile(
 )
 ```
 
-## Product Management
-
-### `getProducts(successCallback, errorCallback)`
+### `login(customerUserId?, successCallback?, errorCallback?)`
 ```kotlin
-fun getProducts(
-    successCallback: (List<BotsiProduct>) -> Unit,
-    errorCallback: (Throwable) -> Unit
+@JvmStatic
+@JvmOverloads
+fun login(
+    customerUserId: String?,
+    successCallback: ((BotsiProfile) -> Unit)? = null,
+    errorCallback: ((Throwable) -> Unit)? = null
 )
 ```
 
-Retrieves the list of products available for the application.
+Logs in a user with the specified customer ID. This method authenticates a user with the Botsi service and retrieves their profile.
 
 **Parameters:**
-- `successCallback`: Called with an array of product details
-- `errorCallback`: Called when fetching products fails
+- `customerUserId`: The user identifier to log in with
+- `successCallback`: Optional callback invoked when login succeeds, providing the user profile
+- `errorCallback`: Optional callback invoked when login fails
+
+**Throws:**
+- `IllegalStateException`: If the SDK has not been activated
+
+**Example:**
+```kotlin
+val currentUserId = "user_12345"
+Botsi.login(
+    customerUserId = currentUserId,
+    successCallback = { profile ->
+        Log.d("Botsi", "User logged in successfully: ${profile.profileId}")
+        // The SDK session is now linked to the authenticated user
+    },
+    errorCallback = { error ->
+        Log.e("Botsi", "Failed to login user: ${error.message}")
+    }
+)
+```
+
+### `logout(successCallback?, errorCallback?)`
+```kotlin
+@JvmStatic
+@JvmOverloads
+fun logout(
+    successCallback: ((BotsiProfile) -> Unit)? = null,
+    errorCallback: ((Throwable) -> Unit)? = null
+)
+```
+
+Logs out the current user from the Botsi service. This method ends the current user session and clears any user-specific data.
+
+**Parameters:**
+- `successCallback`: Optional callback invoked when logout succeeds, providing the updated user profile
+- `errorCallback`: Optional callback invoked when logout fails
+
+**Throws:**
+- `IllegalStateException`: If the SDK has not been activated
+
+**Example:**
+```kotlin
+Botsi.logout(
+    successCallback = { profile ->
+        Log.d("Botsi", "User logged out successfully")
+        // The SDK session is reverted to an anonymous state
+    },
+    errorCallback = { error ->
+        Log.e("Botsi", "Failed to logout user: ${error.message}")
+    }
+)
+```
+
+## Product Management
+
+### `getProducts(successCallback, errorCallback?)`
+```kotlin
+@JvmStatic
+@JvmOverloads
+fun getProducts(
+    successCallback: (List<ProductDetails>) -> Unit,
+    errorCallback: ((Throwable) -> Unit)? = null
+)
+```
+
+Retrieves available product details from the Google Play Billing Library. This method fetches information about products that can be purchased through the app.
+
+**Parameters:**
+- `successCallback`: Callback invoked when products are successfully retrieved
+- `errorCallback`: Optional callback invoked when product retrieval fails
+
+**Returns:**
+- `List<ProductDetails>`: Google Play Billing ProductDetails objects containing product information
+
+**Throws:**
+- `IllegalStateException`: If the SDK has not been activated
 
 **Example:**
 ```kotlin
 Botsi.getProducts(
-    successCallback = { products ->
-        Log.d("Botsi", "Available products: ${products.size}")
-        products.forEach { product ->
-            Log.d("Botsi", "Product: ${product.title} - ${product.price}")
+    successCallback = { productDetailsList ->
+        Log.d("Botsi", "Available products: ${productDetailsList.size}")
+        productDetailsList.forEach { productDetails ->
+            Log.d("Botsi", "Product: ${productDetails.title}")
+            // Access pricing and other product information
         }
     },
     errorCallback = { error ->
@@ -231,38 +277,46 @@ Botsi.getProducts(
 
 ## Purchase Operations
 
-### `makePurchase(activity, product, subscriptionUpdateParams?, isOfferPersonalized, callback, errorCallback)`
+### `makePurchase(activity, product, subscriptionUpdateParams?, isOfferPersonalized, callback, errorCallback?)`
 ```kotlin
+@JvmStatic
+@JvmOverloads
 fun makePurchase(
     activity: Activity,
     product: BotsiProduct,
-    subscriptionUpdateParams: SubscriptionUpdateParams? = null,
+    subscriptionUpdateParams: BotsiSubscriptionUpdateParameters? = null,
     isOfferPersonalized: Boolean = false,
-    callback: ((Pair<BotsiProfile, Purchase>)?) -> Unit,
-    errorCallback: (Throwable) -> Unit
+    callback: ((Pair<BotsiProfile, Purchase?>?) -> Unit),
+    errorCallback: ((Throwable) -> Unit)? = null
 )
 ```
 
-Initiates a purchase for the specified product.
+Initiates a purchase flow for the specified product. This method launches the Google Play Billing purchase flow and handles purchase completion and verification.
 
 **Parameters:**
-- `activity`: The current activity context
-- `product`: The product to purchase
-- `subscriptionUpdateParams`: Optional parameters for subscription updates
-- `isOfferPersonalized`: Whether the offer is personalized
-- `callback`: Called when purchase succeeds with updated profile and purchase details
-- `errorCallback`: Called when purchase fails
+- `activity`: The activity from which the purchase flow is launched
+- `product`: The BotsiProduct to be purchased
+- `subscriptionUpdateParams`: Optional parameters for subscription updates or replacements
+- `isOfferPersonalized`: Whether the offer is personalized to the user (for compliance with regulations)
+- `callback`: Callback invoked when the purchase is completed, providing the updated profile and purchase details
+- `errorCallback`: Optional callback invoked when the purchase fails
+
+**Throws:**
+- `IllegalStateException`: If the SDK has not been activated
 
 **Example:**
 ```kotlin
 Botsi.makePurchase(
     activity = this,
-    product = selectedProduct,
+    product = selectedBotsiProduct,
     subscriptionUpdateParams = null,
     isOfferPersonalized = false,
     callback = { result ->
         val (profile, purchase) = result ?: return@makePurchase
         Log.d("Botsi", "Purchase successful! Updated profile: ${profile.profileId}")
+        purchase?.let {
+            Log.d("Botsi", "Purchase token: ${it.purchaseToken}")
+        }
         // Handle successful purchase
     },
     errorCallback = { error ->
@@ -271,19 +325,24 @@ Botsi.makePurchase(
 )
 ```
 
-### `restoreProducts(successCallback, errorCallback)`
+### `restoreProducts(successCallback, errorCallback?)`
 ```kotlin
+@JvmStatic
+@JvmOverloads
 fun restoreProducts(
     successCallback: (BotsiProfile) -> Unit,
-    errorCallback: (Throwable) -> Unit
+    errorCallback: ((Throwable) -> Unit)? = null
 )
 ```
 
-Restores previously purchased products for the current user.
+Restores previously purchased products for the current user. This method synchronizes the user's purchase history with the Botsi service and updates the user profile with restored purchases.
 
 **Parameters:**
-- `successCallback`: Called when restore succeeds with updated profile
-- `errorCallback`: Called when restore fails
+- `successCallback`: Callback invoked when products are successfully restored, providing the updated user profile
+- `errorCallback`: Optional callback invoked when product restoration fails
+
+**Throws:**
+- `IllegalStateException`: If the SDK has not been activated
 
 **Example:**
 ```kotlin
@@ -300,21 +359,26 @@ Botsi.restoreProducts(
 
 ## Paywall Management
 
-### `getPaywall(placementId, successCallback, errorCallback)`
+### `getPaywall(placementId, successCallback, errorCallback?)`
 ```kotlin
+@JvmStatic
+@JvmOverloads
 fun getPaywall(
     placementId: String,
     successCallback: (BotsiPaywall) -> Unit,
-    errorCallback: (Throwable) -> Unit
+    errorCallback: ((Throwable) -> Unit)? = null
 )
 ```
 
-Retrieves a paywall configuration for the specified placement ID.
+Retrieves paywall configuration for the specified placement. A paywall represents a monetization screen that can be displayed to users.
 
 **Parameters:**
-- `placementId`: The identifier of the paywall placement
-- `successCallback`: Called with the paywall configuration containing UI elements and product references
-- `errorCallback`: Called when paywall fetching fails
+- `placementId`: The identifier for the paywall placement
+- `successCallback`: Callback invoked when the paywall is successfully retrieved
+- `errorCallback`: Optional callback invoked when paywall retrieval fails
+
+**Throws:**
+- `IllegalStateException`: If the SDK has not been activated
 
 **Example:**
 ```kotlin
@@ -333,15 +397,55 @@ Botsi.getPaywall(
 )
 ```
 
+### `getPaywallViewConfiguration(paywallId, successCallback, errorCallback?)`
+```kotlin
+@JvmStatic
+@JvmOverloads
+fun getPaywallViewConfiguration(
+    paywallId: Long,
+    successCallback: (JsonElement) -> Unit,
+    errorCallback: ((Throwable) -> Unit)? = null
+)
+```
+
+Retrieves the visual configuration for a specific paywall. This method fetches the UI configuration that defines how the paywall should be displayed.
+
+**Parameters:**
+- `paywallId`: The unique identifier of the paywall
+- `successCallback`: Callback invoked when the configuration is successfully retrieved
+- `errorCallback`: Optional callback invoked when configuration retrieval fails
+
+**Throws:**
+- `IllegalStateException`: If the SDK has not been activated
+
+**Example:**
+```kotlin
+Botsi.getPaywallViewConfiguration(
+    paywallId = paywall.id,
+    successCallback = { jsonConfig ->
+        Log.d("Botsi", "Paywall configuration retrieved")
+        // Use the JSON configuration to customize your paywall UI
+        parseAndApplyConfiguration(jsonConfig)
+    },
+    errorCallback = { error ->
+        Log.e("Botsi", "Failed to get paywall configuration: ${error.message}")
+    }
+)
+```
+
 ### `logShowPaywall(paywall)`
 ```kotlin
+@JvmStatic
 fun logShowPaywall(paywall: BotsiPaywall)
 ```
 
-Sends an analytics event when a paywall is shown to the user. Should be called together with `getPaywall()`.
+Logs an analytics event when a paywall is shown to the user. This method should be called whenever a paywall is displayed to track user interactions.
 
 **Parameters:**
-- `paywall`: The paywall object obtained from `getPaywall()`
+- `paywall`: The paywall that was shown to the user
+
+**Throws:**
+- `IllegalStateException`: If the SDK has not been activated
 
 **Example:**
 ```kotlin
@@ -360,50 +464,63 @@ Botsi.getPaywall(
 )
 ```
 
-## Utility
-
-### `clearCache()`
-```kotlin
-fun clearCache()
-```
-
-Clears the SDK's internal cache. Use this when you need to refresh cached data.
-
-**Example:**
-```kotlin
-Botsi.clearCache()
-Log.d("Botsi", "Cache cleared successfully")
-```
-
 ## Error Handling
 
-The SDK uses standard Kotlin `Throwable` for error reporting through error callbacks. Common errors include:
+The SDK uses standard Kotlin `Throwable` for error reporting through error callbacks. The most common error is:
 
-- `IllegalStateException("Botsi not activated!")`: SDK hasn't been initialized
-- Network errors: Connection issues when communicating with Botsi servers
-- Billing errors: Google Play Billing related issues
-- Invalid API key: Incorrect or missing API key
-- Paywall configuration errors: Issues with paywall setup or fetching
+### `IllegalStateException`
+This exception is thrown when SDK methods are called before the SDK has been properly activated with the `activate()` method.
 
-**Best Practices:**
 ```kotlin
-// Always handle errors appropriately
+// This will throw IllegalStateException if SDK is not activated
+try {
+    Botsi.getProfile("user_123") { profile ->
+        // Handle profile
+    }
+} catch (e: IllegalStateException) {
+    Log.e("Botsi", "SDK not activated: ${e.message}")
+    // Initialize SDK first
+}
+```
+
+### Other Common Errors
+- Network errors: Connection issues when communicating with Botsi servers
+- Billing errors: Google Play Billing related issues during purchases
+- Invalid API key: Incorrect or missing API key during activation
+- Profile errors: Issues with user profile operations
+
+### Best Practices
+```kotlin
+// Always activate SDK first
+Botsi.activate(
+    context = applicationContext,
+    apiKey = "your_api_key",
+    successCallback = { profile ->
+        // SDK is ready, now you can use other methods
+        performSDKOperations()
+    },
+    errorCallback = { error ->
+        Log.e("Botsi", "SDK activation failed: ${error.message}")
+    }
+)
+
+// Handle errors appropriately in all operations
 Botsi.makePurchase(
     activity = this,
     product = product,
+    isOfferPersonalized = false,
     callback = { result ->
         // Handle success
     },
     errorCallback = { error ->
         when (error) {
             is IllegalStateException -> {
-                // SDK not initialized
                 Log.e("Botsi", "SDK not initialized: ${error.message}")
+                // Show initialization error to user
             }
             else -> {
-                // Other errors
                 Log.e("Botsi", "Purchase error: ${error.message}")
-                // Show user-friendly error message
+                // Show purchase error to user
             }
         }
     }
