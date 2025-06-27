@@ -25,7 +25,7 @@ To integrate the BotsiSDK into your project using Maven Central, add the followi
 
 ```gradle
 dependencies {
-    implementation 'com.botsi:sdk:1.0.1'
+    implementation 'com.botsi:sdk:{version}'
 }
 ```
 
@@ -46,7 +46,7 @@ allprojects {
 2. **Add the dependency to your app's `build.gradle`:**
 ```gradle
 dependencies {
-    implementation 'com.github.BotsiTeam:BotsiSDK-Android:1.0.1'
+    implementation 'com.github.BotsiTeam:BotsiSDK-Android:{version}'
 }
 ```
 
