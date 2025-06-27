@@ -110,7 +110,7 @@ object Botsi {
      * @param errorCallback Optional callback that is invoked when the update fails
      * @throws IllegalStateException if the SDK has not been activated
      */
-    @JvmSynthetic
+    @JvmStatic
     @JvmOverloads
     fun updateProfile(
         customerUserId: String?,

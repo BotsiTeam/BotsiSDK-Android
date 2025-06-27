@@ -2,5 +2,5 @@ package com.botsi.domain.model
 
 data class BotsiSubscriptionUpdateParameters(
     val oldSubVendorProductId: String,
-    val replacementMode: BotsiReplacementMode,
+    val replacementMode: BotsiReplacementMode = BotsiReplacementMode.WITHOUT_PRORATION,
 )

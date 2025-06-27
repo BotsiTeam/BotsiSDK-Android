@@ -1,9 +1,7 @@
 package com.botsi.domain.model
 
-import androidx.annotation.RestrictTo
 import java.util.Date
 
-@RestrictTo(RestrictTo.Scope.LIBRARY)
 class BotsiProfile(
     val profileId: String,
     val customerUserId: String,
