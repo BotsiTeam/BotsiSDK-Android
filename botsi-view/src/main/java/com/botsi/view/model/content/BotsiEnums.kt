@@ -6,6 +6,7 @@ internal enum class BotsiAlign {
     Center,
     Top,
     Bottom,
+    Column,
 }
 
 internal enum class BotsiButtonIconType {
@@ -125,6 +126,9 @@ internal enum class BotsiContentType(val key: String) {
     Links("links"),
     Carousel("carousel"),
     Timer("timer"),
+    Toggle("toggle_control"),
+    ToggleOn("toggle_on"),
+    ToggleOff("toggle_off"),
     Image("image");
 
     companion object {

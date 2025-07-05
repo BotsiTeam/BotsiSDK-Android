@@ -8,7 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.botsi.view.model.content.BotsiFooterContent
 import com.botsi.view.model.content.BotsiPaywallBlock
-import com.botsi.view.utils.toArrangement
+import com.botsi.view.utils.toArrangementVertical
 import com.botsi.view.utils.toBackground
 import com.botsi.view.utils.toBorder
 import com.botsi.view.utils.toPaddings
@@ -25,7 +25,7 @@ internal fun BotsiFooterComposable(
         footerBlock.content as? BotsiFooterContent
     }
     val paddings = remember(footerContent) { footerContent.toPaddings() }
-    val arrangement = remember(footerContent) { footerContent.toArrangement() }
+    val arrangement = remember(footerContent) { footerContent.toArrangementVertical() }
     LazyColumn(
         modifier = modifier
             .fillMaxWidth()

@@ -31,9 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.botsi.view.model.content.BotsiCarouselContent
@@ -41,7 +38,7 @@ import com.botsi.view.model.content.BotsiCarouselInteractive
 import com.botsi.view.model.content.BotsiCarouselLastOption
 import com.botsi.view.model.content.BotsiCarouselPageControlType
 import com.botsi.view.model.content.BotsiPaywallBlock
-import com.botsi.view.utils.toArrangement
+import com.botsi.view.utils.toArrangementHorizontal
 import com.botsi.view.utils.toColor
 import com.botsi.view.utils.toContentPaddings
 import com.botsi.view.utils.toPaddings
@@ -169,7 +166,7 @@ internal fun BotsiCarouselComposable(
                         ) {
                             BotsiContentComposable(
                                 item = carousel.children[it],
-                                scope = scope
+                                scope = scope,
                             )
                         }
                     }
@@ -178,7 +175,7 @@ internal fun BotsiCarouselComposable(
             val carouselPageControlComposable = @Composable {
                 if (content.pageControl == true) {
                     val paddings = remember(content) { content.style.toPaddings() }
-                    val arrangement = remember(content) { content.style.toArrangement(Alignment.CenterHorizontally) }
+                    val arrangement = remember(content) { content.style.toArrangementHorizontal(Alignment.CenterHorizontally) }
                     Row(
                         Modifier
                             .fillMaxWidth()

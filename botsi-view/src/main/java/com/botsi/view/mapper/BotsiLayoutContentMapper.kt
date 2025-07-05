@@ -2,7 +2,6 @@ package com.botsi.view.mapper
 
 import androidx.annotation.RestrictTo
 import com.botsi.view.model.content.BotsiAlign
-import com.botsi.view.model.content.BotsiBackgroundColor
 import com.botsi.view.model.content.BotsiButtonAction
 import com.botsi.view.model.content.BotsiButtonIconType
 import com.botsi.view.model.content.BotsiButtonType
@@ -12,6 +11,7 @@ import com.botsi.view.model.content.BotsiLayoutContent
 import com.botsi.view.model.content.BotsiTemplate
 import com.botsi.view.model.content.BotsiTopButton
 import com.botsi.view.utils.toCapitalizedString
+import com.botsi.view.utils.toHexColorIfPossible
 import com.botsi.view.utils.toIntList
 import com.google.gson.JsonElement
 import kotlinx.coroutines.Dispatchers
@@ -30,22 +30,13 @@ internal class BotsiLayoutContentMapper(
                 BotsiLayoutContent(
                     darkMode = runCatching { get("dark_mode").asBoolean }.getOrNull(),
                     purchaseFlow = runCatching { get("purchase_flow").asString }.getOrNull(),
-                    backgroundColor = runCatching { mapBackgroundColor(get("background_color")) }.getOrNull(),
+                    fillColor = runCatching { get("fill_color").toHexColorIfPossible() }.getOrNull(),
                     contentLayout = runCatching { mapContentLayout(get("content_layout")) }.getOrNull(),
                     topButtons = runCatching { mapTopButtons(get("top_buttons")) }.getOrNull(),
                     defaultFont = runCatching { fontMapper.map(get("default_font")) }.getOrNull(),
                     template = runCatching { mapTemplate(get("dark_mode")) }.getOrNull(),
                 )
             }
-        }
-    }
-
-    private fun mapBackgroundColor(jsonElement: JsonElement): BotsiBackgroundColor {
-        return with(jsonElement.asJsonObject) {
-            BotsiBackgroundColor(
-                background = runCatching { get("background").asString }.getOrNull(),
-                opacity = runCatching { get("opacity").asFloat }.getOrNull(),
-            )
         }
     }
 

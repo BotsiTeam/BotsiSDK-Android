@@ -31,7 +31,7 @@ import com.botsi.view.model.content.BotsiLayoutDirection
 import com.botsi.view.model.content.BotsiLinksContent
 import com.botsi.view.model.content.BotsiLinksStyle
 import com.botsi.view.model.content.BotsiLinksText
-import com.botsi.view.utils.toArrangement
+import com.botsi.view.utils.toArrangementVertical
 import com.botsi.view.utils.toArrangementHorizontal
 import com.botsi.view.utils.toColor
 import com.botsi.view.utils.toFontSize
@@ -59,7 +59,7 @@ internal fun BotsiLinksComposable(
         if (content.hasRestoreButton == true) items.add(content.restoreButton to BotsiButtonAction.Restore)
         items.filter { it.first != null }
     }
-    val containerArrangement = remember(content) { content.contentLayout.toArrangement() }
+    val containerArrangement = remember(content) { content.contentLayout.toArrangementVertical() }
     val containerPaddings = remember(content) { content.toPaddings() }
     val verticalOffset = remember(content) { (content.verticalOffset ?: 0).dp }
     val contentAlignment = remember(content) { content.contentLayout?.layout }
@@ -187,7 +187,7 @@ internal fun BotsiLinksComposable(
 
     if (content.contentLayout?.layout == BotsiLayoutDirection.Vertical) {
         val arrangement = remember(content) {
-            content.contentLayout.toArrangement(
+            content.contentLayout.toArrangementVertical(
                 Alignment.CenterVertically
             )
         }

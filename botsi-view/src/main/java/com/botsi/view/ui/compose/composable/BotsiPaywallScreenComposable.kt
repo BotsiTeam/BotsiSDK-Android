@@ -39,7 +39,7 @@ import com.botsi.view.model.content.BotsiPaywallContentStructure
 import com.botsi.view.model.ui.BotsiPaywallUiAction
 import com.botsi.view.model.ui.BotsiPaywallUiState
 import com.botsi.view.ui.compose.scroll.BotsiHeroImageOverlayNestedScroll
-import com.botsi.view.utils.toArrangement
+import com.botsi.view.utils.toArrangementVertical
 import com.botsi.view.utils.toColor
 import com.botsi.view.utils.toImageHeightPx
 import com.botsi.view.utils.toPaddings
@@ -78,7 +78,7 @@ internal fun BotsiPaywallScreenComposable(
 
     Scaffold(
         modifier = modifier,
-        containerColor = contentLayout?.backgroundColor.toColor()
+        containerColor = contentLayout?.fillColor.toColor()
             .takeIf { !isImageHeroTransparent } ?: Color.Unspecified,
         snackbarHost = {
             SnackbarHost(snackbarHostState)
@@ -174,7 +174,7 @@ private fun Content(
             modifier = Modifier
                 .fillMaxSize()
                 .run {
-                    if (isImageHeroOverlay) {
+                    if (isImageHeroOverlay && !heroImageContent?.backgroundImage.isNullOrEmpty()) {
                         offset {
                             IntOffset(
                                 y = heroImageScrollOffsetState.floatValue.toInt(),
@@ -182,7 +182,7 @@ private fun Content(
                             )
                         }
                             .background(
-                                color = contentLayout.backgroundColor.toColor(),
+                                color = contentLayout.fillColor.toColor(),
                                 shape = heroImageContent.toShape(heroImageScrollOffsetState.floatValue)
                             )
                     } else {
@@ -191,7 +191,7 @@ private fun Content(
                 },
             state = contentListScrollState,
             contentPadding = contentLayout.contentLayout.toPaddings(),
-            verticalArrangement = contentLayout.contentLayout.toArrangement()
+            verticalArrangement = contentLayout.contentLayout.toArrangementVertical()
         ) {
             if (isImageHeroFlat) {
                 item {

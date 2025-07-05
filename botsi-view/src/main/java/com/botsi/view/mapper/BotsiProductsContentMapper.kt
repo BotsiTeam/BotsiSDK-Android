@@ -22,10 +22,10 @@ internal class BotsiProductsContentMapper(private val fontMapper: BotsiFontMappe
                     state = runCatching { get("state").asString }.getOrNull(),
                     defaultStyle = runCatching { mapStyle(get("default_style")) }.getOrNull(),
                     selectedStyle = runCatching { mapStyle(get("")) }.getOrNull(),
-                    text1 = runCatching { mapText(get("text1")) }.getOrNull(),
-                    text2 = runCatching { mapText(get("text2")) }.getOrNull(),
-                    text3 = runCatching { mapText(get("text3")) }.getOrNull(),
-                    text4 = runCatching { mapText(get("text4")) }.getOrNull(),
+                    text1 = runCatching { mapText(get("text_1")) }.getOrNull(),
+                    text2 = runCatching { mapText(get("text_2")) }.getOrNull(),
+                    text3 = runCatching { mapText(get("text_3")) }.getOrNull(),
+                    text4 = runCatching { mapText(get("text_4")) }.getOrNull(),
                     padding = runCatching { get("padding").toIntList() }.getOrNull(),
                     verticalOffset = runCatching { get("vertical_offset").asInt }.getOrNull(),
                     contentLayout = runCatching { mapContentLayout(get("content_layout")) }.getOrNull(),
@@ -42,7 +42,7 @@ internal class BotsiProductsContentMapper(private val fontMapper: BotsiFontMappe
                 borderThickness = runCatching { get("border_thickness").asInt }.getOrNull(),
                 color = runCatching { get("color").asString }.getOrNull(),
                 opacity = runCatching { get("opacity").asFloat }.getOrNull(),
-                radius = runCatching { get("radius").asString }.getOrNull(),
+                radius = runCatching { get("radius").toIntList() }.getOrNull(),
             )
         }
     }

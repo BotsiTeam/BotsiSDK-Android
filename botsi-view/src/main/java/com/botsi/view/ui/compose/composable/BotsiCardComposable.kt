@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.botsi.view.model.content.BotsiCardContent
 import com.botsi.view.model.content.BotsiPaywallBlock
-import com.botsi.view.utils.toAlignment
+import com.botsi.view.utils.toAlignmentHorizontal
 import com.botsi.view.utils.toBackground
 import com.botsi.view.utils.toBorder
 import com.botsi.view.utils.toPaddings
@@ -35,7 +35,7 @@ internal fun BotsiCardComposable(
     val outerPaddings = remember(content) { content.toPaddings() }
     val innerPaddings = remember(content) { content?.contentLayout.toPaddings() }
     val verticalOffset = remember(content) { (content?.verticalOffset ?: 0).dp }
-    val alignment = remember(content) { content?.contentLayout.toAlignment() }
+    val alignment = remember(content) { content?.contentLayout.toAlignmentHorizontal() }
     val image = remember(content) { content?.backgroundImage }
 
     if (content != null) {
@@ -53,7 +53,10 @@ internal fun BotsiCardComposable(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 cardBlock.children.orEmpty().forEach { child ->
-                    BotsiContentComposable(item = child, scope = scope)
+                    BotsiContentComposable(
+                        item = child,
+                        scope = scope,
+                    )
                 }
             }
         }

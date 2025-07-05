@@ -3,18 +3,12 @@ package com.botsi.view.model.content
 internal data class BotsiLayoutContent(
     val darkMode: Boolean? = null,
     val purchaseFlow: String? = null,
-    val backgroundColor: BotsiBackgroundColor? = null,
+    val fillColor: String? = null,
     val defaultFont: BotsiFont? = null,
     val contentLayout: BotsiContentLayout? = null,
     val topButtons: List<BotsiTopButton>? = null,
     val template: BotsiTemplate? = null
 ) : BotsiBlockContent
-
-
-internal data class BotsiBackgroundColor(
-    val background: String? = null,
-    val opacity: Float? = null
-)
 
 internal data class BotsiContentLayout(
     val margin: List<Int>? = null,

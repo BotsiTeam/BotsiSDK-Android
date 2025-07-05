@@ -21,7 +21,7 @@ internal data class BotsiProductStyle(
     val borderThickness: Int? = null,
     val color: String? = null,
     val opacity: Float? = null,
-    val radius: String? = null
+    val radius: List<Int>? = null
 )
 
 internal data class BotsiProductContentLayout(

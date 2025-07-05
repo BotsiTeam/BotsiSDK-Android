@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
 import com.botsi.view.R
 import com.botsi.view.model.content.BotsiAlign
-import com.botsi.view.model.content.BotsiBackgroundColor
 import com.botsi.view.model.content.BotsiButtonContent
 import com.botsi.view.model.content.BotsiButtonContentLayout
 import com.botsi.view.model.content.BotsiButtonStyle
@@ -51,9 +50,19 @@ import com.botsi.view.model.content.BotsiHeroImageShape
 import com.botsi.view.model.content.BotsiHeroLayout
 import com.botsi.view.model.content.BotsiImageAspect
 import com.botsi.view.model.content.BotsiImageContent
+import com.botsi.view.model.content.BotsiLayoutDirection
 import com.botsi.view.model.content.BotsiLinksContent
 import com.botsi.view.model.content.BotsiLinksContentLayout
 import com.botsi.view.model.content.BotsiListContent
+import com.botsi.view.model.content.BotsiProductContentLayout
+import com.botsi.view.model.content.BotsiProductStyle
+import com.botsi.view.model.content.BotsiProductTextStyle
+import com.botsi.view.model.content.BotsiProductToggleContent
+import com.botsi.view.model.content.BotsiProductToggleContentLayout
+import com.botsi.view.model.content.BotsiProductToggleStateContent
+import com.botsi.view.model.content.BotsiProductToggleStateContentLayout
+import com.botsi.view.model.content.BotsiProductToggleStyle
+import com.botsi.view.model.content.BotsiProductsContent
 import com.botsi.view.model.content.BotsiTextContent
 import com.botsi.view.model.content.BotsiTimerContent
 
@@ -77,10 +86,6 @@ internal fun BotsiHeroImageContent?.toImageHeightDp(): Dp {
     return with(density) { toImageHeightPx().toDp() }
 }
 
-internal fun BotsiBackgroundColor?.toColor(): Color {
-    return this?.background?.toColor(opacity) ?: Color.Unspecified
-}
-
 internal fun String?.toColor(opacity: Float? = null): Color {
     return runCatching {
         this?.let { Color(it.toColorInt()).copy(alpha = (opacity ?: 100f) / 100f) } ?: Color.Unspecified
@@ -90,42 +95,58 @@ internal fun String?.toColor(opacity: Float? = null): Color {
 @Composable
 internal fun BotsiButtonStyle?.toBorder(): Modifier {
     return this?.let { style ->
-        Modifier.border(
-            width = (style.borderThickness ?: 0f).dp,
-            color = style.borderColor.toColor(style.borderOpacity),
-            shape = style.toShape()
-        )
+        if (style.borderThickness == null || style.borderThickness == 0f) {
+            Modifier
+        } else {
+            Modifier.border(
+                width = style.borderThickness.dp,
+                color = style.borderColor.toColor(style.borderOpacity),
+                shape = style.toShape()
+            )
+        }
     } ?: Modifier
 }
 
 @Composable
 internal fun BotsiFooterStyle?.toBorder(): Modifier {
     return this?.let { style ->
-        Modifier.border(
-            width = (style.borderThickness ?: 0).dp,
-            color = style.borderColor.toColor(style.borderOpacity),
-            shape = style.toShape()
-        )
+        if (style.borderThickness == null || style.borderThickness == 0) {
+            Modifier
+        } else {
+            Modifier.border(
+                width = style.borderThickness.dp,
+                color = style.borderColor.toColor(style.borderOpacity),
+                shape = style.toShape()
+            )
+        }
     } ?: Modifier
 }
 
 @Composable
 internal fun BotsiCardStyle?.toBorder(): Modifier {
     return this?.let { style ->
-        Modifier.border(
-            width = (style.borderThickness ?: 0).dp,
-            color = style.borderColor.toColor(style.borderOpacity),
-            shape = style.toShape()
-        )
+        if (style.borderThickness == null || style.borderThickness == 0) {
+            Modifier
+        } else {
+            Modifier.border(
+                width = style.borderThickness.dp,
+                color = style.borderColor.toColor(style.borderOpacity),
+                shape = style.toShape()
+            )
+        }
     } ?: Modifier
 }
 
 internal fun BotsiButtonStyle?.toBorderStroke(): BorderStroke? {
     return this?.let { style ->
-        BorderStroke(
-            width = (style.borderThickness ?: 0f).dp,
-            color = style.borderColor.toColor(style.borderOpacity),
-        )
+        if (style.borderThickness == null || style.borderThickness == 0f) {
+            BorderStroke(0.dp, Color.Transparent)
+        } else {
+            BorderStroke(
+                width = style.borderThickness.dp,
+                color = style.borderColor.toColor(style.borderOpacity),
+            )
+        }
     }
 }
 
@@ -176,6 +197,15 @@ internal fun BotsiAlign?.toAlignmentHorizontal(): Alignment.Horizontal {
         BotsiAlign.Right -> Alignment.End
         BotsiAlign.Center -> Alignment.CenterHorizontally
         else -> Alignment.Start
+    }
+}
+
+internal fun BotsiAlign?.toAlignmentVertical(): Alignment.Vertical {
+    return when (this) {
+        BotsiAlign.Top -> Alignment.Top
+        BotsiAlign.Bottom -> Alignment.Bottom
+        BotsiAlign.Center -> Alignment.CenterVertically
+        else -> Alignment.CenterVertically
     }
 }
 
@@ -263,6 +293,31 @@ internal fun BotsiCardStyle?.toShape(): Shape {
     return this?.radius.toShape()
 }
 
+@Composable
+internal fun BotsiProductStyle?.toBackground(): Modifier {
+    return this?.let { style ->
+        Modifier.background(
+            color = style.color.toColor(style.opacity),
+            shape = style.radius.toShape()
+        )
+    } ?: Modifier
+}
+
+@Composable
+internal fun BotsiProductStyle?.toBorder(): Modifier {
+    return this?.let { style ->
+        if (style.borderThickness == null || style.borderThickness == 0) {
+            Modifier
+        } else {
+            Modifier.border(
+                width = style.borderThickness.dp,
+                color = style.borderColor.toColor(style.borderOpacity),
+                shape = style.radius.toShape()
+            )
+        }
+    } ?: Modifier
+}
+
 internal fun BotsiContentLayout?.toPaddings(extraTopPadding: Dp = Dp.Hairline): PaddingValues {
     return this?.margin.toPaddings(extraTopPadding)
 }
@@ -319,40 +374,37 @@ internal fun BotsiTimerContent?.toPaddings(): PaddingValues {
     return this?.padding.toPaddings()
 }
 
-internal fun BotsiHeroLayout?.toPaddings(): PaddingValues {
-    return this?.padding.toPaddings()
-}
 
-internal fun BotsiCarouselStyle?.toArrangement(alignment: Alignment.Horizontal): Arrangement.Horizontal {
+internal fun BotsiCarouselStyle?.toArrangementHorizontal(alignment: Alignment.Horizontal): Arrangement.Horizontal {
     return this?.spacing.toArrangementHorizontal(alignment)
 }
 
-internal fun BotsiContentLayout?.toArrangement(): Arrangement.Vertical {
-    return this?.spacing.toArrangement()
+internal fun BotsiContentLayout?.toArrangementVertical(): Arrangement.Vertical {
+    return this?.spacing.toArrangementVertical()
 }
 
-internal fun BotsiFooterContent?.toArrangement(): Arrangement.Vertical {
-    return this?.spacing.toArrangement()
+internal fun BotsiFooterContent?.toArrangementVertical(): Arrangement.Vertical {
+    return this?.spacing.toArrangementVertical()
 }
 
-internal fun BotsiListContent?.toArrangement(): Arrangement.Vertical {
-    return this?.itemSpacing.toArrangement()
+internal fun BotsiListContent?.toArrangementVertical(): Arrangement.Vertical {
+    return this?.itemSpacing.toArrangementVertical()
 }
 
-internal fun BotsiLinksContentLayout?.toArrangement(alignment: Alignment.Vertical = Alignment.Top): Arrangement.Vertical {
-    return ((this?.spacing ?: 4) + 4).toArrangement(alignment)
+internal fun BotsiLinksContentLayout?.toArrangementVertical(alignment: Alignment.Vertical = Alignment.Top): Arrangement.Vertical {
+    return ((this?.spacing ?: 4) + 4).toArrangementVertical(alignment)
 }
 
 internal fun BotsiLinksContentLayout?.toArrangementHorizontal(alignment: Alignment.Horizontal = Alignment.Start): Arrangement.Horizontal {
     return ((this?.spacing ?: 4) + 4).toArrangementHorizontal(alignment)
 }
 
-internal fun BotsiCardContentLayout?.toAlignment(): Alignment.Horizontal {
+internal fun BotsiCardContentLayout?.toAlignmentHorizontal(): Alignment.Horizontal {
     return this?.align.toAlignmentHorizontal()
 }
 
 internal fun Float?.toFontSize(): TextUnit {
-    return ((this?.toFloat() ?: 14f) * 1.2f).sp
+    return ((this ?: 14f) * 1.2f).sp
 }
 
 internal fun BotsiFont?.toTextStyle(): TextStyle {
@@ -405,6 +457,126 @@ internal fun BotsiImageContent?.toContentScale(): ContentScale {
     } ?: ContentScale.Fit
 }
 
+internal fun BotsiHeroLayout?.toPaddings(): PaddingValues {
+    return this?.padding.toPaddings()
+}
+
+internal fun BotsiProductsContent?.toPaddings(): PaddingValues {
+    return this?.padding.toPaddings()
+}
+
+internal fun BotsiProductContentLayout?.toPaddings(): PaddingValues {
+    return this?.padding.toPaddings()
+}
+
+internal fun BotsiProductToggleContent?.toPaddings(): PaddingValues {
+    return this?.padding.toPaddings()
+}
+
+internal fun BotsiProductToggleContentLayout?.toPaddings(): PaddingValues {
+    return this?.padding.toPaddings()
+}
+
+internal fun BotsiProductToggleStateContent?.toPaddings(): PaddingValues {
+    return this?.padding.toPaddings()
+}
+
+internal fun BotsiProductToggleStateContentLayout?.toPaddings(): PaddingValues {
+    return this?.padding.toPaddings()
+}
+
+@Composable
+internal fun BotsiProductToggleStyle?.toBackground(): Modifier {
+    return this?.let { style ->
+        Modifier.background(
+            color = style.color.toColor(style.opacity),
+            shape = style.radius.toShape()
+        )
+    } ?: Modifier
+}
+
+@Composable
+internal fun BotsiProductToggleStyle?.toBorder(): Modifier {
+    return this?.let { style ->
+        if (style.borderThickness == null || style.borderThickness == 0) {
+            Modifier
+        } else {
+            Modifier.border(
+                width = style.borderThickness.dp,
+                color = style.borderColor.toColor(style.borderOpacity),
+                shape = style.radius.toShape()
+            )
+        }
+
+    } ?: Modifier
+}
+
+internal fun BotsiProductContentLayout?.toArrangementVertical(): Arrangement.Vertical {
+    return this?.spacing.toArrangementVertical()
+}
+
+internal fun BotsiProductContentLayout?.toArrangementHorizontal(): Arrangement.Horizontal {
+    return this?.spacing.toArrangementHorizontal()
+}
+
+internal fun BotsiProductToggleContentLayout?.toArrangementVertical(
+    alignment: Alignment.Vertical = Alignment.Top
+): Arrangement.Vertical {
+    return this?.spacing.toArrangementVertical(alignment)
+}
+
+internal fun BotsiProductToggleStateContentLayout?.toArrangementVertical(): Arrangement.Vertical {
+    return this?.spacing.toArrangementVertical()
+}
+
+internal fun BotsiProductToggleStateContentLayout?.toArrangementHorizontal(): Arrangement.Horizontal {
+    return this?.spacing.toArrangementHorizontal()
+}
+
+internal fun BotsiProductContentLayout?.toAlignmentHorizontal(): Alignment.Horizontal {
+    return this?.align.toAlignmentHorizontal()
+}
+
+internal fun BotsiProductContentLayout?.toAlignmentVertical(): Alignment.Vertical {
+    return this?.align.toAlignmentVertical()
+}
+
+internal fun BotsiProductToggleStateContentLayout?.toAlignmentHorizontal(): Alignment.Horizontal {
+    return this?.align.toAlignmentHorizontal()
+}
+
+internal fun BotsiProductToggleStateContentLayout?.toAlignmentVertical(): Alignment.Vertical {
+    return this?.align.toAlignmentVertical()
+}
+
+internal fun BotsiLayoutDirection?.toArrangementHorizontal(spacing: Int? = null): Arrangement.Horizontal {
+    return when (this) {
+        BotsiLayoutDirection.Horizontal -> Arrangement.spacedBy((spacing ?: 0).dp, Alignment.Start)
+        BotsiLayoutDirection.Vertical -> Arrangement.Start
+        else -> Arrangement.Start
+    }
+}
+
+@Composable
+internal fun BotsiProductTextStyle?.toTextStyle(): TextStyle {
+    return this?.let { textStyle ->
+        textStyle.font.toTextStyle().copy(
+            fontSize = (textStyle.size ?: 14).sp,
+            color = textStyle.color.toColor(textStyle.opacity)
+        )
+    } ?: TextStyle()
+}
+
+@Composable
+internal fun BotsiProductTextStyle?.toSelectedTextStyle(): TextStyle {
+    return this?.let { textStyle ->
+        textStyle.font.toTextStyle().copy(
+            fontSize = (textStyle.size ?: 14).sp,
+            color = textStyle.selectedColor.toColor(textStyle.selectedOpacity)
+        )
+    } ?: TextStyle()
+}
+
 private fun List<Int>?.toPaddings(extraTopPadding: Dp = Dp.Hairline): PaddingValues = this?.let {
     if (it.size == 1) {
         PaddingValues(
@@ -436,8 +608,9 @@ private fun List<Int>?.toShape(): Shape = this?.let {
     }
 } ?: RoundedCornerShape(0.dp)
 
-private fun Int?.toArrangement(alignment: Alignment.Vertical = Alignment.Top): Arrangement.Vertical =
+private fun Int?.toArrangementVertical(alignment: Alignment.Vertical = Alignment.Top): Arrangement.Vertical =
     Arrangement.spacedBy((this ?: 0).dp, alignment)
 
 private fun Int?.toArrangementHorizontal(alignment: Alignment.Horizontal = Alignment.Start): Arrangement.Horizontal =
     Arrangement.spacedBy((this ?: 0).dp, alignment)
+

@@ -19,6 +19,8 @@ import com.botsi.view.mapper.BotsiListNestedContentMapper
 import com.botsi.view.mapper.BotsiPaywallBlocksMapper
 import com.botsi.view.mapper.BotsiProductItemContentMapper
 import com.botsi.view.mapper.BotsiProductsContentMapper
+import com.botsi.view.mapper.BotsiProductToggleContentMapper
+import com.botsi.view.mapper.BotsiProductToggleStateContentMapper
 import com.botsi.view.mapper.BotsiTextContentMapper
 import com.botsi.view.mapper.BotsiTextMapper
 import com.botsi.view.mapper.BotsiTimerContentMapper
@@ -76,8 +78,22 @@ internal class BotsiPaywallDIManager {
                 )
             )
             put(BotsiCarouselContentMapper::class.java, BotsiCarouselContentMapper())
-            put(BotsiProductItemContentMapper::class.java, BotsiProductItemContentMapper())
-            put(BotsiProductsContentMapper::class.java, BotsiProductsContentMapper(inject()))
+            put(BotsiProductToggleStateContentMapper::class.java, BotsiProductToggleStateContentMapper())
+            put(
+                BotsiProductToggleContentMapper::class.java, BotsiProductToggleContentMapper(
+                    textMapper = inject()
+                )
+            )
+            put(
+                BotsiProductItemContentMapper::class.java, BotsiProductItemContentMapper(
+                    fontMapper = inject()
+                )
+            )
+            put(
+                BotsiProductsContentMapper::class.java, BotsiProductsContentMapper(
+                    fontMapper = inject()
+                )
+            )
             put(
                 BotsiTextContentMapper::class.java, BotsiTextContentMapper(
                     textMapper = inject()
@@ -99,7 +115,9 @@ internal class BotsiPaywallDIManager {
                     cardContentMapper = inject(),
                     linksContentMapper = inject(),
                     carouselContentMapper = inject(),
-                    timerContentMapper = inject()
+                    timerContentMapper = inject(),
+                    productToggleContentMapper = inject(),
+                    productToggleStateContentMapper = inject()
                 )
             )
             put(

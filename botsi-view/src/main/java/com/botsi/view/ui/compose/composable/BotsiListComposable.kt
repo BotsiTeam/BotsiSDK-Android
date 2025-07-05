@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -33,7 +32,7 @@ import com.botsi.view.model.content.BotsiListContent
 import com.botsi.view.model.content.BotsiListNestedContent
 import com.botsi.view.model.content.BotsiPaywallBlock
 import com.botsi.view.utils.toAlignment
-import com.botsi.view.utils.toArrangement
+import com.botsi.view.utils.toArrangementVertical
 import com.botsi.view.utils.toColor
 import com.botsi.view.utils.toPaddings
 
@@ -46,7 +45,7 @@ internal fun BotsiListComposable(
     if (!listBlock.children.isNullOrEmpty()) {
         val paddings = remember(content) { content.toPaddings() }
         val verticalOffset = remember(content) { (content?.verticalOffset ?: 0).dp }
-        val arrangement = remember(content) { content.toArrangement() }
+        val arrangement = remember(content) { content.toArrangementVertical() }
         Column(
             modifier = modifier
                 .padding(paddings)
