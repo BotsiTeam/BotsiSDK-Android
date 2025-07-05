@@ -89,6 +89,11 @@ internal enum class BotsiLayoutDirection {
     Horizontal,
 }
 
+internal enum class BotsiProductState {
+    Default,
+    Selected,
+}
+
 internal enum class BotsiCarouselPageControlType {
     Overlay,
     Outside,

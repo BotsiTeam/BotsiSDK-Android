@@ -25,7 +25,7 @@ internal data class BotsiProductStyle(
 )
 
 internal data class BotsiProductContentLayout(
-    val layout: String? = null,
+    val layout: BotsiLayoutDirection? = null,
     val align: BotsiAlign? = null,
     val padding: List<Int>? = null,
     val spacing: Int? = null

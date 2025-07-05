@@ -1,7 +1,7 @@
 package com.botsi.view.model.content
 
 internal data class BotsiProductItemContent(
-    val state: String? = null,
+    val state: BotsiProductState? = null,
     val offerState: String? = null,
     val defaultText: BotsiProductText? = null,
     val freeText: BotsiProductText? = null,

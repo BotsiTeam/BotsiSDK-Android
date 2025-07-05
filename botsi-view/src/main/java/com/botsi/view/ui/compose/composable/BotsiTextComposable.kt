@@ -85,8 +85,8 @@ internal fun BotsiTextComposable(
             color = textColor,
             fontSize = textUnit,
             textAlign = textAlign,
-            maxLines = maxLines,
-            softWrap = maxLines > 1
+            maxLines = maxLines.takeIf { it > 0 } ?: Int.MAX_VALUE,
+            softWrap = maxLines >= 0
         )
     }
 

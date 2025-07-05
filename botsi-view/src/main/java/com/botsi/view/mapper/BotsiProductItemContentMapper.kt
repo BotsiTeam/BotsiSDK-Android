@@ -3,10 +3,12 @@ package com.botsi.view.mapper
 import com.botsi.view.mapper.BotsiFontMapper
 import com.botsi.view.model.content.BotsiBadge
 import com.botsi.view.model.content.BotsiProductItemContent
+import com.botsi.view.model.content.BotsiProductState
 import com.botsi.view.model.content.BotsiProductStateStyle
 import com.botsi.view.model.content.BotsiProductStyle
 import com.botsi.view.model.content.BotsiProductText
 import com.botsi.view.model.content.BotsiProductTextStyle
+import com.botsi.view.utils.toCapitalizedString
 import com.botsi.view.utils.toIntList
 import com.google.gson.JsonElement
 import kotlinx.coroutines.Dispatchers
@@ -18,7 +20,7 @@ internal class BotsiProductItemContentMapper(private val fontMapper: BotsiFontMa
         return withContext(Dispatchers.Default) {
             with(json.asJsonObject) {
                 BotsiProductItemContent(
-                    state = runCatching { get("state").asString }.getOrNull(),
+                    state = runCatching { BotsiProductState.valueOf(get("state").toCapitalizedString()) }.getOrNull(),
                     offerState = runCatching { get("offer_state").asString }.getOrNull(),
                     defaultText = runCatching { mapProductText(get("default_text")) }.getOrNull(),
                     freeText = runCatching { mapProductText(get("free_text")) }.getOrNull(),

@@ -49,8 +49,8 @@ internal fun BotsiHeroImageTransparentComposable(
         modifier = modifier
             .fillMaxSize()
             .drawWithContent {
-                drawContent()
                 drawRect(color = color, alpha = alpha)
+                drawContent()
             },
         model = image,
         contentDescription = null,

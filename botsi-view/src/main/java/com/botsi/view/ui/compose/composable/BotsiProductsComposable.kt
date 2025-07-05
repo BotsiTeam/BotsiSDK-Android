@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.botsi.view.model.content.BotsiLayoutDirection
 import com.botsi.view.model.content.BotsiPaywallBlock
 import com.botsi.view.model.content.BotsiProductsContent
 import com.botsi.view.utils.toAlignmentHorizontal
@@ -33,7 +34,7 @@ internal fun BotsiProductsComposable(
 
 
     val isHorizontalLayout = remember(content) {
-        content.contentLayout?.layout?.lowercase() == "horizontal"
+        content.contentLayout?.layout == BotsiLayoutDirection.Horizontal
     }
 
     if (isHorizontalLayout) {
@@ -50,6 +51,7 @@ internal fun BotsiProductsComposable(
         ) {
             item.children?.forEach { productBlock ->
                 BotsiContentComposable(
+                    modifier = Modifier.weight(1f),
                     item = productBlock,
                     scope = scope,
                 )
@@ -69,6 +71,7 @@ internal fun BotsiProductsComposable(
         ) {
             item.children?.forEach { productBlock ->
                 BotsiContentComposable(
+                    modifier = Modifier.fillMaxWidth(),
                     item = productBlock,
                     scope = scope,
                 )

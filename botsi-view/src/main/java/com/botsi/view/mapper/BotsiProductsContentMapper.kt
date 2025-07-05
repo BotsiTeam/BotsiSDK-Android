@@ -1,6 +1,7 @@
 package com.botsi.view.mapper
 
 import com.botsi.view.model.content.BotsiAlign
+import com.botsi.view.model.content.BotsiLayoutDirection
 import com.botsi.view.model.content.BotsiProductContentLayout
 import com.botsi.view.model.content.BotsiProductStyle
 import com.botsi.view.model.content.BotsiProductTextStyle
@@ -50,7 +51,7 @@ internal class BotsiProductsContentMapper(private val fontMapper: BotsiFontMappe
     private fun mapContentLayout(jsonElement: JsonElement): BotsiProductContentLayout {
         return with(jsonElement.asJsonObject) {
             BotsiProductContentLayout(
-                layout = runCatching { get("layout").asString }.getOrNull(),
+                layout = runCatching { BotsiLayoutDirection.valueOf(get("layout").toCapitalizedString()) }.getOrNull(),
                 align = runCatching { BotsiAlign.valueOf(get("align").toCapitalizedString()) }.getOrNull(),
                 padding = runCatching { get("padding").toIntList() }.getOrNull(),
                 spacing = runCatching { get("spacing").asInt }.getOrNull(),

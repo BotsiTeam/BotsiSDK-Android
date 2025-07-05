@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
 import com.botsi.view.R
 import com.botsi.view.model.content.BotsiAlign
+import com.botsi.view.model.content.BotsiBadge
 import com.botsi.view.model.content.BotsiButtonContent
 import com.botsi.view.model.content.BotsiButtonContentLayout
 import com.botsi.view.model.content.BotsiButtonStyle
@@ -299,6 +300,16 @@ internal fun BotsiProductStyle?.toBackground(): Modifier {
         Modifier.background(
             color = style.color.toColor(style.opacity),
             shape = style.radius.toShape()
+        )
+    } ?: Modifier
+}
+
+@Composable
+internal fun BotsiBadge?.toBackground(): Modifier {
+    return this?.let { style ->
+        Modifier.background(
+            color = style.badgeColor.toColor(style.badgeOpacity),
+            shape = style.badgeRadius.toShape()
         )
     } ?: Modifier
 }
