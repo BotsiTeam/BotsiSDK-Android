@@ -9,6 +9,7 @@ import com.botsi.data.model.dto.BotsiPurchasableProductDto
 import com.botsi.data.model.dto.BotsiPurchaseRecordDto
 import com.botsi.data.model.dto.BotsiUnsyncPurchaseDto
 import com.botsi.data.model.dto.BotsiUpdateProfileParametersDto
+import com.botsi.domain.model.BotsiPurchase
 import com.google.gson.JsonElement
 import kotlinx.coroutines.flow.Flow
 
@@ -22,7 +23,7 @@ internal interface BotsiRepository {
     fun updateProfile(customerUserId: String?,params: BotsiUpdateProfileParametersDto?): Flow<BotsiProfileDto>
 
     fun validatePurchase(
-        purchase: Purchase,
+        purchase: BotsiPurchase,
         productDetails: BotsiPurchasableProductDto,
     ): Flow<BotsiProfileDto>
 

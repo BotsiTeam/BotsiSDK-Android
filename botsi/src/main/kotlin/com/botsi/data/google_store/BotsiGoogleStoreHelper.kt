@@ -18,6 +18,7 @@ import com.android.billingclient.api.queryProductDetails
 import com.android.billingclient.api.queryPurchaseHistory
 import com.android.billingclient.api.queryPurchasesAsync
 import com.botsi.BotsiException
+import com.botsi.domain.model.BotsiPurchase
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -93,7 +94,7 @@ internal class BotsiGoogleStoreHelper(
             .map { (_, activePurchases) -> activePurchases }
 
     @JvmSynthetic
-    fun acknowledgePurchase(purchase: Purchase) =
+    fun acknowledgePurchase(purchase: BotsiPurchase) =
         flow {
             val params = AcknowledgePurchaseParams.newBuilder()
                 .setPurchaseToken(purchase.purchaseToken)
@@ -108,7 +109,7 @@ internal class BotsiGoogleStoreHelper(
         }
 
     @JvmSynthetic
-    fun consumePurchase(purchase: Purchase) =
+    fun consumePurchase(purchase: BotsiPurchase) =
         flow {
             val params = ConsumeParams.newBuilder()
                 .setPurchaseToken(purchase.purchaseToken)

@@ -18,7 +18,9 @@ import com.botsi.BotsiException
 import com.botsi.data.model.dto.BotsiPurchasableProductDto
 import com.botsi.data.model.dto.BotsiPurchaseRecordDto
 import com.botsi.data.model.dto.BotsiSubscriptionUpdateParametersDto
+import com.botsi.domain.model.BotsiPurchase
 import com.botsi.domain.model.BotsiReplacementMode
+import com.botsi.logging.BotsiLogger
 import com.botsi.scope.flowOnMain
 import com.botsi.scope.launch
 import kotlinx.coroutines.delay
@@ -35,13 +37,12 @@ import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Semaphore
-import java.util.logging.Level
-import java.util.logging.Logger
 import kotlin.coroutines.resumeWithException
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 internal class BotsiGoogleStoreManager(
     context: Context,
+    private val logger: BotsiLogger,
 ) : PurchasesUpdatedListener {
 
     private val billingClient = BillingClient.newBuilder(context)
@@ -133,7 +134,7 @@ internal class BotsiGoogleStoreManager(
         callback: BotsiPurchaseCallback?
     ) {
         val message = storeHelper.errorMessageFromBillingResult(billingResult, "on purchases updated")
-        Logger.getAnonymousLogger().log(Level.INFO, message)
+        logger.info(message)
         callback?.invoke(
             null,
             BotsiException(
@@ -148,7 +149,7 @@ internal class BotsiGoogleStoreManager(
         callback: BotsiPurchaseCallback?,
     ) {
         val message = error.message ?: error.localizedMessage ?: "Unknown billing error occured"
-        Logger.getAnonymousLogger().log(Level.INFO, message)
+        logger.info(message)
         callback?.invoke(
             null,
             (error as? BotsiException) ?: BotsiException(
@@ -271,12 +272,12 @@ internal class BotsiGoogleStoreManager(
                     .build()
             }
             ?: "Can't launch flow to change subscription. Either subscription to change is inactive, or it was purchased from different Google account or from iOS".let { errorMessage ->
-                Logger.getAnonymousLogger().log(Level.WARNING, errorMessage)
+                logger.warn(errorMessage)
                 throw BotsiException(message = errorMessage)
             }
 
     @JvmSynthetic
-    fun acknowledgeOrConsume(purchase: Purchase, product: BotsiPurchasableProductDto) =
+    fun acknowledgeOrConsume(purchase: BotsiPurchase, product: BotsiPurchasableProductDto) =
         onConnected {
             if (product.isConsumable) {
                 storeHelper.consumePurchase(purchase)
@@ -293,10 +294,7 @@ internal class BotsiGoogleStoreManager(
             storeHelper.getBillingConfig(params)
         }
             .catch { e ->
-                Logger.getAnonymousLogger().log(
-                    Level.WARNING,
-                    e.message ?: e.localizedMessage ?: "Unknown error occured on get billing config"
-                )
+                logger.warn(e.message ?: e.localizedMessage ?: "Unknown error occured on get billing config", e)
                 throw e
             }
             .map { config -> config?.countryCode }
@@ -382,7 +380,7 @@ internal class BotsiGoogleStoreManager(
                 return@retryWhen true
             } else {
                 val message = error.message ?: error.localizedMessage ?: "Unknown billing error occured"
-                Logger.getAnonymousLogger().log(Level.INFO, message)
+                logger.info(message)
                 return@retryWhen false
             }
         }

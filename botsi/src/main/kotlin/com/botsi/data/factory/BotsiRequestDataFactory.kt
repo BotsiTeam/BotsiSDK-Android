@@ -45,7 +45,7 @@ internal class BotsiRequestDataFactory {
                 BotsiSubscriptionOfferDetailsRequestData(
                     basePlanId = sub.basePlanId,
                     offerId = sub.offerId,
-                    pricingPhases = sub.pricingPhases.pricingPhaseList.map { pricingPhase ->
+                    pricingPhases = sub.pricingPhases.map { pricingPhase ->
                         BotsiPricingPhaseRequestData(
                             pricingPhase.priceAmountMicros,
                             pricingPhase.priceCurrencyCode,

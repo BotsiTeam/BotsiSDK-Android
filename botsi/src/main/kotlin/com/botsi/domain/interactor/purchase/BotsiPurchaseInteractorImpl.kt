@@ -16,6 +16,7 @@ import com.botsi.domain.mapper.toPurchasableProduct
 import com.botsi.domain.model.BotsiProduct
 import com.botsi.domain.model.BotsiProfile
 import com.botsi.domain.model.BotsiPurchasableProduct
+import com.botsi.domain.model.BotsiPurchase
 import com.botsi.domain.model.BotsiSubscriptionUpdateParameters
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -48,7 +49,7 @@ internal class BotsiPurchaseInteractorImpl(
         product: BotsiProduct,
         subscriptionUpdateParams: BotsiSubscriptionUpdateParameters?,
         isOfferPersonalized: Boolean
-    ): Flow<Pair<BotsiProfile, Purchase?>?> {
+    ): Flow<Pair<BotsiProfile, BotsiPurchase?>?> {
         return googlePlayManager.queryInfoForProduct(product.productId, product.type)
             .flatMapConcat { productDetails ->
                 val purchasableProduct = product
@@ -74,7 +75,8 @@ internal class BotsiPurchaseInteractorImpl(
                     }
                     .flatMapConcat { purchase ->
                         if (purchase != null) {
-                            validatePurchase(purchase, purchasableProduct)
+                            // Use the BotsiPurchase returned by validatePurchase
+                            validatePurchase(BotsiPurchase.from(purchase)!!, purchasableProduct)
                         } else {
                             googlePlayManager.findActivePurchaseForProduct(
                                 product.productId,
@@ -84,7 +86,11 @@ internal class BotsiPurchaseInteractorImpl(
                                     message = "Purchase is null",
                                     code = BillingResponseCode.BILLING_UNAVAILABLE
                                 )
-                                validatePurchase(purchase, purchasableProduct)
+                                // Use the BotsiPurchase returned by validatePurchase
+                                validatePurchase(
+                                    BotsiPurchase.from(purchase)!!,
+                                    purchasableProduct
+                                )
                             }
                         }
                     }
@@ -94,9 +100,9 @@ internal class BotsiPurchaseInteractorImpl(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun validatePurchase(
-        purchase: Purchase,
+        purchase: BotsiPurchase,
         product: BotsiPurchasableProduct,
-    ): Flow<Pair<BotsiProfile, Purchase>> =
+    ): Flow<Pair<BotsiProfile, BotsiPurchase>> =
         repository.validatePurchase(purchase, product.toDto())
             .onEach {
                 googlePlayManager.acknowledgeOrConsume(purchase, product.toDto())
@@ -114,6 +120,16 @@ internal class BotsiPurchaseInteractorImpl(
                 )
                 repository.saveUnsyncedPurchases(unsyncedPurchases)
             }
+
+    // New method that accepts BotsiPurchase
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun validateBotsiPurchase(
+        botsiPurchase: BotsiPurchase,
+        product: BotsiPurchasableProduct,
+    ): Flow<Pair<BotsiProfile, BotsiPurchase>> {
+        // Use the original Purchase stored in BotsiPurchase
+        return validatePurchase(botsiPurchase, product)
+    }
 
     private suspend fun makePurchase(
         activity: Activity,
@@ -140,7 +156,9 @@ internal class BotsiPurchaseInteractorImpl(
                 if (unsyncPurchases.isNotEmpty()) {
                     merge(
                         *unsyncPurchases.map {
+                            // Use the BotsiPurchase returned by validatePurchase, but only keep the profile
                             validatePurchase(it.purchase, it.product)
+                                .map { (profile, _) -> profile }
                         }.toTypedArray()
                     )
                 } else {

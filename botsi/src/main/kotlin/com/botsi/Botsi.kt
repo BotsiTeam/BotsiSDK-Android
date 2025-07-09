@@ -8,20 +8,22 @@ import com.botsi.di.DiManager
 import com.botsi.domain.model.BotsiPaywall
 import com.botsi.domain.model.BotsiProduct
 import com.botsi.domain.model.BotsiProfile
+import com.botsi.domain.model.BotsiPurchase
 import com.botsi.domain.model.BotsiSubscriptionUpdateParameters
 import com.botsi.domain.model.BotsiUpdateProfileParameters
+import com.botsi.logging.BotsiLogLevel
 import com.google.gson.JsonElement
 
 /**
  * Main entry point for the Botsi SDK.
- * 
+ *
  * This singleton object provides access to all Botsi SDK functionality including:
  * - SDK activation and initialization
  * - User profile management
  * - Product and subscription management
  * - Purchase handling
  * - Paywall configuration and display
- * 
+ *
  * The SDK must be activated with [activate] before any other methods can be used.
  */
 object Botsi {
@@ -39,7 +41,7 @@ object Botsi {
 
     /**
      * Activates and initializes the Botsi SDK.
-     * 
+     *
      * This method must be called before any other SDK methods can be used.
      * It initializes the dependency injection system and sets up the SDK facade.
      *
@@ -47,6 +49,7 @@ object Botsi {
      * @param apiKey The API key for authenticating with Botsi services
      * @param clearCache Whether to clear any cached data during activation (default: false)
      * @param customerUserId Optional user identifier for the current user
+     * @param logLevel The log level to use for SDK logging (default: INFO)
      * @param successCallback Optional callback that is invoked when activation succeeds, providing the user profile
      * @param errorCallback Optional callback that is invoked when activation fails
      */
@@ -57,10 +60,11 @@ object Botsi {
         apiKey: String,
         clearCache: Boolean = false,
         customerUserId: String? = null,
+        logLevel: BotsiLogLevel = BotsiLogLevel.DEFAULT,
         successCallback: ((BotsiProfile) -> Unit)? = null,
         errorCallback: ((Throwable) -> Unit)? = null
     ) {
-        diManager.initDi(context, apiKey)
+        diManager.initDi(context, apiKey, logLevel)
 
         facade = BotsiFacade(
             profileInteractor = diManager.inject(),
@@ -69,7 +73,7 @@ object Botsi {
             analyticsTracker = diManager.inject(),
         )
 
-        if (clearCache){
+        if (clearCache) {
             facade.clearCache()
         }
 
@@ -78,6 +82,20 @@ object Botsi {
             successCallback,
             errorCallback,
         )
+    }
+
+    /**
+     * Updates the log level used by the SDK.
+     *
+     * This method can be called after the SDK has been activated to change the logging verbosity.
+     *
+     * @param logLevel The new log level to use
+     * @throws IllegalStateException if the SDK has not been activated
+     */
+    @JvmStatic
+    fun setLogLevel(logLevel: BotsiLogLevel) {
+        checkActivation()
+        diManager.updateLogLevel(logLevel)
     }
 
     /**
@@ -90,12 +108,14 @@ object Botsi {
     @JvmStatic
     fun getProfile(
         customerUserId: String?,
-        successCallback: (BotsiProfile) -> Unit
+        successCallback: (BotsiProfile) -> Unit,
+        errorCallback: ((Throwable) -> Unit)? = null
     ) {
         checkActivation()
         facade.getProfile(
             customerUserId,
-            successCallback
+            successCallback,
+            errorCallback,
         )
     }
 
@@ -103,7 +123,7 @@ object Botsi {
      * Updates the user profile with the provided parameters.
      *
      * This method allows updating various user profile attributes defined in [BotsiUpdateProfileParameters].
-     * 
+     *
      * @param customerUserId Optional user identifier. If null, uses the currently logged-in user
      * @param params Parameters containing the profile attributes to update
      * @param successCallback Optional callback that is invoked when the profile is successfully updated
@@ -277,7 +297,7 @@ object Botsi {
         product: BotsiProduct,
         subscriptionUpdateParams: BotsiSubscriptionUpdateParameters? = null,
         isOfferPersonalized: Boolean = false,
-        callback: ((Pair<BotsiProfile, Purchase?>?) -> Unit),
+        callback: ((Pair<BotsiProfile, BotsiPurchase?>?) -> Unit),
         errorCallback: ((Throwable) -> Unit)? = null,
     ) {
         checkActivation()

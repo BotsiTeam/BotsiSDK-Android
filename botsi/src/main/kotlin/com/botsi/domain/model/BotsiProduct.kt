@@ -14,6 +14,6 @@ data class BotsiProduct(
     val description: String,
     val isConsumable: Boolean,
     val basePlanId: String,
-    val subscriptionOffer: ProductDetails.SubscriptionOfferDetails?,
-    val onTimePurchaseOffers: ProductDetails.OneTimePurchaseOfferDetails?,
+    val subscriptionOffer: BotsiSubscriptionOfferDetails?,
+    val onTimePurchaseOffers: BotsiOneTimePurchaseOfferDetails?,
 )

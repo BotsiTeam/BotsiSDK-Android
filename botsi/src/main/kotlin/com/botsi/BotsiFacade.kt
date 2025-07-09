@@ -12,6 +12,7 @@ import com.botsi.domain.interactor.purchase.BotsiPurchaseInteractor
 import com.botsi.domain.model.BotsiPaywall
 import com.botsi.domain.model.BotsiProduct
 import com.botsi.domain.model.BotsiProfile
+import com.botsi.domain.model.BotsiPurchase
 import com.botsi.domain.model.BotsiSubscriptionUpdateParameters
 import com.botsi.domain.model.BotsiUpdateProfileParameters
 import com.botsi.scope.launch
@@ -98,7 +99,7 @@ internal class BotsiFacade(
         product: BotsiProduct,
         subscriptionUpdateParams: BotsiSubscriptionUpdateParameters?,
         isOfferPersonalized: Boolean,
-        successCallback: ((Pair<BotsiProfile, Purchase?>?) -> Unit)? = null,
+        successCallback: ((Pair<BotsiProfile, BotsiPurchase?>?) -> Unit)? = null,
         errorCallback: ((Throwable) -> Unit)? = null,
     ) {
         launch {

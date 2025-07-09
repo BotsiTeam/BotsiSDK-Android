@@ -12,6 +12,7 @@ import com.botsi.data.model.dto.BotsiUnsyncPurchaseDto
 import com.botsi.data.model.dto.BotsiUpdateProfileParametersDto
 import com.botsi.data.service.BotsiInstallationMetaRetrieverService
 import com.botsi.data.storage.BotsiStorageManager
+import com.botsi.domain.model.BotsiPurchase
 import com.google.gson.JsonElement
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -68,7 +69,7 @@ internal class BotsiRepositoryImpl(
     }
 
     override fun validatePurchase(
-        purchase: Purchase,
+        purchase: BotsiPurchase,
         product: BotsiPurchasableProductDto
     ): Flow<BotsiProfileDto> {
         return flow {

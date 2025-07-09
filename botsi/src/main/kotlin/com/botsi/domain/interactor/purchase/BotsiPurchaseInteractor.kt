@@ -3,9 +3,9 @@ package com.botsi.domain.interactor.purchase
 import android.app.Activity
 import androidx.annotation.RestrictTo
 import com.android.billingclient.api.ProductDetails
-import com.android.billingclient.api.Purchase
 import com.botsi.domain.model.BotsiProduct
 import com.botsi.domain.model.BotsiProfile
+import com.botsi.domain.model.BotsiPurchase
 import com.botsi.domain.model.BotsiSubscriptionUpdateParameters
 import kotlinx.coroutines.flow.Flow
 
@@ -17,7 +17,7 @@ internal interface BotsiPurchaseInteractor {
         product: BotsiProduct,
         subscriptionUpdateParams: BotsiSubscriptionUpdateParameters?,
         isOfferPersonalized: Boolean,
-    ): Flow<Pair<BotsiProfile, Purchase?>?>
+    ): Flow<Pair<BotsiProfile, BotsiPurchase?>?>
 
     fun syncPurchases(): Flow<BotsiProfile>
 

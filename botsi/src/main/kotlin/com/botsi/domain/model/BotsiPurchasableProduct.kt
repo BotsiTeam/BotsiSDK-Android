@@ -10,8 +10,8 @@ internal class BotsiPurchasableProduct(
     val paywallId: Long,
     val placementId: String,
     val abTestId: Long,
-    val currentSubOfferDetails: ProductDetails.SubscriptionOfferDetails?,
-    val currentOneTmeOfferDetails: ProductDetails.OneTimePurchaseOfferDetails?,
+    val currentSubOfferDetails: BotsiSubscriptionOfferDetails?,
+    val currentOneTmeOfferDetails: BotsiOneTimePurchaseOfferDetails?,
     val isOfferPersonalized: Boolean,
     val productDetails: ProductDetails,
 )

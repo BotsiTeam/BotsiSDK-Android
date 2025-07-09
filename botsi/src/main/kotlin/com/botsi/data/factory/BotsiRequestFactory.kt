@@ -10,6 +10,7 @@ import com.botsi.data.model.dto.BotsiPurchaseRecordDto
 import com.botsi.data.model.dto.BotsiUpdateProfileParametersDto
 import com.botsi.data.model.request.BotsiRequest
 import com.botsi.data.model.request.BotsiSendEventRequest
+import com.botsi.domain.model.BotsiPurchase
 import com.google.gson.Gson
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
@@ -65,7 +66,7 @@ internal class BotsiRequestFactory(
     @JvmSynthetic
     fun validatePurchaseRequest(
         profileId: String,
-        purchase: Purchase,
+        purchase: BotsiPurchase,
         product: BotsiPurchasableProductDto,
     ) = buildRequest {
         method = BotsiRequest.Method.POST

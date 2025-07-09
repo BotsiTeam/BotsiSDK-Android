@@ -5,8 +5,10 @@ import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.ProductDetails.SubscriptionOfferDetails
 import com.botsi.data.google_store.BotsiGoogleStoreManager
 import com.botsi.data.repository.BotsiRepository
+import com.botsi.domain.model.BotsiOneTimePurchaseOfferDetails
 import com.botsi.domain.model.BotsiPaywall
 import com.botsi.domain.model.BotsiProduct
+import com.botsi.domain.model.BotsiSubscriptionOfferDetails
 import com.google.gson.JsonElement
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -59,8 +61,8 @@ internal class BotsiProductsInteractorImpl(
                                             description = product.description,
                                             isConsumable = dto?.isConsumable == true,
                                             basePlanId = dto?.basePlanId.orEmpty(),
-                                            subscriptionOffer = it,
-                                            onTimePurchaseOffers = product.oneTimePurchaseOfferDetails,
+                                            subscriptionOffer = BotsiSubscriptionOfferDetails.from(it),
+                                            onTimePurchaseOffers = BotsiOneTimePurchaseOfferDetails.from(product.oneTimePurchaseOfferDetails),
                                             placementId = placementId,
                                             paywallId = paywall.id ?: 0,
                                             abTestId = paywall.abTestId ?: 0,

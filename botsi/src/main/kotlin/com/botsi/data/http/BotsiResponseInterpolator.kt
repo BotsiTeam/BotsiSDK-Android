@@ -3,17 +3,17 @@ package com.botsi.data.http
 import androidx.annotation.RestrictTo
 import com.botsi.BotsiException
 import com.botsi.data.model.response.BotsiResponse
+import com.botsi.logging.BotsiLogger
 import com.google.gson.Gson
 import java.io.InputStream
 import java.lang.reflect.Type
 import java.net.HttpURLConnection
-import java.util.logging.Level.INFO
-import java.util.logging.Logger
 import java.util.zip.GZIPInputStream
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 internal class BotsiResponseInterpolator(
     private val gson: Gson,
+    private val logger: BotsiLogger,
 ) {
 
     fun <T> process(connection: HttpURLConnection, typeOfT: Type): BotsiResponse<T> {
@@ -39,7 +39,7 @@ internal class BotsiResponseInterpolator(
     }
 
     private fun log(message: String) {
-        Logger.getAnonymousLogger().log(INFO, message)
+        logger.info(message)
     }
 
     private fun toStringUtf8(inputStream: InputStream, isInGzip: Boolean): String {
