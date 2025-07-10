@@ -1,8 +1,10 @@
 package com.botsi.data.model.dto
 
+import androidx.annotation.Keep
 import androidx.annotation.RestrictTo
 import com.google.gson.annotations.SerializedName
 
+@Keep
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 internal data class BotsiInstallationMetaDto(
     @SerializedName("deviceId")

@@ -1,5 +1,8 @@
 package com.botsi.view.model.content
 
+import androidx.annotation.Keep
+
+@Keep
 internal data class BotsiImageContent(
     val image: String? = null,
     val height: Int? = null,

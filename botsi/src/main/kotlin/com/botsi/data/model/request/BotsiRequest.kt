@@ -1,7 +1,9 @@
 package com.botsi.data.model.request
 
+import androidx.annotation.Keep
 import androidx.annotation.RestrictTo
 
+@Keep
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 internal class BotsiRequest internal constructor(val baseUrl: String) {
 
@@ -21,6 +23,7 @@ internal class BotsiRequest internal constructor(val baseUrl: String) {
     @JvmField
     var headers: Set<Header>? = null
 
+    @Keep
     internal class Builder(private val baseRequest: BotsiRequest = BotsiRequest(baseUrl = "https://swytapp-test.com.ua/api/v1/sdk/")) {
 
         @get:JvmSynthetic
@@ -65,10 +68,12 @@ internal class BotsiRequest internal constructor(val baseUrl: String) {
         }
     }
 
+    @Keep
     internal enum class Method {
         GET, POST, PATCH
     }
 
+    @Keep
     internal class Header(val key: String, val value: String?)
 
 }

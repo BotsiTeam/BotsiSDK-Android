@@ -1,5 +1,8 @@
 package com.botsi.view.model.content
 
+import androidx.annotation.Keep
+
+@Keep
 internal data class BotsiLinksContent(
     val hasTermOfService: Boolean? = null,
     val hasPrivacyPolicy: Boolean? = null,
@@ -32,6 +35,7 @@ internal data class BotsiLinksStyle(
     val dividersThickness: Int? = null,
 )
 
+@Keep
 internal data class BotsiLinksContentLayout(
     val layout: BotsiLayoutDirection? = null,
     val spacing: Int? = null,

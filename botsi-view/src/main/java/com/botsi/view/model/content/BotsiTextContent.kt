@@ -1,5 +1,8 @@
 package com.botsi.view.model.content
 
+import androidx.annotation.Keep
+
+@Keep
 internal data class BotsiTextContent(
     val text: BotsiText? = null,
     val maxLines: Int? = null,

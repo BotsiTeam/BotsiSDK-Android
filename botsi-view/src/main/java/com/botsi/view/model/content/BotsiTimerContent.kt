@@ -1,7 +1,9 @@
 package com.botsi.view.model.content
 
+import androidx.annotation.Keep
 import java.text.SimpleDateFormat
 
+@Keep
 internal data class BotsiTimerContent(
     val dateFormat: SimpleDateFormat? = null,
     val noJavaFormatSupportSeparatorValues: List<String>? = null,

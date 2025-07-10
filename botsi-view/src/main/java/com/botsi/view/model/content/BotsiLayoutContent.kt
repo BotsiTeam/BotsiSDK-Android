@@ -1,5 +1,8 @@
 package com.botsi.view.model.content
 
+import androidx.annotation.Keep
+
+@Keep
 internal data class BotsiLayoutContent(
     val darkMode: Boolean? = null,
     val purchaseFlow: String? = null,
@@ -10,11 +13,13 @@ internal data class BotsiLayoutContent(
     val template: BotsiTemplate? = null
 ) : BotsiBlockContent
 
+@Keep
 internal data class BotsiContentLayout(
     val margin: List<Int>? = null,
     val spacing: Int? = null
 )
 
+@Keep
 internal data class BotsiTopButton(
     val action: BotsiButtonAction? = null,
     val enabled: Boolean? = null,
@@ -27,12 +32,14 @@ internal data class BotsiTopButton(
     val icon: BotsiIconStyle? = null
 )
 
+@Keep
 internal data class BotsiIconStyle(
     val type: BotsiButtonIconType? = null,
     val color: String? = null,
     val opacity: Float? = null
 )
 
+@Keep
 internal data class BotsiTemplate(
     val image: String? = null,
     val name: String? = null,

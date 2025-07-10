@@ -1,5 +1,8 @@
 package com.botsi.view.model.content
 
+import androidx.annotation.Keep
+
+@Keep
 internal data class BotsiPaywallContentStructure(
     val layout: BotsiPaywallBlock? = null,
     val heroImage: BotsiPaywallBlock? = null,

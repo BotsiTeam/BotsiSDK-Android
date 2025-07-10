@@ -1,5 +1,8 @@
 package com.botsi.view.model.content
 
+import androidx.annotation.Keep
+
+@Keep
 internal data class BotsiProductItemContent(
     val state: BotsiProductState? = null,
     val offerState: String? = null,
@@ -15,6 +18,7 @@ internal data class BotsiProductItemContent(
     val badge: BotsiBadge? = null
 ) : BotsiBlockContent
 
+@Keep
 internal data class BotsiProductText(
     val text1: String? = null,
     val text1Fallback: String? = null,
@@ -26,6 +30,7 @@ internal data class BotsiProductText(
     val text4Fallback: String? = null
 )
 
+@Keep
 internal data class BotsiProductStateStyle(
     val text1: BotsiProductTextStyle? = null,
     val text2: BotsiProductTextStyle? = null,
@@ -33,6 +38,7 @@ internal data class BotsiProductStateStyle(
     val text4: BotsiProductTextStyle? = null
 )
 
+@Keep
 internal data class BotsiBadge(
     val badgeText: String? = null,
     val badgeColor: String? = null,

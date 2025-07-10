@@ -1,5 +1,8 @@
 package com.botsi.view.model.content
 
+import androidx.annotation.Keep
+
+@Keep
 internal data class BotsiHeroImageContent(
     val type: String? = null,
     val style: BotsiHeroImageContentStyle? = null,
@@ -10,11 +13,13 @@ internal data class BotsiHeroImageContent(
     val layout: BotsiHeroLayout? = null
 ): BotsiBlockContent
 
+@Keep
 internal data class BotsiTint(
     val opacity: Float? = null,
     val fillColor: String? = null
 )
 
+@Keep
 internal data class BotsiHeroLayout(
     val padding: List<Int>? = null,
     val verticalOffset: Int? = null

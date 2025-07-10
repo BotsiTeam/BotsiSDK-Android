@@ -1,10 +1,12 @@
 package com.botsi.domain.model
 
+import androidx.annotation.Keep
 import com.android.billingclient.api.ProductDetails
 
 /**
  * Wrapper class for [ProductDetails.SubscriptionOfferDetails]
  */
+@Keep
 data class BotsiSubscriptionOfferDetails(
     val basePlanId: String,
     val offerId: String?,

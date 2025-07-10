@@ -1,8 +1,10 @@
 package com.botsi.data.model.request
 
+import androidx.annotation.Keep
 import androidx.annotation.RestrictTo
 import com.google.gson.annotations.SerializedName
 
+@Keep
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 internal class BotsiValidateReceiptRequest(
     @SerializedName("profileId")
@@ -25,6 +27,7 @@ internal class BotsiValidateReceiptRequest(
     val subscriptionOfferDetails: BotsiSubscriptionOfferDetailsRequestData? = null,
 ) {
 
+    @Keep
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     internal class BotsiOneTimePurchaseOfferDetailsRequestData(
         @SerializedName("priceAmountMicros")
@@ -33,6 +36,7 @@ internal class BotsiValidateReceiptRequest(
         val currencyCode: String,
     )
 
+    @Keep
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     internal class BotsiSubscriptionOfferDetailsRequestData(
         @SerializedName("basePlanId")
@@ -43,6 +47,7 @@ internal class BotsiValidateReceiptRequest(
         val pricingPhases: List<BotsiPricingPhaseRequestData>,
     )
 
+    @Keep
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     internal class BotsiPricingPhaseRequestData(
         @SerializedName("priceAmountMicros")

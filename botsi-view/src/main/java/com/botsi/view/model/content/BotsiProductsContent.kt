@@ -1,5 +1,8 @@
 package com.botsi.view.model.content
 
+import androidx.annotation.Keep
+
+@Keep
 internal data class BotsiProductsContent(
     val grouping: String? = null,
     val selectedProduct: String? = null,
@@ -24,6 +27,7 @@ internal data class BotsiProductStyle(
     val radius: List<Int>? = null
 )
 
+@Keep
 internal data class BotsiProductContentLayout(
     val layout: BotsiLayoutDirection? = null,
     val align: BotsiAlign? = null,

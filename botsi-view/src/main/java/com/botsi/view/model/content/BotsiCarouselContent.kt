@@ -1,5 +1,8 @@
 package com.botsi.view.model.content
 
+import androidx.annotation.Keep
+
+@Keep
 internal data class BotsiCarouselContent(
     val height: Int? = null,
     val pageControl: Boolean? = null,
@@ -13,6 +16,7 @@ internal data class BotsiCarouselContent(
     val spacing: Int? = null,
 ) : BotsiBlockContent
 
+@Keep
 internal data class BotsiCarouselStyle(
     val activeColor: String? = null,
     val activeOpacity: Float? = null,
@@ -24,6 +28,7 @@ internal data class BotsiCarouselStyle(
     val spacing: Int? = null,
 )
 
+@Keep
 internal data class BotsiCarouselTiming(
     val timing: Long? = null,
     val initialTiming: Long? = null,

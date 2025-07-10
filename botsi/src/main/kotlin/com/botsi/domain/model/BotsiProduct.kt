@@ -1,7 +1,8 @@
 package com.botsi.domain.model
 
-import com.android.billingclient.api.ProductDetails
+import androidx.annotation.Keep
 
+@Keep
 data class BotsiProduct(
     val productId: String,
     val paywallId: Long,

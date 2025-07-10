@@ -1,7 +1,9 @@
 package com.botsi.domain.model
 
+import androidx.annotation.Keep
 import java.util.Date
 
+@Keep
 class BotsiProfile(
     val profileId: String,
     val customerUserId: String,
@@ -11,6 +13,7 @@ class BotsiProfile(
     val custom: List<CustomEntry>,
 ) {
 
+    @Keep
     data class AccessLevel(
         val createdDate: Date,
         val id: Int,
@@ -35,6 +38,7 @@ class BotsiProfile(
         val billingIssueDetectedAt: Date,
     )
 
+    @Keep
     data class Subscription(
         val createdDate: Date,
         val id: Int,
@@ -59,6 +63,7 @@ class BotsiProfile(
         val billingIssueDetectedAt: Date,
     )
 
+    @Keep
     data class NonSubscription(
         val isConsumable: Boolean,
         val isOneTime: Boolean,
@@ -70,6 +75,7 @@ class BotsiProfile(
         val transactionId: String,
     )
 
+    @Keep
     data class CustomEntry(
         val key: String?,
         val value: String?,

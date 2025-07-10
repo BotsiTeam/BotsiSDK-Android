@@ -1,5 +1,8 @@
 package com.botsi.view.model.content
 
+import androidx.annotation.Keep
+
+@Keep
 internal data class BotsiProductToggleContent(
     val state: Boolean? = null,
     val toggleColor: String? = null,
@@ -12,6 +15,7 @@ internal data class BotsiProductToggleContent(
     val contentLayout: BotsiProductToggleContentLayout? = null,
 ): BotsiBlockContent
 
+@Keep
 internal data class BotsiProductToggleStyle(
     val color: String? = null,
     val opacity: Float? = null,
@@ -21,6 +25,7 @@ internal data class BotsiProductToggleStyle(
     val radius: List<Int>? = null,
 )
 
+@Keep
 internal data class BotsiProductToggleState(
     val text: String? = null,
     val textStyle: BotsiText? = null,
@@ -28,6 +33,7 @@ internal data class BotsiProductToggleState(
     val secondaryTextStyle: BotsiText? = null,
 )
 
+@Keep
 internal data class BotsiProductToggleContentLayout(
     val padding: List<Int>? = null,
     val spacing: Int? = null,

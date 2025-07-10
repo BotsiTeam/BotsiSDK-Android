@@ -1,10 +1,12 @@
 package com.botsi.domain.model
 
+import androidx.annotation.Keep
 import com.android.billingclient.api.ProductDetails
 
 /**
  * Wrapper class for [ProductDetails.PricingPhase]
  */
+@Keep
 data class BotsiPricingPhase(
     val priceAmountMicros: Long,
     val priceCurrencyCode: String,

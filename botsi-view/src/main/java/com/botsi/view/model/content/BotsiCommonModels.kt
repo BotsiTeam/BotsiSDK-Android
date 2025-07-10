@@ -1,5 +1,8 @@
 package com.botsi.view.model.content
 
+import androidx.annotation.Keep
+
+@Keep
 internal data class BotsiText(
     val text: String? = null,
     val font: BotsiFont? = null,
@@ -9,6 +12,7 @@ internal data class BotsiText(
     val align: BotsiAlign? = null
 )
 
+@Keep
 internal data class BotsiFont(
     val id: String? = null,
     val name: String? = null,
@@ -16,6 +20,7 @@ internal data class BotsiFont(
     val types: List<BotsiFontType>? = null
 )
 
+@Keep
 internal data class BotsiFontType(
     val name: String? = null,
     val id: String? = null,
@@ -24,6 +29,7 @@ internal data class BotsiFontType(
     val isSelected: Boolean? = null
 )
 
+@Keep
 internal data class BotsiProductTextStyle(
     val font: BotsiFont? = null,
     val size: Int? = null,
@@ -33,6 +39,7 @@ internal data class BotsiProductTextStyle(
     val selectedOpacity: Float? = null
 )
 
+@Keep
 internal data class BotsiButtonStyle(
     val color: String? = null,
     val opacity: Float? = null,

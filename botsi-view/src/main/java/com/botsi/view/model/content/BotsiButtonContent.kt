@@ -1,5 +1,8 @@
 package com.botsi.view.model.content
 
+import androidx.annotation.Keep
+
+@Keep
 internal data class BotsiButtonContent(
     val action: BotsiButtonAction? = null,
     val actionLabel: String? = null,
@@ -11,6 +14,7 @@ internal data class BotsiButtonContent(
     val contentLayout: BotsiButtonContentLayout? = null
 ) : BotsiBlockContent
 
+@Keep
 internal data class BotsiButtonContentLayout(
     val padding: List<Int>? = null,
     val align: BotsiAlign? = null

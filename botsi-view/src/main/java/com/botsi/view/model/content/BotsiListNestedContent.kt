@@ -1,5 +1,8 @@
 package com.botsi.view.model.content
 
+import androidx.annotation.Keep
+
+@Keep
 internal data class BotsiListNestedContent(
     val icon: String? = null,
     val connectorThickness: Int? = null,

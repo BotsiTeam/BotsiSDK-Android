@@ -1,10 +1,12 @@
 package com.botsi.domain.model
 
+import androidx.annotation.Keep
 import com.android.billingclient.api.Purchase
 
 /**
  * Wrapper class for [Purchase]
  */
+@Keep
 data class BotsiPurchase(
     val purchaseToken: String,
     val purchaseTime: Long,

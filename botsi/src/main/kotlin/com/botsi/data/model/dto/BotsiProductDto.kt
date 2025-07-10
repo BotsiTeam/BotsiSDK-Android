@@ -1,7 +1,9 @@
 package com.botsi.data.model.dto
 
+import androidx.annotation.Keep
 import androidx.annotation.RestrictTo
 
+@Keep
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 internal class BotsiProductDto(
     val botsiProductId: Int? = null,

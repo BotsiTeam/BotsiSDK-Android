@@ -1,5 +1,6 @@
 package com.botsi.logging
 
+import androidx.annotation.Keep
 import androidx.annotation.RestrictTo
 import java.util.logging.Level
 
@@ -31,6 +32,7 @@ import java.util.logging.Level
  * Botsi.setLogLevel(BotsiLogLevel.VERBOSE)
  * ```
  */
+@Keep
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 enum class BotsiLogLevel(val value: Int) {
     /**

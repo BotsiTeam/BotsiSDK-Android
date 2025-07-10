@@ -1,5 +1,8 @@
 package com.botsi.view.model.content
 
+import androidx.annotation.Keep
+
+@Keep
 internal enum class BotsiAlign {
     Left,
     Right,
@@ -9,6 +12,7 @@ internal enum class BotsiAlign {
     Column,
 }
 
+@Keep
 internal enum class BotsiButtonIconType {
     None,
     Close,
@@ -16,6 +20,7 @@ internal enum class BotsiButtonIconType {
     Next,
 }
 
+@Keep
 internal enum class BotsiHeroImageShape(val key: String) {
     Rectangle("rectangle"),
     Circle("circle"),
@@ -30,12 +35,14 @@ internal enum class BotsiHeroImageShape(val key: String) {
     }
 }
 
+@Keep
 internal enum class BotsiHeroImageContentStyle {
     Overlay,
     Transparent,
     Flat,
 }
 
+@Keep
 internal enum class BotsiCarouselLastOption(val key: String) {
     StartOver("start over"),
     Stop("stop slide show");
@@ -46,6 +53,7 @@ internal enum class BotsiCarouselLastOption(val key: String) {
     }
 }
 
+@Keep
 internal enum class BotsiCarouselInteractive(val key: String) {
     WithoutAffect("without_affect"),
     Stop("stop"),
@@ -57,48 +65,57 @@ internal enum class BotsiCarouselInteractive(val key: String) {
     }
 }
 
+@Keep
 internal enum class BotsiButtonType {
     Icon,
     Text,
 }
 
+@Keep
 internal enum class BotsiFontStyleType {
     Normal,
     Italic,
     Bold,
 }
 
+@Keep
 internal enum class BotsiOnOverflowBehavior {
     Scale,
 }
 
+@Keep
 internal enum class BotsiImageAspect {
     Fill,
     Fit,
     Stretch,
 }
 
+@Keep
 internal enum class BotsiDefaultIcon {
     Tick,
     Checkmark,
     Dot,
 }
 
+@Keep
 internal enum class BotsiLayoutDirection {
     Vertical,
     Horizontal,
 }
 
+@Keep
 internal enum class BotsiProductState {
     Default,
     Selected,
 }
 
+@Keep
 internal enum class BotsiCarouselPageControlType {
     Overlay,
     Outside,
 }
 
+@Keep
 internal enum class BotsiTimerFormat(val format: String) {
     Ss("ss"),
     MmSs("mm ss"),
@@ -110,6 +127,7 @@ internal enum class BotsiTimerFormat(val format: String) {
     }
 }
 
+@Keep
 internal enum class BotsiTimerSeparator(val symbol: String) {
     Colon(":"),
     Dash("-"),
@@ -117,6 +135,7 @@ internal enum class BotsiTimerSeparator(val symbol: String) {
     Letter("D H M S")
 }
 
+@Keep
 internal enum class BotsiContentType(val key: String) {
     Layout("layout"),
     HeroImage("hero_image"),
@@ -141,7 +160,7 @@ internal enum class BotsiContentType(val key: String) {
     }
 }
 
-
+@Keep
 internal sealed interface BotsiButtonAction {
     data object None : BotsiButtonAction
     data object Close : BotsiButtonAction

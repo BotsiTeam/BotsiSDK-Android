@@ -1,8 +1,10 @@
 package com.botsi.data.model.dto
 
+import androidx.annotation.Keep
 import androidx.annotation.RestrictTo
 import com.google.gson.annotations.SerializedName
 
+@Keep
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 internal class BotsiProfileDto(
     @SerializedName("profileId") val profileId: String? = null,
@@ -13,6 +15,7 @@ internal class BotsiProfileDto(
     @SerializedName("custom") val custom: List<CustomEntryDto>? = null,
 ) {
 
+    @Keep
     data class AccessLevelDto(
         @SerializedName("createdDate") val createdDate: String? = null,
         @SerializedName("id") val id: Int? = null,
@@ -37,6 +40,7 @@ internal class BotsiProfileDto(
         @SerializedName("billingIssueDetectedAt") val billingIssueDetectedAt: String? = null,
     )
 
+    @Keep
     data class SubscriptionDto(
         @SerializedName("createdDate") val createdDate: String? = null,
         @SerializedName("id") val id: Int? = null,
@@ -61,6 +65,7 @@ internal class BotsiProfileDto(
         @SerializedName("billingIssueDetectedAt") val billingIssueDetectedAt: String? = null,
     )
 
+    @Keep
     data class NonSubscriptionDto(
         @SerializedName("isConsumable") val isConsumable: Boolean? = null,
         @SerializedName("isOneTime") val isOneTime: Boolean? = null,
@@ -72,6 +77,7 @@ internal class BotsiProfileDto(
         @SerializedName("transactionId") val transactionId: String? = null,
     )
 
+    @Keep
     data class CustomEntryDto(
         @SerializedName("key") val key: String? = null,
         @SerializedName("value") val value: String? = null,

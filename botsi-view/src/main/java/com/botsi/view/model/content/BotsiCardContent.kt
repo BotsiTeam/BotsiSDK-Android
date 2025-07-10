@@ -1,5 +1,8 @@
 package com.botsi.view.model.content
 
+import androidx.annotation.Keep
+
+@Keep
 internal data class BotsiCardContent(
     val style: BotsiCardStyle? = null,
     val backgroundImage: String? = null,
@@ -8,6 +11,7 @@ internal data class BotsiCardContent(
     val contentLayout: BotsiCardContentLayout? = null,
 ) : BotsiBlockContent
 
+@Keep
 internal data class BotsiCardStyle(
     val color: String? = null,
     val opacity: Float? = null,
@@ -17,6 +21,7 @@ internal data class BotsiCardStyle(
     val radius: List<Int>? = null,
 )
 
+@Keep
 internal data class BotsiCardContentLayout(
     val padding: List<Int>? = null,
     val verticalOffset: Int? = null,

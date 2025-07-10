@@ -1,5 +1,8 @@
 package com.botsi.domain.model
 
+import androidx.annotation.Keep
+
+@Keep
 data class BotsiUpdateProfileParameters(
     val birthday: String? = null,
     val email: String? = null,
@@ -9,6 +12,7 @@ data class BotsiUpdateProfileParameters(
     val custom: List<CustomAttributesEntry> = emptyList()
 ) {
 
+    @Keep
     data class CustomAttributesEntry(
         val key: String? = null,
         val value: String? = null,
