@@ -1,6 +1,5 @@
 package com.botsi.view.mapper
 
-import com.botsi.view.model.content.BotsiBlockMeta
 import com.botsi.view.model.content.BotsiContentType
 import com.botsi.view.model.content.BotsiPaywallBlock
 import com.botsi.view.model.content.BotsiPaywallContentStructure
@@ -29,6 +28,9 @@ internal class BotsiPaywallBlocksMapper(
     private val productToggleStateContentMapper: BotsiProductToggleStateContentMapper,
     private val tabControlContentMapper: BotsiTabControlContentMapper,
     private val tabGroupContentMapper: BotsiTabGroupContentMapper,
+    private val plansContentMapper: BotsiPlansContentMapper,
+    private val plansControlContentMapper: BotsiPlansControlContentMapper,
+    private val morePlansSheetContentMapper: BotsiMorePlansSheetContentMapper,
 ) {
 
     suspend fun map(jsonElement: JsonElement): BotsiPaywallContentStructure {
@@ -80,6 +82,10 @@ internal class BotsiPaywallBlocksMapper(
                             BotsiContentType.ToggleOff -> productToggleStateContentMapper.map(contentJson)
                             BotsiContentType.TabControl -> tabControlContentMapper.map(contentJson)
                             BotsiContentType.TabGroup -> tabGroupContentMapper.map(contentJson)
+                            BotsiContentType.MainPlans,
+                            BotsiContentType.MorePlans -> plansContentMapper.map(contentJson)
+                            BotsiContentType.MorePlansSheet -> morePlansSheetContentMapper.map(contentJson)
+                            BotsiContentType.PlansControl -> plansControlContentMapper.map(contentJson)
 //                                "localization" -> buttonContentMapper.map(contentJson)
                             else -> null
                         },

@@ -161,7 +161,11 @@ internal enum class BotsiContentType(val key: String) {
     ToggleOff("toggle_off"),
     Image("image"),
     TabControl("tab_control"),
-    TabGroup("tab_group");
+    TabGroup("tab_group"),
+    MainPlans("main_plans"),
+    MorePlans("more_plans"),
+    MorePlansSheet("more_plans_sheet"),
+    PlansControl("plans_control");
 
     companion object {
         fun findByKey(key: String): BotsiContentType? = entries.find { it.key == key }

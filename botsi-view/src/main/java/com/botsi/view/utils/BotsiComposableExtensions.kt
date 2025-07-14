@@ -55,6 +55,7 @@ import com.botsi.view.model.content.BotsiLayoutDirection
 import com.botsi.view.model.content.BotsiLinksContent
 import com.botsi.view.model.content.BotsiLinksContentLayout
 import com.botsi.view.model.content.BotsiListContent
+import com.botsi.view.model.content.BotsiMorePlansSheetContent
 import com.botsi.view.model.content.BotsiProductContentLayout
 import com.botsi.view.model.content.BotsiProductStyle
 import com.botsi.view.model.content.BotsiProductTextStyle
@@ -67,6 +68,9 @@ import com.botsi.view.model.content.BotsiProductsContent
 import com.botsi.view.model.content.BotsiTabControlContent
 import com.botsi.view.model.content.BotsiTabControlState
 import com.botsi.view.model.content.BotsiTabGroupContent
+import com.botsi.view.model.content.BotsiPlansContent
+import com.botsi.view.model.content.BotsiPlansControlContent
+import com.botsi.view.model.content.BotsiPlansControlContentLayout
 import com.botsi.view.model.content.BotsiTextContent
 import com.botsi.view.model.content.BotsiTimerContent
 
@@ -518,6 +522,22 @@ internal fun BotsiTabControlState?.toPaddings(): PaddingValues {
 }
 
 internal fun BotsiTabGroupContent?.toPaddings(): PaddingValues {
+    return this?.padding.toPaddings()
+}
+
+internal fun BotsiPlansContent?.toPaddings(): PaddingValues {
+    return this?.padding.toPaddings()
+}
+
+internal fun BotsiPlansControlContent?.toPaddings(): PaddingValues {
+    return this?.margin.toPaddings()
+}
+
+internal fun BotsiPlansControlContentLayout?.toPaddings(): PaddingValues {
+    return this?.padding.toPaddings()
+}
+
+internal fun BotsiMorePlansSheetContent?.toPaddings(): PaddingValues {
     return this?.padding.toPaddings()
 }
 

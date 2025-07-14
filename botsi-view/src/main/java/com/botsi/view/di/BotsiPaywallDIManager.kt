@@ -16,17 +16,19 @@ import com.botsi.view.mapper.BotsiLayoutContentMapper
 import com.botsi.view.mapper.BotsiLinksContentMapper
 import com.botsi.view.mapper.BotsiListContentMapper
 import com.botsi.view.mapper.BotsiListNestedContentMapper
+import com.botsi.view.mapper.BotsiMorePlansSheetContentMapper
 import com.botsi.view.mapper.BotsiPaywallBlocksMapper
+import com.botsi.view.mapper.BotsiPlansContentMapper
+import com.botsi.view.mapper.BotsiPlansControlContentMapper
 import com.botsi.view.mapper.BotsiProductItemContentMapper
-import com.botsi.view.mapper.BotsiProductsContentMapper
 import com.botsi.view.mapper.BotsiProductToggleContentMapper
 import com.botsi.view.mapper.BotsiProductToggleStateContentMapper
+import com.botsi.view.mapper.BotsiProductsContentMapper
 import com.botsi.view.mapper.BotsiTabControlContentMapper
 import com.botsi.view.mapper.BotsiTabGroupContentMapper
 import com.botsi.view.mapper.BotsiTextContentMapper
 import com.botsi.view.mapper.BotsiTextMapper
 import com.botsi.view.mapper.BotsiTimerContentMapper
-import com.botsi.view.model.content.BotsiTabControlContent
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 internal class BotsiPaywallDIManager {
@@ -88,6 +90,19 @@ internal class BotsiPaywallDIManager {
                 )
             )
             put(BotsiTabGroupContentMapper::class.java, BotsiTabGroupContentMapper())
+            put(BotsiPlansContentMapper::class.java, BotsiPlansContentMapper())
+            put(
+                BotsiPlansControlContentMapper::class.java, BotsiPlansControlContentMapper(
+                    textMapper = inject(),
+                    buttonStyleMapper = inject()
+                )
+            )
+            put(
+                BotsiMorePlansSheetContentMapper::class.java, BotsiMorePlansSheetContentMapper(
+                    textMapper = inject(),
+                    buttonStyleMapper = inject()
+                )
+            )
             put(BotsiProductToggleStateContentMapper::class.java, BotsiProductToggleStateContentMapper())
             put(
                 BotsiProductToggleContentMapper::class.java, BotsiProductToggleContentMapper(
@@ -129,7 +144,10 @@ internal class BotsiPaywallDIManager {
                     productToggleContentMapper = inject(),
                     productToggleStateContentMapper = inject(),
                     tabControlContentMapper = inject(),
-                    tabGroupContentMapper = inject()
+                    tabGroupContentMapper = inject(),
+                    plansContentMapper = inject(),
+                    plansControlContentMapper = inject(),
+                    morePlansSheetContentMapper = inject()
                 )
             )
             put(

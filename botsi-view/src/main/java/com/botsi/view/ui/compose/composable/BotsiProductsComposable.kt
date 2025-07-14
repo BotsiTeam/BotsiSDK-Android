@@ -19,7 +19,6 @@ import com.botsi.view.utils.toAlignmentVertical
 import com.botsi.view.utils.toArrangementHorizontal
 import com.botsi.view.utils.toArrangementVertical
 import com.botsi.view.utils.toPaddings
-import kotlinx.coroutines.CoroutineScope
 
 @Composable
 internal fun BotsiProductsComposable(
@@ -106,6 +105,12 @@ internal fun BotsiProductsContent(
             modifier = modifier,
             item = item,
             parentItem = parentItem,
+        )
+
+        BotsiContentType.PlansControl -> BotsiPlansControlComposable(
+            modifier = modifier,
+            item = item,
+            parentItem = parentItem
         )
 
         else -> {}
