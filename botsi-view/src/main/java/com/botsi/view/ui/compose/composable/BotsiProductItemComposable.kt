@@ -14,9 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.botsi.view.model.content.BotsiAlign
 import com.botsi.view.model.content.BotsiPaywallBlock
 import com.botsi.view.model.content.BotsiProductItemContent
 import com.botsi.view.model.content.BotsiProductState
+import com.botsi.view.utils.toAlignmentHorizontal
 import com.botsi.view.utils.toBackground
 import com.botsi.view.utils.toBorder
 import com.botsi.view.utils.toColor
@@ -26,7 +28,8 @@ import com.botsi.view.utils.toTextStyle
 @Composable
 internal fun BotsiProductItemComposable(
     modifier: Modifier = Modifier,
-    item: BotsiPaywallBlock
+    item: BotsiPaywallBlock,
+    align: BotsiAlign?,
 ) {
     val content = item.content as? BotsiProductItemContent
     if (content == null) return
@@ -45,11 +48,11 @@ internal fun BotsiProductItemComposable(
                 .then(currentStyle.toBackground())
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = align.toAlignmentHorizontal()
         ) {
             if (!currentText?.text1.isNullOrEmpty()) {
                 Text(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier,
                     text = currentText.text1,
                     style = if (isSelected) {
                         content.selectedState?.text1.toSelectedTextStyle()
@@ -60,7 +63,7 @@ internal fun BotsiProductItemComposable(
             }
             if (!currentText?.text2.isNullOrEmpty()) {
                 Text(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier,
                     text = currentText.text2,
                     style = if (isSelected) {
                         content.selectedState?.text2.toSelectedTextStyle()
@@ -71,7 +74,7 @@ internal fun BotsiProductItemComposable(
             }
             if (!currentText?.text3.isNullOrEmpty()) {
                 Text(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier,
                     text = currentText.text3,
                     style = if (isSelected) {
                         content.selectedState?.text3.toSelectedTextStyle()
@@ -82,7 +85,7 @@ internal fun BotsiProductItemComposable(
             }
             if (!currentText?.text4.isNullOrEmpty()) {
                 Text(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier,
                     text = currentText.text4,
                     style = if (isSelected) {
                         content.selectedState?.text4.toSelectedTextStyle()
@@ -97,7 +100,7 @@ internal fun BotsiProductItemComposable(
         if (content.isBadge == true && content.badge != null) {
             Box(
                 modifier = Modifier
-                    .align(Alignment.TopCenter)
+                    .align(if (align == BotsiAlign.Column) Alignment.TopEnd else Alignment.TopCenter)
                     .offset(y = (-12).dp)
                     .then(content.badge.toBackground())
                     .padding(horizontal = 8.dp)

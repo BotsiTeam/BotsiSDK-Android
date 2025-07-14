@@ -21,9 +21,12 @@ import com.botsi.view.mapper.BotsiProductItemContentMapper
 import com.botsi.view.mapper.BotsiProductsContentMapper
 import com.botsi.view.mapper.BotsiProductToggleContentMapper
 import com.botsi.view.mapper.BotsiProductToggleStateContentMapper
+import com.botsi.view.mapper.BotsiTabControlContentMapper
+import com.botsi.view.mapper.BotsiTabGroupContentMapper
 import com.botsi.view.mapper.BotsiTextContentMapper
 import com.botsi.view.mapper.BotsiTextMapper
 import com.botsi.view.mapper.BotsiTimerContentMapper
+import com.botsi.view.model.content.BotsiTabControlContent
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 internal class BotsiPaywallDIManager {
@@ -78,6 +81,13 @@ internal class BotsiPaywallDIManager {
                 )
             )
             put(BotsiCarouselContentMapper::class.java, BotsiCarouselContentMapper())
+            put(
+                BotsiTabControlContentMapper::class.java, BotsiTabControlContentMapper(
+                    fontMapper = inject(),
+                    buttonStyleMapper = inject()
+                )
+            )
+            put(BotsiTabGroupContentMapper::class.java, BotsiTabGroupContentMapper())
             put(BotsiProductToggleStateContentMapper::class.java, BotsiProductToggleStateContentMapper())
             put(
                 BotsiProductToggleContentMapper::class.java, BotsiProductToggleContentMapper(
@@ -117,7 +127,9 @@ internal class BotsiPaywallDIManager {
                     carouselContentMapper = inject(),
                     timerContentMapper = inject(),
                     productToggleContentMapper = inject(),
-                    productToggleStateContentMapper = inject()
+                    productToggleStateContentMapper = inject(),
+                    tabControlContentMapper = inject(),
+                    tabGroupContentMapper = inject()
                 )
             )
             put(

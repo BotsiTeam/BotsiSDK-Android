@@ -41,6 +41,7 @@ internal data class BotsiProductTextStyle(
 
 @Keep
 internal data class BotsiButtonStyle(
+    val fillColor: String? = null,
     val color: String? = null,
     val opacity: Float? = null,
     val borderColor: String? = null,

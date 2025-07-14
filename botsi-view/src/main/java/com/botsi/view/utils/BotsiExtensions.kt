@@ -13,8 +13,12 @@ fun JsonElement.toCapitalizedString(): String = asString.replaceFirstChar {
 fun JsonElement.toHexColorIfPossible(): String = asString.run {
     if (startsWith("#")) return@run this
 
-    val regex = Regex("""rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d.]+)\s*\)""")
-    val matchResult = regex.find(this.trim())
+    val regexA = Regex("""rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d.]+)\s*\)""")
+    val regexB = Regex("""rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d.]+)\s*\)""")
+    val matchResultA = regexA.find(this.trim())
+    val matchResultB = regexB.find(this.trim())
+
+    val matchResult = matchResultA ?: matchResultB
 
     return matchResult?.let { match ->
         val red = match.groupValues[1].toInt().coerceIn(0, 255)

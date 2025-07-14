@@ -22,7 +22,6 @@ import kotlinx.coroutines.CoroutineScope
 internal fun BotsiProductToggleStateComposable(
     modifier: Modifier = Modifier,
     item: BotsiPaywallBlock,
-    scope: CoroutineScope
 ) {
     val content = remember(item) { item.content as? BotsiProductToggleStateContent }
     if (content == null) return
@@ -35,9 +34,10 @@ internal fun BotsiProductToggleStateComposable(
 
     val layoutComponent: @Composable () -> Unit = {
         item.children.forEach { child ->
-            BotsiContentComposable(
+            BotsiProductsContent(
                 item = child,
-                scope = scope,
+                parentItem = item,
+                align = content.contentLayout?.align
             )
         }
     }

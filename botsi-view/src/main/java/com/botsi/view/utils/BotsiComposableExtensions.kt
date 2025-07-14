@@ -64,6 +64,9 @@ import com.botsi.view.model.content.BotsiProductToggleStateContent
 import com.botsi.view.model.content.BotsiProductToggleStateContentLayout
 import com.botsi.view.model.content.BotsiProductToggleStyle
 import com.botsi.view.model.content.BotsiProductsContent
+import com.botsi.view.model.content.BotsiTabControlContent
+import com.botsi.view.model.content.BotsiTabControlState
+import com.botsi.view.model.content.BotsiTabGroupContent
 import com.botsi.view.model.content.BotsiTextContent
 import com.botsi.view.model.content.BotsiTimerContent
 
@@ -156,6 +159,16 @@ internal fun BotsiButtonStyle?.toBackground(): Modifier {
     return this?.let { style ->
         Modifier.background(
             color = style.color.toColor(style.opacity),
+            shape = style.toShape()
+        )
+    } ?: Modifier
+}
+
+@Composable
+internal fun BotsiButtonStyle?.toBackgroundFillColor(): Modifier {
+    return this?.let { style ->
+        Modifier.background(
+            color = style.fillColor.toColor(style.opacity),
             shape = style.toShape()
         )
     } ?: Modifier
@@ -496,6 +509,18 @@ internal fun BotsiProductToggleStateContentLayout?.toPaddings(): PaddingValues {
     return this?.padding.toPaddings()
 }
 
+internal fun BotsiTabControlContent?.toPaddings(): PaddingValues {
+    return this?.padding.toPaddings()
+}
+
+internal fun BotsiTabControlState?.toPaddings(): PaddingValues {
+    return this?.padding.toPaddings()
+}
+
+internal fun BotsiTabGroupContent?.toPaddings(): PaddingValues {
+    return this?.padding.toPaddings()
+}
+
 @Composable
 internal fun BotsiProductToggleStyle?.toBackground(): Modifier {
     return this?.let { style ->
@@ -534,6 +559,12 @@ internal fun BotsiProductToggleContentLayout?.toArrangementVertical(
     alignment: Alignment.Vertical = Alignment.Top
 ): Arrangement.Vertical {
     return this?.spacing.toArrangementVertical(alignment)
+}
+
+internal fun BotsiProductToggleContentLayout?.toArrangementHorizontal(
+    alignment: Alignment.Horizontal = Alignment.Start
+): Arrangement.Horizontal {
+    return this?.spacing.toArrangementHorizontal(alignment)
 }
 
 internal fun BotsiProductToggleStateContentLayout?.toArrangementVertical(): Arrangement.Vertical {
@@ -624,4 +655,3 @@ private fun Int?.toArrangementVertical(alignment: Alignment.Vertical = Alignment
 
 private fun Int?.toArrangementHorizontal(alignment: Alignment.Horizontal = Alignment.Start): Arrangement.Horizontal =
     Arrangement.spacedBy((this ?: 0).dp, alignment)
-

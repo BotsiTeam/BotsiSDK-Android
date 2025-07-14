@@ -1,6 +1,5 @@
 package com.botsi.view.ui.compose.composable
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,6 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.botsi.view.model.content.BotsiAlign
+import com.botsi.view.model.content.BotsiContentType
 import com.botsi.view.model.content.BotsiLayoutDirection
 import com.botsi.view.model.content.BotsiPaywallBlock
 import com.botsi.view.model.content.BotsiProductsContent
@@ -24,7 +25,6 @@ import kotlinx.coroutines.CoroutineScope
 internal fun BotsiProductsComposable(
     modifier: Modifier = Modifier,
     item: BotsiPaywallBlock,
-    scope: CoroutineScope,
     onProductSelected: (String) -> Unit = {}
 ) {
     val content: BotsiProductsContent = remember { item.content as BotsiProductsContent }
@@ -41,7 +41,7 @@ internal fun BotsiProductsComposable(
         val contentAlignment = remember(content) { content.contentLayout.toAlignmentVertical() }
         val arrangement = remember(content) { content.contentLayout.toArrangementHorizontal() }
         Row(
-            modifier = Modifier
+            modifier = modifier
                 .padding(outerPaddings)
                 .fillMaxWidth()
                 .offset(y = verticalOffset)
@@ -50,10 +50,11 @@ internal fun BotsiProductsComposable(
             verticalAlignment = contentAlignment
         ) {
             item.children?.forEach { productBlock ->
-                BotsiContentComposable(
+                BotsiProductsContent(
                     modifier = Modifier.weight(1f),
                     item = productBlock,
-                    scope = scope,
+                    parentItem = item,
+                    align = content.contentLayout?.align
                 )
             }
         }
@@ -61,7 +62,7 @@ internal fun BotsiProductsComposable(
         val contentAlignment = remember(content) { content.contentLayout.toAlignmentHorizontal() }
         val arrangement = remember(content) { content.contentLayout.toArrangementVertical() }
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .padding(outerPaddings)
                 .fillMaxWidth()
                 .offset(y = verticalOffset)
@@ -70,12 +71,43 @@ internal fun BotsiProductsComposable(
             horizontalAlignment = contentAlignment
         ) {
             item.children?.forEach { productBlock ->
-                BotsiContentComposable(
+                BotsiProductsContent(
                     modifier = Modifier.fillMaxWidth(),
                     item = productBlock,
-                    scope = scope,
+                    parentItem = item,
+                    align = content.contentLayout?.align
                 )
             }
         }
+    }
+}
+
+@Composable
+internal fun BotsiProductsContent(
+    modifier: Modifier = Modifier,
+    item: BotsiPaywallBlock,
+    parentItem: BotsiPaywallBlock,
+    align: BotsiAlign? = null
+) {
+    when (item.meta?.type) {
+        BotsiContentType.ProductItem -> BotsiProductItemComposable(
+            modifier = modifier,
+            item = item,
+            align = align
+        )
+
+        BotsiContentType.Toggle -> BotsiProductToggleComposable(
+            modifier = modifier,
+            item = item,
+            parentItem = parentItem,
+        )
+
+        BotsiContentType.TabControl -> BotsiTabControlComposable(
+            modifier = modifier,
+            item = item,
+            parentItem = parentItem,
+        )
+
+        else -> {}
     }
 }

@@ -110,6 +110,12 @@ internal enum class BotsiProductState {
 }
 
 @Keep
+internal enum class BotsiTabState {
+    Active,
+    Inactive,
+}
+
+@Keep
 internal enum class BotsiCarouselPageControlType {
     Overlay,
     Outside,
@@ -153,7 +159,9 @@ internal enum class BotsiContentType(val key: String) {
     Toggle("toggle_control"),
     ToggleOn("toggle_on"),
     ToggleOff("toggle_off"),
-    Image("image");
+    Image("image"),
+    TabControl("tab_control"),
+    TabGroup("tab_group");
 
     companion object {
         fun findByKey(key: String): BotsiContentType? = entries.find { it.key == key }
