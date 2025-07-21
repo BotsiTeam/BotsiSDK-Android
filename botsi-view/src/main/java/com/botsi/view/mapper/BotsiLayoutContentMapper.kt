@@ -30,7 +30,7 @@ internal class BotsiLayoutContentMapper(
                 BotsiLayoutContent(
                     darkMode = runCatching { get("dark_mode").asBoolean }.getOrNull(),
                     purchaseFlow = runCatching { get("purchase_flow").asString }.getOrNull(),
-                    fillColor = runCatching { get("fill_color").toHexColorIfPossible() }.getOrNull(),
+                    fillColor = runCatching { (get("color") ?: get("fill_color") ?: get("fillColor")).toHexColorIfPossible() }.getOrNull(),
                     contentLayout = runCatching { mapContentLayout(get("content_layout")) }.getOrNull(),
                     topButtons = runCatching { mapTopButtons(get("top_buttons")) }.getOrNull(),
                     defaultFont = runCatching { fontMapper.map(get("default_font")) }.getOrNull(),
@@ -84,7 +84,7 @@ internal class BotsiLayoutContentMapper(
                                     type = runCatching {
                                         BotsiButtonIconType.valueOf(get("type").toCapitalizedString())
                                     }.getOrDefault(BotsiButtonIconType.None),
-                                    color = runCatching { get("color").asString }.getOrNull(),
+                                    color = runCatching { (get("color") ?: get("fill_color") ?: get("fillColor")).toHexColorIfPossible() }.getOrNull(),
                                     opacity = runCatching { get("opacity").asFloat }.getOrNull(),
                                 )
                             }

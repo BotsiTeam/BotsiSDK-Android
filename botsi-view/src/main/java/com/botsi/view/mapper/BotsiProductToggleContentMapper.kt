@@ -4,6 +4,7 @@ import com.botsi.view.model.content.BotsiProductToggleContent
 import com.botsi.view.model.content.BotsiProductToggleContentLayout
 import com.botsi.view.model.content.BotsiProductToggleState
 import com.botsi.view.model.content.BotsiProductToggleStyle
+import com.botsi.view.utils.toHexColorIfPossible
 import com.botsi.view.utils.toIntList
 import com.google.gson.JsonElement
 import kotlinx.coroutines.Dispatchers
@@ -18,7 +19,7 @@ internal class BotsiProductToggleContentMapper(
             with(json.asJsonObject) {
                 BotsiProductToggleContent(
                     state = runCatching { get("state").asBoolean }.getOrNull(),
-                    toggleColor = runCatching { get("toggle_color").asString }.getOrNull(),
+                    toggleColor = runCatching { (get("toggle_color") ?: get("toggleColor") ?: get("color")).toHexColorIfPossible() }.getOrNull(),
                     toggleOpacity = runCatching { get("toggle_opacity").asFloat }.getOrNull(),
                     toggleStyle = runCatching { mapToggleStyle(get("toggle_style")) }.getOrNull(),
                     activeState = runCatching { mapToggleState(get("active_state")) }.getOrNull(),
@@ -34,9 +35,9 @@ internal class BotsiProductToggleContentMapper(
     private fun mapToggleStyle(jsonElement: JsonElement): BotsiProductToggleStyle {
         return with(jsonElement.asJsonObject) {
             BotsiProductToggleStyle(
-                color = runCatching { get("color").asString }.getOrNull(),
+                color = runCatching { (get("color") ?: get("fill_color") ?: get("fillColor")).toHexColorIfPossible() }.getOrNull(),
                 opacity = runCatching { get("opacity").asFloat }.getOrNull(),
-                borderColor = runCatching { get("border_color").asString }.getOrNull(),
+                borderColor = runCatching { (get("border_color") ?: get("borderColor") ?: get("color")).toHexColorIfPossible() }.getOrNull(),
                 borderOpacity = runCatching { get("border_opacity").asFloat }.getOrNull(),
                 borderThickness = runCatching { get("border_thickness").asInt }.getOrNull(),
                 radius = runCatching { get("radius").toIntList() }.getOrNull()

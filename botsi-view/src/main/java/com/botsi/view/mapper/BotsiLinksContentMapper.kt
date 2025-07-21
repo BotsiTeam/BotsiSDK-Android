@@ -6,6 +6,7 @@ import com.botsi.view.model.content.BotsiLinksContentLayout
 import com.botsi.view.model.content.BotsiLinksStyle
 import com.botsi.view.model.content.BotsiLinksText
 import com.botsi.view.utils.toCapitalizedString
+import com.botsi.view.utils.toHexColorIfPossible
 import com.botsi.view.utils.toIntList
 import com.google.gson.JsonElement
 import kotlinx.coroutines.Dispatchers
@@ -51,9 +52,9 @@ internal class BotsiLinksContentMapper(
             BotsiLinksStyle(
                 font = runCatching { fontMapper.map(get("font")) }.getOrNull(),
                 size = runCatching { get("size").asFloat }.getOrNull(),
-                color = runCatching { get("color").asString }.getOrNull(),
+                color = runCatching { (get("color") ?: get("fill_color") ?: get("fillColor")).toHexColorIfPossible() }.getOrNull(),
                 opacity = runCatching { get("opacity").asFloat }.getOrNull(),
-                dividersColor = runCatching { get("dividers_color").asString }.getOrNull(),
+                dividersColor = runCatching { (get("dividers_color") ?: get("dividersColor") ?: get("color")).toHexColorIfPossible() }.getOrNull(),
                 dividersOpacity = runCatching { get("dividers_opacity").asFloat }.getOrNull(),
                 dividersThickness = runCatching { get("dividers_thickness").asInt }.getOrNull(),
             )

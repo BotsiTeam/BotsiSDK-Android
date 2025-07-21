@@ -1,5 +1,6 @@
 package com.botsi.view.ui.compose.entry_point
 
+import androidx.annotation.OptIn
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
@@ -8,6 +9,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.media3.common.util.UnstableApi
 import com.botsi.view.BotsiViewConfig
 import com.botsi.view.delegate.BotsiPaywallDelegate
 import com.botsi.view.di.BotsiPaywallDIManager
@@ -18,6 +20,7 @@ import com.botsi.view.model.ui.BotsiPaywallUiSideEffect
 import com.botsi.view.ui.compose.composable.BotsiPaywallScreenComposable
 import kotlinx.coroutines.launch
 
+@OptIn(UnstableApi::class)
 @Composable
 internal fun BotsiPaywallEntryPoint(
     viewConfig: BotsiViewConfig,

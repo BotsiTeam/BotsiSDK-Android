@@ -5,6 +5,7 @@ import com.botsi.view.model.content.BotsiLayoutDirection
 import com.botsi.view.model.content.BotsiMorePlansSheetContent
 import com.botsi.view.model.content.BotsiProductContentLayout
 import com.botsi.view.utils.toCapitalizedString
+import com.botsi.view.utils.toHexColorIfPossible
 import com.botsi.view.utils.toIntList
 import com.google.gson.JsonElement
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +25,7 @@ internal class BotsiMorePlansSheetContentMapper(
                     contentLayout = runCatching { mapContentLayout(get("content_layout")) }.getOrNull(),
                     plansStyles = runCatching { buttonStyleMapper.map(get("plans_styles")) }.getOrNull(),
                     closeButtonStyles = runCatching { buttonStyleMapper.map(get("close_button_styles")) }.getOrNull(),
-                    iconColor = runCatching { get("icon_color")?.asString }.getOrNull(),
+                    iconColor = runCatching { (get("icon_color") ?: get("iconColor") ?: get("color"))?.toHexColorIfPossible() }.getOrNull(),
                     iconOpacity = runCatching { get("icon_opacity")?.asInt }.getOrNull(),
                     iconSize = runCatching { get("icon_size")?.asString }.getOrNull(),
                     titleText = runCatching { get("title_text")?.asString }.getOrNull(),

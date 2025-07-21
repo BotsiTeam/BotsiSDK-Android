@@ -5,6 +5,7 @@ import com.botsi.view.model.content.BotsiTabControlState
 import com.botsi.view.model.content.BotsiTabState
 import com.botsi.view.model.content.BotsiButtonStyle
 import com.botsi.view.utils.toCapitalizedString
+import com.botsi.view.utils.toHexColorIfPossible
 import com.botsi.view.utils.toIntList
 import com.google.gson.JsonElement
 import kotlinx.coroutines.Dispatchers
@@ -49,7 +50,7 @@ internal class BotsiTabControlContentMapper(
                     buttonStyleMapper.map(get("state_style")) 
                 }.getOrNull(),
                 padding = runCatching { get("padding").toIntList() }.getOrNull(),
-                fontColor = runCatching { get("font_color").asString }.getOrNull(),
+                fontColor = runCatching { (get("font_color") ?: get("fontColor") ?: get("color")).toHexColorIfPossible() }.getOrNull(),
                 fontOpacity = runCatching { get("font_opacity").asFloat }.getOrNull()
             )
         }

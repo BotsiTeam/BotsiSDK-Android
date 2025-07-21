@@ -19,7 +19,7 @@ import com.botsi.view.handler.BotsiClickHandler
 import com.botsi.view.handler.BotsiPublicEventHandler
 import com.botsi.view.ui.compose.entry_point.BotsiPaywallEntryPoint
 
-open class BotsiViewFragment : Fragment() {
+class BotsiViewFragment : Fragment() {
 
     private var paywall: BotsiPaywall? = null
     private var eventHandler: BotsiPublicEventHandler? = null

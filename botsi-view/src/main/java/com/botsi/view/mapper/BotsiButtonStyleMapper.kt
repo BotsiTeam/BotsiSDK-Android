@@ -13,10 +13,10 @@ internal class BotsiButtonStyleMapper {
         return withContext(Dispatchers.Default) {
             with(json.asJsonObject) {
                 BotsiButtonStyle(
-                    fillColor = runCatching { get("fillColor").toHexColorIfPossible() }.getOrNull(),
-                    color = runCatching { get("color").asString }.getOrNull(),
+                    fillColor = runCatching { (get("fillColor") ?: get("fill_color") ?: get("color")).toHexColorIfPossible() }.getOrNull(),
+                    color = runCatching { (get("color") ?: get("fill_color") ?: get("fillColor")).toHexColorIfPossible() }.getOrNull(),
                     opacity = runCatching { get("opacity").asFloat }.getOrNull(),
-                    borderColor = runCatching { get("border_color").asString }.getOrNull(),
+                    borderColor = runCatching { (get("border_color") ?: get("borderColor") ?: get("color")).toHexColorIfPossible() }.getOrNull(),
                     borderOpacity = runCatching { get("border_opacity").asFloat }.getOrNull(),
                     borderThickness = runCatching { get("border_thickness").asFloat }.getOrNull(),
                     radius = runCatching { get("radius").toIntList() }.getOrNull(),

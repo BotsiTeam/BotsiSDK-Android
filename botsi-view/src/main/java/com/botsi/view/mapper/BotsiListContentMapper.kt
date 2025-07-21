@@ -4,6 +4,7 @@ import com.botsi.view.model.content.BotsiAlign
 import com.botsi.view.model.content.BotsiDefaultIcon
 import com.botsi.view.model.content.BotsiListContent
 import com.botsi.view.utils.toCapitalizedString
+import com.botsi.view.utils.toHexColorIfPossible
 import com.botsi.view.utils.toIntList
 import com.google.gson.JsonElement
 import kotlinx.coroutines.Dispatchers
@@ -25,10 +26,10 @@ internal class BotsiListContentMapper(
                     height = runCatching { get("height").asInt }.getOrNull(),
                     defaultIcon = runCatching { BotsiDefaultIcon.valueOf(get("default_icon").toCapitalizedString()) }.getOrNull(),
                     iconPlacement = runCatching { BotsiAlign.valueOf(get("icon_placement").toCapitalizedString()) }.getOrNull(),
-                    defaultColor = runCatching { get("default_color").asString }.getOrNull(),
+                    defaultColor = runCatching { (get("default_color") ?: get("defaultColor") ?: get("color")).toHexColorIfPossible() }.getOrNull(),
                     defaultOpacity = runCatching { get("default_opacity").asFloat }.getOrNull(),
                     connectorThickness = runCatching { get("connector_thickness").asInt }.getOrNull(),
-                    connectorColor = runCatching { get("connector_color").asString }.getOrNull(),
+                    connectorColor = runCatching { (get("connector_color") ?: get("connectorColor") ?: get("color")).toHexColorIfPossible() }.getOrNull(),
                     connectorOpacity = runCatching { get("connector_opacity").asFloat }.getOrNull(),
                     titleTextStyle = runCatching { textMapper.map(get("title_text_style")) }.getOrNull(),
                     captionTextStyle = runCatching { textMapper.map(get("caption_text_style")) }.getOrNull(),

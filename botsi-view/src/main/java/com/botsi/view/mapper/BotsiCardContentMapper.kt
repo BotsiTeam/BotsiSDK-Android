@@ -5,6 +5,7 @@ import com.botsi.view.model.content.BotsiCardContent
 import com.botsi.view.model.content.BotsiCardContentLayout
 import com.botsi.view.model.content.BotsiCardStyle
 import com.botsi.view.utils.toCapitalizedString
+import com.botsi.view.utils.toHexColorIfPossible
 import com.botsi.view.utils.toIntList
 import com.google.gson.JsonElement
 import kotlinx.coroutines.Dispatchers
@@ -39,9 +40,9 @@ internal class BotsiCardContentMapper {
     private fun mapStyle(jsonElement: JsonElement): BotsiCardStyle {
         return with(jsonElement.asJsonObject) {
             BotsiCardStyle(
-                color = runCatching { get("color").asString }.getOrNull(),
+                color = runCatching { (get("color") ?: get("fill_color") ?: get("fillColor")).toHexColorIfPossible() }.getOrNull(),
                 opacity = runCatching { get("opacity").asFloat }.getOrNull(),
-                borderColor = runCatching { get("border_color").asString }.getOrNull(),
+                borderColor = runCatching { (get("border_color") ?: get("borderColor") ?: get("color")).toHexColorIfPossible() }.getOrNull(),
                 borderOpacity = runCatching { get("border_opacity").asFloat }.getOrNull(),
                 borderThickness = runCatching { get("border_thickness").asInt }.getOrNull(),
                 radius = runCatching { get("radius").toIntList() }.getOrNull(),

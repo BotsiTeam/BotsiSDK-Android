@@ -7,6 +7,7 @@ import com.botsi.view.model.content.BotsiProductStyle
 import com.botsi.view.model.content.BotsiProductTextStyle
 import com.botsi.view.model.content.BotsiProductsContent
 import com.botsi.view.utils.toCapitalizedString
+import com.botsi.view.utils.toHexColorIfPossible
 import com.botsi.view.utils.toIntList
 import com.google.gson.JsonElement
 import kotlinx.coroutines.Dispatchers
@@ -38,10 +39,10 @@ internal class BotsiProductsContentMapper(private val fontMapper: BotsiFontMappe
     private fun mapStyle(jsonElement: JsonElement): BotsiProductStyle {
         return with(jsonElement.asJsonObject) {
             BotsiProductStyle(
-                borderColor = runCatching { get("border_color").asString }.getOrNull(),
+                borderColor = runCatching { (get("border_color") ?: get("borderColor") ?: get("color")).toHexColorIfPossible() }.getOrNull(),
                 borderOpacity = runCatching { get("border_opacity").asFloat }.getOrNull(),
                 borderThickness = runCatching { get("border_thickness").asInt }.getOrNull(),
-                color = runCatching { get("color").asString }.getOrNull(),
+                color = runCatching { (get("color") ?: get("fill_color") ?: get("fillColor")).toHexColorIfPossible() }.getOrNull(),
                 opacity = runCatching { get("opacity").asFloat }.getOrNull(),
                 radius = runCatching { get("radius").toIntList() }.getOrNull(),
             )
@@ -64,9 +65,9 @@ internal class BotsiProductsContentMapper(private val fontMapper: BotsiFontMappe
             BotsiProductTextStyle(
                 font = runCatching { fontMapper.map(get("font")) }.getOrNull(),
                 size = runCatching { get("size").asInt }.getOrNull(),
-                color = runCatching { get("color").asString }.getOrNull(),
+                color = runCatching { (get("color") ?: get("fill_color") ?: get("fillColor")).toHexColorIfPossible() }.getOrNull(),
                 opacity = runCatching { get("opacity").asFloat }.getOrNull(),
-                selectedColor = runCatching { get("selected_color").asString }.getOrNull(),
+                selectedColor = runCatching { (get("selected_color") ?: get("selectedColor") ?: get("color")).toHexColorIfPossible() }.getOrNull(),
                 selectedOpacity = runCatching { get("selected_opacity").asFloat }.getOrNull(),
             )
         }

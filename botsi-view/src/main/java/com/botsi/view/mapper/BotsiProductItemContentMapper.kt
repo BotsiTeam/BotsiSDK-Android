@@ -9,6 +9,7 @@ import com.botsi.view.model.content.BotsiProductStyle
 import com.botsi.view.model.content.BotsiProductText
 import com.botsi.view.model.content.BotsiProductTextStyle
 import com.botsi.view.utils.toCapitalizedString
+import com.botsi.view.utils.toHexColorIfPossible
 import com.botsi.view.utils.toIntList
 import com.google.gson.JsonElement
 import kotlinx.coroutines.Dispatchers
@@ -66,10 +67,10 @@ internal class BotsiProductItemContentMapper(private val fontMapper: BotsiFontMa
     private fun mapStyle(jsonElement: JsonElement): BotsiProductStyle {
         return with(jsonElement.asJsonObject) {
             BotsiProductStyle(
-                borderColor = runCatching { get("border_color").asString }.getOrNull(),
+                borderColor = runCatching { (get("border_color") ?: get("borderColor") ?: get("color")).toHexColorIfPossible() }.getOrNull(),
                 borderOpacity = runCatching { get("border_opacity").asFloat }.getOrNull(),
                 borderThickness = runCatching { get("border_thickness").asInt }.getOrNull(),
-                color = runCatching { get("color").asString }.getOrNull(),
+                color = runCatching { (get("color") ?: get("fill_color") ?: get("fillColor")).toHexColorIfPossible() }.getOrNull(),
                 opacity = runCatching { get("opacity").asFloat }.getOrNull(),
                 radius = runCatching { get("radius").toIntList() }.getOrNull(),
             )
@@ -81,9 +82,9 @@ internal class BotsiProductItemContentMapper(private val fontMapper: BotsiFontMa
             BotsiProductTextStyle(
                 font = runCatching { fontMapper.map(get("font")) }.getOrNull(),
                 size = runCatching { get("size").asInt }.getOrNull(),
-                color = runCatching { get("color").asString }.getOrNull(),
+                color = runCatching { (get("color") ?: get("fill_color") ?: get("fillColor")).toHexColorIfPossible() }.getOrNull(),
                 opacity = runCatching { get("opacity").asFloat }.getOrNull(),
-                selectedColor = runCatching { get("selected_color").asString }.getOrNull(),
+                selectedColor = runCatching { (get("selected_color") ?: get("selectedColor") ?: get("color")).toHexColorIfPossible() }.getOrNull(),
                 selectedOpacity = runCatching { get("selected_opacity").asFloat }.getOrNull(),
             )
         }
@@ -93,12 +94,12 @@ internal class BotsiProductItemContentMapper(private val fontMapper: BotsiFontMa
         return with(jsonElement.asJsonObject) {
             BotsiBadge(
                 badgeText = runCatching { get("badge_text").asString }.getOrNull(),
-                badgeColor = runCatching { get("badge_color").asString }.getOrNull(),
+                badgeColor = runCatching { (get("badge_color") ?: get("badgeColor") ?: get("color")).toHexColorIfPossible() }.getOrNull(),
                 badgeOpacity = runCatching { get("badge_opacity").asFloat }.getOrNull(),
                 badgeRadius = runCatching { get("badge_radius").toIntList() }.getOrNull(),
                 badgeTextFont = runCatching { fontMapper.map(get("badge_text_font")) }.getOrNull(),
                 badgeTextSize = runCatching { get("badge_text_size").asInt }.getOrNull(),
-                badgeTextColor = runCatching { get("badge_text_color").asString }.getOrNull(),
+                badgeTextColor = runCatching { (get("badge_text_color") ?: get("badgeTextColor") ?: get("color")).toHexColorIfPossible() }.getOrNull(),
                 badgeTextOpacity = runCatching { get("badge_text_opacity").asFloat }.getOrNull()
             )
         }
