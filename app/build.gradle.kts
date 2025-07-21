@@ -45,7 +45,7 @@ dependencies {
     implementation(project(":botsi-view"))
     implementation(platform(libs.kotlin.bom))
     implementation("androidx.multidex:multidex:2.0.1")
-    implementation("androidx.appcompat:appcompat:1.3.0")
+    implementation(libs.appcompat.v171)
     implementation(libs.android.billing.client)
     implementation(platform(libs.compose.bom))
     implementation("androidx.compose.material3:material3") {

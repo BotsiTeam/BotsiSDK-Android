@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.botsi.view.R
 import com.botsi.view.model.content.BotsiMorePlansSheetContent
 import com.botsi.view.model.content.BotsiPaywallBlock
+import com.botsi.view.model.ui.BotsiPaywallUiAction
 import com.botsi.view.utils.toAlignmentHorizontal
 import com.botsi.view.utils.toBackground
 import com.botsi.view.utils.toBorder
@@ -32,7 +33,8 @@ import com.botsi.view.utils.toShape
 internal fun BotsiMorePlansSheetComposable(
     modifier: Modifier = Modifier,
     item: BotsiPaywallBlock,
-    onCloseClick: () -> Unit
+    onCloseClick: () -> Unit,
+    onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     val content: BotsiMorePlansSheetContent = remember { item.content as BotsiMorePlansSheetContent }
     val outerPaddings = remember(content) { content.toPaddings() }
@@ -98,7 +100,8 @@ internal fun BotsiMorePlansSheetComposable(
                     modifier = Modifier.fillMaxWidth(),
                     item = childBlock,
                     parentItem = item,
-                    align = content.contentLayout?.align
+                    align = content.contentLayout?.align,
+                    onAction = onAction
                 )
             }
 
@@ -107,7 +110,8 @@ internal fun BotsiMorePlansSheetComposable(
                 BotsiContentComposable(
                     modifier = Modifier.fillMaxWidth(),
                     item = childBlock,
-                    scope = rememberCoroutineScope()
+                    scope = rememberCoroutineScope(),
+                    onAction = onAction
                 )
             }
         }

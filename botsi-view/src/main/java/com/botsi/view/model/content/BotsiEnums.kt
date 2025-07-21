@@ -173,7 +173,7 @@ internal enum class BotsiContentType(val key: String) {
 }
 
 @Keep
-internal sealed interface BotsiButtonAction {
+sealed interface BotsiButtonAction {
     data object None : BotsiButtonAction
     data object Close : BotsiButtonAction
     data object Login : BotsiButtonAction

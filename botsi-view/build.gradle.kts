@@ -48,6 +48,7 @@ dependencies {
     implementation(libs.ui.text.google.fonts)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+    implementation(libs.appcompat.v171)
     implementation("androidx.compose.material3:material3") {
         exclude(module = "androidx.lifecycle:lifecycle-livedata-core")
     }

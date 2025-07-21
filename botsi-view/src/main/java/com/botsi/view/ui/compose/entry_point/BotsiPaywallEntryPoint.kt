@@ -11,6 +11,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import com.botsi.view.BotsiViewConfig
 import com.botsi.view.delegate.BotsiPaywallDelegate
 import com.botsi.view.di.BotsiPaywallDIManager
+import com.botsi.view.handler.BotsiClickHandler
 import com.botsi.view.isNotEmpty
 import com.botsi.view.model.ui.BotsiPaywallUiAction
 import com.botsi.view.model.ui.BotsiPaywallUiSideEffect
@@ -18,9 +19,12 @@ import com.botsi.view.ui.compose.composable.BotsiPaywallScreenComposable
 import kotlinx.coroutines.launch
 
 @Composable
-fun BotsiPaywallEntryPoint(viewConfig: BotsiViewConfig) {
-    val diManager = remember(viewConfig) { BotsiPaywallDIManager() }
-    val delegate = remember(viewConfig) { diManager.inject<BotsiPaywallDelegate>() }
+internal fun BotsiPaywallEntryPoint(
+    viewConfig: BotsiViewConfig,
+    clickHandler: BotsiClickHandler? = null
+) {
+    val diManager = remember(viewConfig, clickHandler) { BotsiPaywallDIManager(clickHandler) }
+    val delegate = remember(viewConfig, clickHandler) { diManager.inject<BotsiPaywallDelegate>() }
     val snackbarHostState = remember(Unit) { SnackbarHostState() }
 
     val uiState by delegate.uiState.collectAsState()

@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.botsi.view.model.content.BotsiPaywallBlock
 import com.botsi.view.model.content.BotsiTabGroupContent
+import com.botsi.view.model.ui.BotsiPaywallUiAction
 import com.botsi.view.utils.toAlignmentHorizontal
 import com.botsi.view.utils.toArrangementVertical
 import com.botsi.view.utils.toPaddings
@@ -18,6 +19,7 @@ import com.botsi.view.utils.toPaddings
 internal fun BotsiTabGroupComposable(
     modifier: Modifier = Modifier,
     item: BotsiPaywallBlock,
+    onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     val content: BotsiTabGroupContent = remember { item.content as BotsiTabGroupContent }
     val outerPaddings = remember(content) { content.toPaddings() }
@@ -41,7 +43,8 @@ internal fun BotsiTabGroupComposable(
                 modifier = Modifier.fillMaxWidth(),
                 item = childBlock,
                 parentItem = item,
-                align = content.contentLayout?.align
+                align = content.contentLayout?.align,
+                onAction = onAction
             )
         }
     }

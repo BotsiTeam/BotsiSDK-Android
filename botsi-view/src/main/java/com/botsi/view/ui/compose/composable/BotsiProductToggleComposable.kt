@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.botsi.view.model.content.BotsiContentType
 import com.botsi.view.model.content.BotsiPaywallBlock
 import com.botsi.view.model.content.BotsiProductToggleContent
+import com.botsi.view.model.ui.BotsiPaywallUiAction
 import com.botsi.view.utils.toArrangementHorizontal
 import com.botsi.view.utils.toArrangementVertical
 import com.botsi.view.utils.toBackground
@@ -34,6 +35,7 @@ internal fun BotsiProductToggleComposable(
     modifier: Modifier = Modifier,
     item: BotsiPaywallBlock,
     parentItem: BotsiPaywallBlock,
+    onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     val content = remember { item.content as BotsiProductToggleContent }
     var isChecked by remember { mutableStateOf(false) }
@@ -97,6 +99,7 @@ internal fun BotsiProductToggleComposable(
                         BotsiProductToggleStateComposable(
                             modifier = modifier,
                             item = it,
+                            onAction = onAction
                         )
                     }
                 }
@@ -106,6 +109,7 @@ internal fun BotsiProductToggleComposable(
                         BotsiProductToggleStateComposable(
                             modifier = modifier,
                             item = it,
+                            onAction = onAction
                         )
                     }
                 }

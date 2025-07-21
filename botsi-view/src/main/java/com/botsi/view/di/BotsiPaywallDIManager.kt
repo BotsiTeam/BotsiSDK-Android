@@ -3,6 +3,7 @@ package com.botsi.view.di
 import androidx.annotation.RestrictTo
 import com.botsi.view.delegate.BotsiPaywallDelegate
 import com.botsi.view.delegate.BotsiPaywallDelegateImpl
+import com.botsi.view.handler.BotsiClickHandler
 import com.botsi.view.mapper.BotsiBlockMetaMapper
 import com.botsi.view.mapper.BotsiButtonContentMapper
 import com.botsi.view.mapper.BotsiButtonStyleMapper
@@ -31,7 +32,9 @@ import com.botsi.view.mapper.BotsiTextMapper
 import com.botsi.view.mapper.BotsiTimerContentMapper
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
-internal class BotsiPaywallDIManager {
+internal class BotsiPaywallDIManager(
+    private val clickHandler: BotsiClickHandler? = null
+) {
     private val dependencies = mutableMapOf<Class<*>, Any>()
 
     init {
@@ -152,7 +155,8 @@ internal class BotsiPaywallDIManager {
             )
             put(
                 BotsiPaywallDelegate::class.java, BotsiPaywallDelegateImpl(
-                    paywallBlocksMapper = inject()
+                    paywallBlocksMapper = inject(),
+                    clickHandler = clickHandler
                 )
             )
         }

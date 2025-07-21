@@ -2,7 +2,10 @@ package com.botsi.view.delegate
 
 import androidx.annotation.RestrictTo
 import com.botsi.Botsi
+import com.botsi.view.handler.BotsiActionType
+import com.botsi.view.handler.BotsiClickHandler
 import com.botsi.view.mapper.BotsiPaywallBlocksMapper
+import com.botsi.view.model.content.BotsiButtonAction
 import com.botsi.view.model.ui.BotsiPaywallUiAction
 import com.botsi.view.model.ui.BotsiPaywallUiSideEffect
 import com.botsi.view.model.ui.BotsiPaywallUiState
@@ -21,6 +24,7 @@ import kotlinx.coroutines.launch
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 internal class BotsiPaywallDelegateImpl(
     private val paywallBlocksMapper: BotsiPaywallBlocksMapper,
+    private val clickHandler: BotsiClickHandler? = null,
 ) : BotsiPaywallDelegate {
 
     private lateinit var coroutineScope: CoroutineScope
@@ -74,6 +78,43 @@ internal class BotsiPaywallDelegateImpl(
 
             is BotsiPaywallUiAction.Dispose -> {
                 coroutineScope.cancel()
+            }
+
+            is BotsiPaywallUiAction.ButtonClick -> {
+                val actionType = when (action.action) {
+                    is BotsiButtonAction.None -> BotsiActionType.None
+                    is BotsiButtonAction.Close -> BotsiActionType.Close
+                    is BotsiButtonAction.Login -> BotsiActionType.Login
+                    is BotsiButtonAction.Restore -> BotsiActionType.Restore
+                    is BotsiButtonAction.Custom -> BotsiActionType.Custom
+                    is BotsiButtonAction.Link -> BotsiActionType.Link
+                }
+                clickHandler?.onButtonClick(
+                    actionType = actionType,
+                    actionId = action.actionId,
+                    url = (action.action as? BotsiButtonAction.Link)?.url
+                )
+            }
+
+            is BotsiPaywallUiAction.TopButtonClick -> {
+                val actionType = when (action.topButton.action) {
+                    is BotsiButtonAction.None -> BotsiActionType.None
+                    is BotsiButtonAction.Close -> BotsiActionType.Close
+                    is BotsiButtonAction.Login -> BotsiActionType.Login
+                    is BotsiButtonAction.Restore -> BotsiActionType.Restore
+                    is BotsiButtonAction.Custom -> BotsiActionType.Custom
+                    is BotsiButtonAction.Link -> BotsiActionType.Link
+                    null -> BotsiActionType.None
+                }
+                clickHandler?.onTopButtonClick(actionType, action.topButton.actionId)
+            }
+
+            is BotsiPaywallUiAction.LinkClick -> {
+                clickHandler?.onLinkClick(action.url)
+            }
+
+            is BotsiPaywallUiAction.CustomAction -> {
+                clickHandler?.onCustomAction(action.actionId, action.actionLabel)
             }
         }
     }

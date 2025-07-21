@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.botsi.view.model.content.BotsiContentType
 import com.botsi.view.model.content.BotsiPaywallBlock
 import com.botsi.view.model.content.BotsiPlansControlContent
+import com.botsi.view.model.ui.BotsiPaywallUiAction
 import com.botsi.view.utils.toAlignmentHorizontal
 import com.botsi.view.utils.toBackground
 import com.botsi.view.utils.toBorder
@@ -26,6 +27,7 @@ internal fun BotsiPlansControlComposable(
     modifier: Modifier = Modifier,
     item: BotsiPaywallBlock,
     parentItem: BotsiPaywallBlock,
+    onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     val content: BotsiPlansControlContent = remember { item.content as BotsiPlansControlContent }
     val outerPaddings = remember(content) { content.toPaddings() }
@@ -54,7 +56,10 @@ internal fun BotsiPlansControlComposable(
     }
 
     if (mainPlans != null) {
-        BotsiPlansComposable(item = mainPlans)
+        BotsiPlansComposable(
+            item = mainPlans,
+            onAction = onAction
+        )
     }
 
     Box(
@@ -90,12 +95,16 @@ internal fun BotsiPlansControlComposable(
     }
 
     if (morePlans != null && isExpanded) {
-        BotsiPlansComposable(item = morePlans)
+        BotsiPlansComposable(
+            item = morePlans,
+            onAction = onAction
+        )
     }
 
     if (morePlansBottomSheet != null && isExpanded) {
         BotsiMorePlansSheetComposable(
             item = morePlansBottomSheet,
+            onAction = onAction,
             onCloseClick = { isExpanded = !isExpanded }
         )
     }

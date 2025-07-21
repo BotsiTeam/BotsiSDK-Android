@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
 import androidx.fragment.app.Fragment
 import com.botsi.Botsi
+import com.botsi.view.ui.screen.BotsiViewFragment
 
 class BotsiAppSetupFragment : Fragment() {
 
@@ -108,14 +109,26 @@ class BotsiAppSetupFragment : Fragment() {
                                         clearCache = true,
                                     )
 
-                                    (requireActivity() as MainActivity).addFragment(
-                                        when (startDestination) {
-                                            BotsiFragments.Ui -> BotsiViewFragment.newInstance()
-                                            BotsiFragments.Classic -> BotsiFragment.newInstance()
-                                        },
-                                        true,
-                                        true
-                                    )
+                                    when (startDestination) {
+                                        BotsiFragments.Ui -> Botsi.getPaywall(
+                                            placementId = app.botsiStorage.placementId,
+                                            successCallback = {
+                                                (requireActivity() as MainActivity).addFragment(
+                                                    BotsiViewFragment.newInstance(paywall = it),
+                                                    true,
+                                                    true
+                                                )
+                                            }
+                                        )
+
+                                        BotsiFragments.Classic -> (requireActivity() as MainActivity).addFragment(
+                                            BotsiFragment.newInstance(),
+                                            true,
+                                            true
+                                        )
+                                    }
+
+
                                 },
                             ) {
                                 Text(

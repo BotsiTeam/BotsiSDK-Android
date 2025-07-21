@@ -1,4 +1,5 @@
 [versions]
+appcompat-version = "1.7.1"
 build-tools = "8.7.3"
 coil-compose = "3.2.0"
 compose-bom = "2025.05.01"
@@ -26,6 +27,7 @@ ui-text-google-fonts = "1.8.2"
 android-billing-client = { module = "com.android.billingclient:billing-ktx", version.ref = "billing" }
 android-ads-identifier = { module = "com.google.android.gms:play-services-ads-identifier", version.ref = "ads-identifier" }
 android-appset = { module = "com.google.android.gms:play-services-appset", version.ref = "appset" }
+appcompat-v171 = { module = "androidx.appcompat:appcompat", version.ref = "appcompat-version" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil-compose" }
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil-compose" }
 compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }

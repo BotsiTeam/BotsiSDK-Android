@@ -87,7 +87,8 @@ internal fun BotsiPaywallScreenComposable(
             (uiState as? BotsiPaywallUiState.Success)?.content?.footer?.let {
                 BotsiFooterComposable(
                     footerBlock = it,
-                    scope = scope
+                    scope = scope,
+                    onAction = onAction
                 )
             }
         }
@@ -104,7 +105,8 @@ internal fun BotsiPaywallScreenComposable(
                         modifier = Modifier.padding(paddings),
                         contentLayout = it,
                         structure = uiState.content,
-                        scope = scope
+                        scope = scope,
+                        onAction = onAction
                     )
                 }
             }
@@ -121,7 +123,8 @@ private fun Content(
     modifier: Modifier = Modifier,
     contentLayout: BotsiLayoutContent,
     structure: BotsiPaywallContentStructure,
-    scope: CoroutineScope
+    scope: CoroutineScope,
+    onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     val density = LocalDensity.current
     val heroImageContent = structure.heroImage?.let {
@@ -205,7 +208,8 @@ private fun Content(
             }
             BotsiScopedContent(
                 children = structure.content.orEmpty(),
-                scope = scope
+                scope = scope,
+                onAction = onAction
             )
         }
 
@@ -214,7 +218,9 @@ private fun Content(
                 it.forEach { button ->
                     BotsiTopButtonComposable(
                         topButton = button,
-                        topButtonClick = {}
+                        topButtonClick = { topButton ->
+                            onAction(BotsiPaywallUiAction.TopButtonClick(topButton))
+                        }
                     )
                 }
             }

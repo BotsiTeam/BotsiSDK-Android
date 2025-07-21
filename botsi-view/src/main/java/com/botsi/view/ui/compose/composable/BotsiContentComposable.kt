@@ -11,17 +11,20 @@ import com.botsi.view.model.content.BotsiLinksContent
 import com.botsi.view.model.content.BotsiPaywallBlock
 import com.botsi.view.model.content.BotsiTextContent
 import com.botsi.view.model.content.BotsiTimerContent
+import com.botsi.view.model.ui.BotsiPaywallUiAction
 import kotlinx.coroutines.CoroutineScope
 
 internal fun LazyListScope.BotsiScopedContent(
     children: List<BotsiPaywallBlock>,
-    scope: CoroutineScope
+    scope: CoroutineScope,
+    onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     items(children) { item ->
         BotsiContentComposable(
             modifier = Modifier.animateItem(),
             item = item,
             scope = scope,
+            onAction = onAction
         )
     }
 }
@@ -31,6 +34,7 @@ internal fun BotsiContentComposable(
     modifier: Modifier = Modifier,
     item: BotsiPaywallBlock,
     scope: CoroutineScope,
+    onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     when (item.meta?.type) {
         BotsiContentType.Text -> (item.content as? BotsiTextContent)
@@ -46,7 +50,11 @@ internal fun BotsiContentComposable(
                 BotsiButtonComposable(
                     modifier = modifier,
                     buttonContent = content,
-                    onClick = {},
+                    onClick = {
+                        content.action?.let { action ->
+                            onAction(BotsiPaywallUiAction.ButtonClick(action, content.actionLabel))
+                        }
+                    },
                 )
             }
 
@@ -66,19 +74,35 @@ internal fun BotsiContentComposable(
         BotsiContentType.Card -> BotsiCardComposable(
             modifier = modifier,
             cardBlock = item,
-            scope = scope
+            scope = scope,
+            onAction = onAction
         )
 
         BotsiContentType.Carousel -> BotsiCarouselComposable(
             modifier = modifier,
             carousel = item,
+            onAction = onAction
         )
 
         BotsiContentType.Links -> (item.content as? BotsiLinksContent)?.let { content ->
             BotsiLinksComposable(
                 modifier = modifier,
                 content = content,
-                onClick = {}
+                onClick = { action ->
+                    when (action) {
+                        is com.botsi.view.model.content.BotsiButtonAction.Link -> {
+                            onAction(BotsiPaywallUiAction.LinkClick(action.url))
+                        }
+
+                        is com.botsi.view.model.content.BotsiButtonAction.Custom -> {
+                            onAction(BotsiPaywallUiAction.CustomAction("custom", null))
+                        }
+
+                        else -> {
+                            onAction(BotsiPaywallUiAction.ButtonClick(action))
+                        }
+                    }
+                }
             )
         }
 
@@ -93,6 +117,7 @@ internal fun BotsiContentComposable(
         BotsiContentType.Products -> BotsiProductsComposable(
             modifier = modifier,
             item = item,
+            onAction = onAction
         )
 
         else -> {}

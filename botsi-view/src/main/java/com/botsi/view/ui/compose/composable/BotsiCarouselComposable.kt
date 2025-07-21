@@ -38,6 +38,7 @@ import com.botsi.view.model.content.BotsiCarouselInteractive
 import com.botsi.view.model.content.BotsiCarouselLastOption
 import com.botsi.view.model.content.BotsiCarouselPageControlType
 import com.botsi.view.model.content.BotsiPaywallBlock
+import com.botsi.view.model.ui.BotsiPaywallUiAction
 import com.botsi.view.utils.toArrangementHorizontal
 import com.botsi.view.utils.toColor
 import com.botsi.view.utils.toContentPaddings
@@ -49,6 +50,7 @@ import kotlinx.coroutines.launch
 internal fun BotsiCarouselComposable(
     modifier: Modifier = Modifier,
     carousel: BotsiPaywallBlock,
+    onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     if (!carousel.children.isNullOrEmpty()) {
         val carouselContent = remember(carousel) { carousel.content as? BotsiCarouselContent }
@@ -167,6 +169,7 @@ internal fun BotsiCarouselComposable(
                             BotsiContentComposable(
                                 item = carousel.children[it],
                                 scope = scope,
+                                onAction = onAction,
                             )
                         }
                     }
