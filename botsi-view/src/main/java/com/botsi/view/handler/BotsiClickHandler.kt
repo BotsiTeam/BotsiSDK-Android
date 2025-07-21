@@ -1,8 +1,5 @@
 package com.botsi.view.handler
 
-import com.botsi.view.model.content.BotsiButtonAction
-import com.botsi.view.model.content.BotsiTopButton
-
 /**
  * Interface for handling click actions in Botsi paywall components.
  * This handler provides callbacks for various button actions that can occur

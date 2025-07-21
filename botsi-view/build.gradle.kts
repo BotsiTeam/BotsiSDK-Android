@@ -49,6 +49,8 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     implementation(libs.appcompat.v171)
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.ui)
     implementation("androidx.compose.material3:material3") {
         exclude(module = "androidx.lifecycle:lifecycle-livedata-core")
     }

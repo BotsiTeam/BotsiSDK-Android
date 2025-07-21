@@ -32,6 +32,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.media3.common.util.UnstableApi
 import com.botsi.view.model.content.BotsiHeroImageContent
 import com.botsi.view.model.content.BotsiHeroImageContentStyle
 import com.botsi.view.model.content.BotsiLayoutContent
@@ -46,6 +47,7 @@ import com.botsi.view.utils.toPaddings
 import com.botsi.view.utils.toShape
 import kotlinx.coroutines.CoroutineScope
 
+@UnstableApi
 @Composable
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 internal fun BotsiPaywallScreenComposable(
@@ -118,6 +120,7 @@ internal fun BotsiPaywallScreenComposable(
     }
 }
 
+@UnstableApi
 @Composable
 private fun Content(
     modifier: Modifier = Modifier,

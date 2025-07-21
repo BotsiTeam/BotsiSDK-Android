@@ -13,10 +13,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -57,17 +59,13 @@ class BotsiAppSetupFragment : Fragment() {
     private val storage: BotsiConfigsStorage
         get() = app.botsiStorage
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return ComposeView(context = requireContext()).apply {
             setContent {
                 var appKey by remember { mutableStateOf(TextFieldValue(storage.appKey)) }
                 var placementId by remember { mutableStateOf(TextFieldValue(storage.placementId)) }
-                var paywallId by remember { mutableStateOf(TextFieldValue(storage.paywallId.toString())) }
+                var isLoading by remember { mutableStateOf(false) }
 
                 var startDestination by remember {
                     mutableStateOf(BotsiFragments.Classic)
@@ -101,7 +99,6 @@ class BotsiAppSetupFragment : Fragment() {
                                 onClick = {
                                     storage.appKey = appKey.text
                                     storage.placementId = placementId.text
-                                    storage.paywallId = paywallId.text.toLong()
 
                                     Botsi.activate(
                                         context = requireContext(),
@@ -110,16 +107,21 @@ class BotsiAppSetupFragment : Fragment() {
                                     )
 
                                     when (startDestination) {
-                                        BotsiFragments.Ui -> Botsi.getPaywall(
-                                            placementId = app.botsiStorage.placementId,
-                                            successCallback = {
-                                                (requireActivity() as MainActivity).addFragment(
-                                                    BotsiViewFragment.newInstance(paywall = it),
-                                                    true,
-                                                    true
-                                                )
-                                            }
-                                        )
+                                        BotsiFragments.Ui -> {
+                                            isLoading = true
+                                            Botsi.getPaywall(
+                                                placementId = app.botsiStorage.placementId,
+                                                successCallback = {
+                                                    isLoading = false
+                                                    (requireActivity() as MainActivity).addFragment(
+                                                        BotsiViewFragment.newInstance(paywall = it),
+                                                        true,
+                                                        true
+                                                    )
+                                                },
+                                                errorCallback = { isLoading = false }
+                                            )
+                                        }
 
                                         BotsiFragments.Classic -> (requireActivity() as MainActivity).addFragment(
                                             BotsiFragment.newInstance(),
@@ -127,18 +129,23 @@ class BotsiAppSetupFragment : Fragment() {
                                             true
                                         )
                                     }
-
-
                                 },
                             ) {
-                                Text(
-                                    text = "Start",
-                                    style = TextStyle(
-                                        fontWeight = FontWeight.Medium
-                                    ),
-                                    color = Color.White,
-                                    fontSize = 16.sp,
-                                )
+                                if (isLoading) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(24.dp),
+                                        color = Color.White,
+                                    )
+                                } else {
+                                    Text(
+                                        text = "Start",
+                                        style = TextStyle(
+                                            fontWeight = FontWeight.Medium
+                                        ),
+                                        color = Color.White,
+                                        fontSize = 16.sp,
+                                    )
+                                }
                             }
                         }
                     ) {
@@ -186,29 +193,6 @@ class BotsiAppSetupFragment : Fragment() {
                                     )
                                 },
                                 value = placementId,
-                            )
-                            TextField(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(
-                                        horizontal = 16.dp,
-                                        vertical = 16.dp
-                                    ),
-                                onValueChange = {
-                                    paywallId = it
-                                },
-                                label = {
-                                    Text(
-                                        text = "Paywall id",
-                                        style = TextStyle(
-                                            fontWeight = FontWeight.Medium
-                                        ),
-                                    )
-                                },
-                                value = paywallId,
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Number
-                                )
                             )
 
                             var isDropdownExpanded by remember {
