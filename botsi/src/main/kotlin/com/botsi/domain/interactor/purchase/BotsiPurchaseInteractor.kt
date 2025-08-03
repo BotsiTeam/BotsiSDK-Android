@@ -16,8 +16,7 @@ internal interface BotsiPurchaseInteractor {
         activity: Activity,
         product: BotsiProduct,
         subscriptionUpdateParams: BotsiSubscriptionUpdateParameters?,
-        isOfferPersonalized: Boolean,
-    ): Flow<Pair<BotsiProfile, BotsiPurchase?>?>
+    ): Flow<BotsiPurchase>
 
     fun syncPurchases(): Flow<BotsiProfile>
 

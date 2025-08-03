@@ -3,8 +3,6 @@ package com.botsi.domain.interactor.purchase
 import android.app.Activity
 import androidx.annotation.RestrictTo
 import com.android.billingclient.api.BillingClient.BillingResponseCode
-import com.android.billingclient.api.ProductDetails
-import com.android.billingclient.api.Purchase
 import com.botsi.BotsiException
 import com.botsi.data.google_store.BotsiGoogleStoreManager
 import com.botsi.data.model.dto.BotsiUnsyncPurchaseDto
@@ -48,14 +46,12 @@ internal class BotsiPurchaseInteractorImpl(
         activity: Activity,
         product: BotsiProduct,
         subscriptionUpdateParams: BotsiSubscriptionUpdateParameters?,
-        isOfferPersonalized: Boolean
-    ): Flow<Pair<BotsiProfile, BotsiPurchase?>?> {
+    ): Flow<BotsiPurchase> {
         return googlePlayManager.queryInfoForProduct(product.productId, product.type)
             .flatMapConcat { productDetails ->
                 val purchasableProduct = product
                     .toPurchasableProduct(
                         productDetails,
-                        isOfferPersonalized
                     )
                 flow {
                     emit(
@@ -66,13 +62,6 @@ internal class BotsiPurchaseInteractorImpl(
                         )
                     )
                 }
-                    .catch { error ->
-                        if (error is BotsiException && error.code == BillingResponseCode.ITEM_UNAVAILABLE) {
-                            emit(null)
-                        } else {
-                            throw error
-                        }
-                    }
                     .flatMapConcat { purchase ->
                         if (purchase != null) {
                             // Use the BotsiPurchase returned by validatePurchase
@@ -102,14 +91,14 @@ internal class BotsiPurchaseInteractorImpl(
     private fun validatePurchase(
         purchase: BotsiPurchase,
         product: BotsiPurchasableProduct,
-    ): Flow<Pair<BotsiProfile, BotsiPurchase>> =
+    ): Flow<BotsiPurchase> =
         repository.validatePurchase(purchase, product.toDto())
             .onEach {
                 googlePlayManager.acknowledgeOrConsume(purchase, product.toDto())
                     .catch { }
                     .collect()
             }
-            .map { profile -> profile.toDomain() to purchase }
+            .map { purchase }
             .catch {
                 val unsyncedPurchases = repository.getUnsyncedPurchases().toMutableList()
                 unsyncedPurchases.add(
@@ -120,16 +109,6 @@ internal class BotsiPurchaseInteractorImpl(
                 )
                 repository.saveUnsyncedPurchases(unsyncedPurchases)
             }
-
-    // New method that accepts BotsiPurchase
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private fun validateBotsiPurchase(
-        botsiPurchase: BotsiPurchase,
-        product: BotsiPurchasableProduct,
-    ): Flow<Pair<BotsiProfile, BotsiPurchase>> {
-        // Use the original Purchase stored in BotsiPurchase
-        return validatePurchase(botsiPurchase, product)
-    }
 
     private suspend fun makePurchase(
         activity: Activity,

@@ -2,7 +2,6 @@ package com.botsi.data.factory
 
 import androidx.annotation.RestrictTo
 import com.android.billingclient.api.ProductDetails
-import com.android.billingclient.api.Purchase
 import com.botsi.analytic.AnalyticsEvent
 import com.botsi.data.model.dto.BotsiInstallationMetaDto
 import com.botsi.data.model.dto.BotsiPurchasableProductDto
@@ -50,13 +49,11 @@ internal class BotsiRequestFactory(
     @JvmSynthetic
     fun createProfileRequest(
         profileId: String,
-        customerUserId: String?,
         installationMeta: BotsiInstallationMetaDto?,
     ) = buildRequest {
         method = BotsiRequest.Method.POST
         body = gson.toJson(
             requestDataFactory.createCreateProfileRequest(
-                customerUserId = customerUserId,
                 meta = installationMeta,
             )
         )

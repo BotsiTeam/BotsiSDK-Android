@@ -60,10 +60,9 @@ internal class BotsiRequestDataFactory {
     }
 
     fun createCreateProfileRequest(
-        customerUserId: String?,
         meta: BotsiInstallationMetaDto?
     ) = BotsiCreateProfileRequest(
-        meta?.copy(customerUserId = customerUserId)
+        meta
     )
 
     fun createUpdateProfileRequest(

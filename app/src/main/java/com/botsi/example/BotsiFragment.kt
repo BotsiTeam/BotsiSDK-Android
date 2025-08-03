@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -56,7 +55,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.android.billingclient.api.ProductDetails
 import com.botsi.Botsi
 import com.botsi.domain.model.BotsiPaywall
 import com.botsi.domain.model.BotsiProduct
@@ -90,7 +88,6 @@ class BotsiFragment : Fragment() {
         var selectedSub by remember { mutableStateOf<BotsiProduct?>(null) }
 
         LaunchedEffect(Unit) {
-            Botsi.getProducts({}, {})
             Botsi.getPaywall(
                 placementId = app.botsiStorage.placementId,
                 successCallback = {
@@ -189,7 +186,7 @@ class BotsiFragment : Fragment() {
                             .clickable(
                                 onClick = {
                                     isLoading = true
-                                    Botsi.restoreProducts(
+                                    Botsi.restorePurchase(
                                         successCallback = {
                                             isLoading = false
                                             lifecycleScope.launch {

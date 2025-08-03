@@ -26,8 +26,8 @@ internal class BotsiProfileInteractorImpl(
     override val profileFlow: Flow<BotsiProfile>
         get() = repository.profileStateFlow.map { it.toDomain() }
 
-    override fun getOrCreateProfile(customerUserId: String?): Flow<BotsiProfile> {
-        return repository.getOrCreateProfile(customerUserId)
+    override fun getOrCreateProfile(): Flow<BotsiProfile> {
+        return repository.getOrCreateProfile()
             .map { it.toDomain() }
     }
 

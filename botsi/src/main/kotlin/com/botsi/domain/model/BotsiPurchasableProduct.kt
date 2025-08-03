@@ -15,6 +15,5 @@ internal class BotsiPurchasableProduct(
     val abTestId: Long,
     val currentSubOfferDetails: BotsiSubscriptionOfferDetails?,
     val currentOneTmeOfferDetails: BotsiOneTimePurchaseOfferDetails?,
-    val isOfferPersonalized: Boolean,
     val productDetails: ProductDetails,
 )

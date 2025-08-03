@@ -2,8 +2,7 @@ package com.botsi
 
 import android.app.Activity
 import android.content.Context
-import com.android.billingclient.api.ProductDetails
-import com.android.billingclient.api.Purchase
+import com.botsi.Botsi.activate
 import com.botsi.di.DiManager
 import com.botsi.domain.model.BotsiPaywall
 import com.botsi.domain.model.BotsiProduct
@@ -59,12 +58,10 @@ object Botsi {
         context: Context,
         apiKey: String,
         clearCache: Boolean = false,
-        customerUserId: String? = null,
-        logLevel: BotsiLogLevel = BotsiLogLevel.DEFAULT,
         successCallback: ((BotsiProfile) -> Unit)? = null,
         errorCallback: ((Throwable) -> Unit)? = null
     ) {
-        diManager.initDi(context, apiKey, logLevel)
+        diManager.initDi(context, apiKey)
 
         facade = BotsiFacade(
             profileInteractor = diManager.inject(),
@@ -78,7 +75,6 @@ object Botsi {
         }
 
         facade.activate(
-            customerUserId,
             successCallback,
             errorCallback,
         )
@@ -107,13 +103,11 @@ object Botsi {
      */
     @JvmStatic
     fun getProfile(
-        customerUserId: String?,
         successCallback: (BotsiProfile) -> Unit,
         errorCallback: ((Throwable) -> Unit)? = null
     ) {
         checkActivation()
         facade.getProfile(
-            customerUserId,
             successCallback,
             errorCallback,
         )
@@ -133,16 +127,12 @@ object Botsi {
     @JvmStatic
     @JvmOverloads
     fun updateProfile(
-        customerUserId: String?,
         params: BotsiUpdateProfileParameters?,
-        successCallback: ((BotsiProfile) -> Unit)? = null,
         errorCallback: ((Throwable) -> Unit)? = null
     ) {
         checkActivation()
         facade.updateProfile(
-            customerUserId,
             params,
-            successCallback,
             errorCallback
         )
     }
@@ -153,21 +143,18 @@ object Botsi {
      * This method authenticates a user with the Botsi service and retrieves their profile.
      *
      * @param customerUserId The user identifier to log in with
-     * @param successCallback Optional callback that is invoked when login succeeds, providing the user profile
      * @param errorCallback Optional callback that is invoked when login fails
      * @throws IllegalStateException if the SDK has not been activated
      */
     @JvmStatic
     @JvmOverloads
-    fun login(
+    fun identify(
         customerUserId: String?,
-        successCallback: ((BotsiProfile) -> Unit)? = null,
         errorCallback: ((Throwable) -> Unit)? = null
     ) {
         checkActivation()
-        facade.login(
+        facade.identify(
             customerUserId,
-            successCallback,
             errorCallback
         )
     }
@@ -188,29 +175,7 @@ object Botsi {
         errorCallback: ((Throwable) -> Unit)? = null,
     ) {
         checkActivation()
-        facade.logout(
-            successCallback,
-            errorCallback
-        )
-    }
-
-    /**
-     * Retrieves available product details from the Google Play Billing Library.
-     *
-     * This method fetches information about products that can be purchased through the app.
-     *
-     * @param successCallback Callback that is invoked when products are successfully retrieved
-     * @param errorCallback Optional callback that is invoked when product retrieval fails
-     * @throws IllegalStateException if the SDK has not been activated
-     */
-    @JvmStatic
-    @JvmOverloads
-    fun getProducts(
-        successCallback: (List<ProductDetails>) -> Unit,
-        errorCallback: ((Throwable) -> Unit)? = null,
-    ) {
-        checkActivation()
-        facade.getProducts(successCallback, errorCallback)
+        facade.logout(errorCallback)
     }
 
     /**
@@ -226,12 +191,12 @@ object Botsi {
      */
     @JvmStatic
     @JvmOverloads
-    fun restoreProducts(
+    fun restorePurchase(
         successCallback: (BotsiProfile) -> Unit,
         errorCallback: ((Throwable) -> Unit)? = null,
     ) {
         checkActivation()
-        facade.syncPurchases(successCallback, errorCallback)
+        facade.restorePurchase(successCallback, errorCallback)
     }
 
     /**
@@ -296,8 +261,7 @@ object Botsi {
         activity: Activity,
         product: BotsiProduct,
         subscriptionUpdateParams: BotsiSubscriptionUpdateParameters? = null,
-        isOfferPersonalized: Boolean = false,
-        callback: ((Pair<BotsiProfile, BotsiPurchase?>?) -> Unit),
+        callback: (BotsiPurchase) -> Unit,
         errorCallback: ((Throwable) -> Unit)? = null,
     ) {
         checkActivation()
@@ -305,7 +269,6 @@ object Botsi {
             activity,
             product,
             subscriptionUpdateParams,
-            isOfferPersonalized,
             callback,
             errorCallback
         )

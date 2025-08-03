@@ -32,7 +32,7 @@ internal class BotsiRepositoryImpl(
     override val profileStateFlow: Flow<BotsiProfileDto> = _profileStateFlow
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getOrCreateProfile(customerUserId: String?): Flow<BotsiProfileDto> {
+    override fun getOrCreateProfile(): Flow<BotsiProfileDto> {
         return when {
             storageManager.isProfileTemp ->
                 metaRetrieverService.installationMetaFlow(storageManager.deviceId)
@@ -41,7 +41,6 @@ internal class BotsiRepositoryImpl(
                             emit(
                                 httpManager.createProfile(
                                     storageManager.profileId,
-                                    customerUserId,
                                     installationMeta
                                 )
                             )
