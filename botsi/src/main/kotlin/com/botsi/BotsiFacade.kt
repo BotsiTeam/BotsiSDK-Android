@@ -95,7 +95,7 @@ internal class BotsiFacade(
     }
 
     @JvmSynthetic
-    fun restorePurchase(
+    fun restorePurchases(
         successCallback: ((BotsiProfile) -> Unit)? = null,
         errorCallback: ((Throwable) -> Unit)? = null
     ) {
@@ -109,7 +109,10 @@ internal class BotsiFacade(
     }
 
     @JvmSynthetic
-    fun logout(errorCallback: ((Throwable) -> Unit)? = null) {
+    fun logout(
+        successCallback: (() -> Unit)? = null,
+        errorCallback: ((Throwable) -> Unit)? = null
+    ) {
         launch {
             profileInteractor.doOnProfileReady(
                 profileInteractor.updateProfile(
@@ -118,13 +121,14 @@ internal class BotsiFacade(
                 )
             )
                 .catch { errorCallback?.invoke(it) }
-                .collect { }
+                .collect { successCallback?.invoke() }
         }
     }
 
     @JvmSynthetic
     fun identify(
         customerUserId: String?,
+        successCallback: (() -> Unit)? = null,
         errorCallback: ((Throwable) -> Unit)? = null
     ) {
         launch {
@@ -135,7 +139,7 @@ internal class BotsiFacade(
                 )
             )
                 .catch { errorCallback?.invoke(it) }
-                .collect { }
+                .collect { successCallback?.invoke() }
         }
     }
 

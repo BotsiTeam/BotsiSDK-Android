@@ -102,7 +102,7 @@ object Botsi {
      *                       Called on the main thread.
      * @param errorCallback Optional callback invoked when activation fails, providing the error details.
      *                     Called on the main thread.
-     * 
+     *
      * @throws IllegalArgumentException if the API key is empty or invalid
      * @see getProfile
      * @see setLogLevel
@@ -236,6 +236,7 @@ object Botsi {
      * If the user doesn't exist, a new profile will be created automatically.
      *
      * @param customerUserId The user identifier to log in with. Can be null to use anonymous user.
+     * @param successCallback Optional callback invoked when logout succeeds. Called on the main thread.
      * @param errorCallback Optional callback invoked when login fails. Called on the main thread.
      * @throws IllegalStateException if the SDK has not been activated
      * @see getProfile
@@ -246,12 +247,14 @@ object Botsi {
     @JvmOverloads
     fun identify(
         customerUserId: String?,
+        successCallback: (() -> Unit)? = null,
         errorCallback: ((Throwable) -> Unit)? = null
     ) {
         checkActivation()
         facade.identify(
             customerUserId,
-            errorCallback
+            successCallback,
+            errorCallback,
         )
     }
 
@@ -261,8 +264,7 @@ object Botsi {
      * This method ends the current user session and clears any user-specific data.
      * After logout, the SDK will operate with an anonymous user profile.
      *
-     * @param successCallback Optional callback invoked when logout succeeds.
-     *                       Provides the new anonymous user profile. Called on the main thread.
+     * @param successCallback Optional callback invoked when logout succeeds. Called on the main thread.
      * @param errorCallback Optional callback invoked when logout fails. Called on the main thread.
      * @throws IllegalStateException if the SDK has not been activated
      * @see identify
@@ -272,11 +274,11 @@ object Botsi {
     @JvmStatic
     @JvmOverloads
     fun logout(
-        successCallback: ((BotsiProfile) -> Unit)? = null,
+        successCallback: (() -> Unit)? = null,
         errorCallback: ((Throwable) -> Unit)? = null,
     ) {
         checkActivation()
-        facade.logout(errorCallback)
+        facade.logout(successCallback, errorCallback)
     }
 
     /**
@@ -295,7 +297,7 @@ object Botsi {
      *
      * ## Usage Example
      * ```kotlin
-     * Botsi.restorePurchase(
+     * Botsi.restorePurchases(
      *     successCallback = { profile ->
      *         println("Restored purchases for user: ${profile.customerUserId}")
      *         println("Active subscriptions: ${profile.activeSubscriptions}")
@@ -321,12 +323,12 @@ object Botsi {
      */
     @JvmStatic
     @JvmOverloads
-    fun restorePurchase(
+    fun restorePurchases(
         successCallback: (BotsiProfile) -> Unit,
         errorCallback: ((Throwable) -> Unit)? = null,
     ) {
         checkActivation()
-        facade.restorePurchase(successCallback, errorCallback)
+        facade.restorePurchases(successCallback, errorCallback)
     }
 
     /**
@@ -461,7 +463,7 @@ object Botsi {
      *         Log.e("Botsi", "Purchase failed", error)
      *     }
      * )
-     * 
+     *
      * // For subscription upgrade/downgrade
      * val updateParams = BotsiSubscriptionUpdateParameters(
      *     oldProductId = "old_subscription_id",
@@ -488,7 +490,7 @@ object Botsi {
      *                     Called on the main thread.
      * @throws IllegalStateException if the SDK has not been activated
      * @see getPaywallProducts
-     * @see restorePurchase
+     * @see restorePurchases
      * @see BotsiSubscriptionUpdateParameters
      * @since 1.0.0
      */

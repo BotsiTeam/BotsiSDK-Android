@@ -302,11 +302,11 @@ Botsi.makePurchase(
 )
 ```
 
-### `restorePurchase(successCallback, errorCallback?)`
+### `restorePurchases(successCallback, errorCallback?)`
 ```kotlin
 @JvmStatic
 @JvmOverloads
-fun restorePurchase(
+fun restorePurchases(
     successCallback: (BotsiProfile) -> Unit,
     errorCallback: ((Throwable) -> Unit)? = null
 )
@@ -329,7 +329,7 @@ Restores previously purchased products for the current user. This method synchro
 
 **Example:**
 ```kotlin
-Botsi.restorePurchase(
+Botsi.restorePurchases(
     successCallback = { profile ->
         Log.d("Botsi", "Restored purchases for user: ${profile.customerUserId}")
         Log.d("Botsi", "Active subscriptions: ${profile.activeSubscriptions}")

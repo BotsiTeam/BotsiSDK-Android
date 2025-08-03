@@ -56,7 +56,6 @@ import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.botsi.Botsi
-import com.botsi.domain.model.BotsiPaywall
 import com.botsi.domain.model.BotsiProduct
 import kotlinx.coroutines.launch
 
@@ -195,7 +194,7 @@ class BotsiFragment : Fragment() {
                             .clickable(
                                 onClick = {
                                     isLoading = true
-                                    Botsi.restorePurchase(
+                                    Botsi.restorePurchases(
                                         successCallback = {
                                             isLoading = false
                                             lifecycleScope.launch {
