@@ -127,11 +127,12 @@ Botsi.getProfile(
 )
 ```
 
-### `updateProfile(params?, errorCallback?)`
+### `updateProfile(params?, successCallback, errorCallback?)`
 ```kotlin
 @JvmStatic
 @JvmOverloads
 fun updateProfile(
+    successCallback: (BotsiProfile) -> Unit,
     params: BotsiUpdateProfileParameters?,
     errorCallback: ((Throwable) -> Unit)? = null
 )
@@ -141,6 +142,7 @@ Updates the user profile with the provided parameters. This method allows updati
 
 **Parameters:**
 - `params`: Parameters containing the profile attributes to update. See BotsiUpdateProfileParameters.
+- `successCallback`: Callback invoked when the profile is successfully updated. Called on the main thread.
 - `errorCallback`: Optional callback invoked when the update fails. Called on the main thread.
 
 **Throws:**
@@ -154,18 +156,24 @@ val updateParams = BotsiUpdateProfileParameters(
 
 Botsi.updateProfile(
     params = updateParams,
+    successCallback = { profile ->
+        Log.d("Botsi", "User ID: ${profile.customerUserId}")
+        Log.d("Botsi", "Active subscriptions: ${profile.activeSubscriptions}")
+        // Access other profile properties
+    },
     errorCallback = { error ->
         Log.e("Botsi", "Failed to update profile: ${error.message}")
     }
 )
 ```
 
-### `identify(customerUserId?, errorCallback?)`
+### `identify(customerUserId?, successCallback, errorCallback?)`
 ```kotlin
 @JvmStatic
 @JvmOverloads
 fun identify(
     customerUserId: String?,
+    successCallback: (() -> Unit)? = null,
     errorCallback: ((Throwable) -> Unit)? = null
 )
 ```
@@ -173,6 +181,7 @@ fun identify(
 Logs in a user with the specified customer ID. This method authenticates a user with the Botsi service and retrieves their profile. If the user doesn't exist, a new profile will be created automatically.
 
 **Parameters:**
+- `successCallback`: Optional callback invoked when identify succeeds. Called on the main thread.
 - `customerUserId`: The user identifier to log in with. Can be null to use anonymous user.
 - `errorCallback`: Optional callback invoked when login fails. Called on the main thread.
 
@@ -184,6 +193,10 @@ Logs in a user with the specified customer ID. This method authenticates a user 
 val currentUserId = "user_12345"
 Botsi.identify(
     customerUserId = currentUserId,
+    successCallback = {
+        Log.d("Botsi", "User identified successfully")
+        // The SDK session is updated to identified state
+    },
     errorCallback = { error ->
         Log.e("Botsi", "Failed to identify user: ${error.message}")
     }
@@ -195,7 +208,7 @@ Botsi.identify(
 @JvmStatic
 @JvmOverloads
 fun logout(
-    successCallback: ((BotsiProfile) -> Unit)? = null,
+    successCallback: (() -> Unit)? = null,
     errorCallback: ((Throwable) -> Unit)? = null
 )
 ```
@@ -203,7 +216,7 @@ fun logout(
 Logs out the current user from the Botsi service. This method ends the current user session and clears any user-specific data. After logout, the SDK will operate with an anonymous user profile.
 
 **Parameters:**
-- `successCallback`: Optional callback invoked when logout succeeds. Provides the new anonymous user profile. Called on the main thread.
+- `successCallback`: Optional callback invoked when logout succeeds. Called on the main thread.
 - `errorCallback`: Optional callback invoked when logout fails. Called on the main thread.
 
 **Throws:**
@@ -212,7 +225,7 @@ Logs out the current user from the Botsi service. This method ends the current u
 **Example:**
 ```kotlin
 Botsi.logout(
-    successCallback = { profile ->
+    successCallback = {
         Log.d("Botsi", "User logged out successfully")
         // The SDK session is reverted to an anonymous state
     },

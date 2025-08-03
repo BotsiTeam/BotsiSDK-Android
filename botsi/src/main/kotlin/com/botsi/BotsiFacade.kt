@@ -60,6 +60,7 @@ internal class BotsiFacade(
     @JvmSynthetic
     fun updateProfile(
         params: BotsiUpdateProfileParameters?,
+        successCallback: (BotsiProfile) -> Unit,
         errorCallback: ((Throwable) -> Unit)? = null
     ) {
         launch {
@@ -69,7 +70,7 @@ internal class BotsiFacade(
             )
                 .retryIfNecessary()
                 .catch { errorCallback?.invoke(it) }
-                .collect { }
+                .collect { successCallback(it) }
         }
     }
 

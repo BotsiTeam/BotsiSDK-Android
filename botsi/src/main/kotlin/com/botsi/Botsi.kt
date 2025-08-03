@@ -3,6 +3,17 @@ package com.botsi
 import android.app.Activity
 import android.content.Context
 import com.botsi.Botsi.activate
+import com.botsi.Botsi.getPaywall
+import com.botsi.Botsi.getPaywallProducts
+import com.botsi.Botsi.getPaywallViewConfiguration
+import com.botsi.Botsi.getProfile
+import com.botsi.Botsi.identify
+import com.botsi.Botsi.logShowPaywall
+import com.botsi.Botsi.logout
+import com.botsi.Botsi.makePurchase
+import com.botsi.Botsi.restorePurchases
+import com.botsi.Botsi.setLogLevel
+import com.botsi.Botsi.updateProfile
 import com.botsi.di.DiManager
 import com.botsi.domain.model.BotsiPaywall
 import com.botsi.domain.model.BotsiProduct
@@ -210,6 +221,8 @@ object Botsi {
      * Changes are synchronized with Botsi servers and cached locally for offline access.
      *
      * @param params Parameters containing the profile attributes to update. See [BotsiUpdateProfileParameters].
+     * @param successCallback Callback invoked when the profile is successfully retrieved.
+     *                   Provides the current [BotsiProfile]. Called on the main thread.
      * @param errorCallback Optional callback invoked when the update fails. Called on the main thread.
      * @throws IllegalStateException if the SDK has not been activated
      * @see getProfile
@@ -220,12 +233,14 @@ object Botsi {
     @JvmOverloads
     fun updateProfile(
         params: BotsiUpdateProfileParameters?,
+        successCallback: (BotsiProfile) -> Unit,
         errorCallback: ((Throwable) -> Unit)? = null
     ) {
         checkActivation()
         facade.updateProfile(
             params,
-            errorCallback
+            successCallback,
+            errorCallback,
         )
     }
 
