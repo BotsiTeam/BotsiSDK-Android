@@ -81,7 +81,7 @@ class BotsiFragment : Fragment() {
 
     @Composable
     private fun ContentUi() {
-        var paywall by remember { mutableStateOf<BotsiPaywall?>(null) }
+        var products by remember { mutableStateOf<List<BotsiProduct>>(emptyList()) }
         var isLoading by remember { mutableStateOf(true) }
         var isSuccessPayment by remember { mutableStateOf(false) }
         var isError by remember { mutableStateOf(false) }
@@ -91,13 +91,22 @@ class BotsiFragment : Fragment() {
             Botsi.getPaywall(
                 placementId = app.botsiStorage.placementId,
                 successCallback = {
-                    isLoading = false
-                    paywall = it
+                    Botsi.getPaywallProducts(
+                        paywall = it,
+                        successCallback = { result ->
+                            isLoading = false
+                            products = result
+                        },
+                        errorCallback = {
+                            isError = true
+                            isLoading = false
+                        },
+                    )
                 },
                 errorCallback = {
                     isError = true
                     isLoading = false
-                },
+                }
             )
         }
 
@@ -217,7 +226,7 @@ class BotsiFragment : Fragment() {
                         )
                     } else {
                         if (!isSuccessPayment) {
-                            paywall?.sourceProducts?.forEach { product ->
+                            products.forEach { product ->
                                 SubscriptionItem(
                                     modifier = Modifier.padding(
                                         vertical = 6.dp, horizontal = 24.dp

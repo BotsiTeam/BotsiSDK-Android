@@ -112,14 +112,27 @@ class BotsiAppSetupFragment : Fragment() {
                                             Botsi.getPaywall(
                                                 placementId = app.botsiStorage.placementId,
                                                 successCallback = {
-                                                    isLoading = false
-                                                    (requireActivity() as MainActivity).addFragment(
-                                                        BotsiViewFragment.newInstance(paywall = it),
-                                                        true,
-                                                        true
+                                                    Botsi.getPaywallProducts(
+                                                        paywall = it,
+                                                        successCallback = { result ->
+                                                            isLoading = false
+                                                            (requireActivity() as MainActivity).addFragment(
+                                                                BotsiViewFragment.newInstance(
+                                                                    paywall = it,
+                                                                    products = result
+                                                                ),
+                                                                true,
+                                                                true
+                                                            )
+                                                        },
+                                                        errorCallback = {
+                                                            isLoading = false
+                                                        },
                                                     )
                                                 },
-                                                errorCallback = { isLoading = false }
+                                                errorCallback = {
+                                                    isLoading = false
+                                                }
                                             )
                                         }
 

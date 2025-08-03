@@ -153,6 +153,20 @@ internal class BotsiFacade(
         }
     }
 
+    fun getPaywallProducts(
+        paywall: BotsiPaywall,
+        successCallback: ((List<BotsiProduct>) -> Unit)? = null,
+        errorCallback: ((Throwable) -> Unit)? = null
+    ) {
+        launch {
+            profileInteractor.doOnProfileReady(
+                productsInteractor.getPaywallProducts(paywall)
+            )
+                .catch { errorCallback?.invoke(it) }
+                .collect { successCallback?.invoke(it) }
+        }
+    }
+
     fun getPaywallViewConfiguration(
         paywallId: Long,
         successCallback: ((JsonElement) -> Unit)? = null,

@@ -10,5 +10,5 @@ data class BotsiPaywall(
     val abTestId: Long,
     val remoteConfigs: String,
     val revision: Long,
-    val sourceProducts: List<BotsiProduct>,
+    val sourceProducts: List<BotsiBackendProduct>,
 )

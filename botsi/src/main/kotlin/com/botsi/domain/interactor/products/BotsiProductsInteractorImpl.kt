@@ -5,6 +5,7 @@ import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.ProductDetails.SubscriptionOfferDetails
 import com.botsi.data.google_store.BotsiGoogleStoreManager
 import com.botsi.data.repository.BotsiRepository
+import com.botsi.domain.model.BotsiBackendProduct
 import com.botsi.domain.model.BotsiOneTimePurchaseOfferDetails
 import com.botsi.domain.model.BotsiPaywall
 import com.botsi.domain.model.BotsiProduct
@@ -31,61 +32,77 @@ internal class BotsiProductsInteractorImpl(
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getPaywall(placementId: String): Flow<BotsiPaywall> {
         return repository.getPaywall(placementId)
-            .flatMapLatest { paywall ->
-                if (!paywall.sourceProducts.isNullOrEmpty()) {
-                    googleStoreManager.queryProductDetails(paywall.sourceProducts.mapNotNull { it.sourcePoductId })
-                        .map { products ->
-                            val finalProducts = mutableListOf<BotsiProduct>()
-                            products.forEach { product ->
-                                val dto = paywall.sourceProducts
-                                    .find { source -> source.sourcePoductId == product.productId }
-
-                                val offers = dto?.offerIds.orEmpty().map {
-                                    findCurrentOffer(
-                                        subOfferDetails = product.subscriptionOfferDetails.orEmpty(),
-                                        basePlanId = dto?.basePlanId.orEmpty(),
-                                        offerId = it
-                                    )
-                                }.ifEmpty {
-                                    listOf(product.subscriptionOfferDetails?.lastOrNull())
-                                }
-
-                                offers.forEach {
-                                    finalProducts.add(
-                                        BotsiProduct(
-                                            productId = product.productId,
-                                            paywallName = paywall.name.orEmpty(),
-                                            type = product.productType,
-                                            name = product.name,
-                                            title = product.title,
-                                            description = product.description,
-                                            isConsumable = dto?.isConsumable == true,
-                                            basePlanId = dto?.basePlanId.orEmpty(),
-                                            subscriptionOffer = BotsiSubscriptionOfferDetails.from(it),
-                                            onTimePurchaseOffers = BotsiOneTimePurchaseOfferDetails.from(product.oneTimePurchaseOfferDetails),
-                                            placementId = placementId,
-                                            paywallId = paywall.id ?: 0,
-                                            abTestId = paywall.abTestId ?: 0,
-                                        )
-                                    )
-                                }
-                            }
-                            finalProducts.toList()
-                        }
-                } else {
-                    flowOf(emptyList())
-                }.map {
-                    BotsiPaywall(
-                        id = paywall.id ?: 0L,
+            .map { paywall ->
+                val backendProducts = paywall.sourceProducts?.map { dto ->
+                    BotsiBackendProduct(
+                        productId = dto.sourcePoductId.orEmpty(),
+                        paywallId = paywall.id ?: 0,
+                        abTestId = paywall.abTestId ?: 0,
                         placementId = placementId,
-                        name = paywall.name.orEmpty(),
-                        abTestId = paywall.abTestId ?: 0L,
-                        remoteConfigs = paywall.remoteConfigs.orEmpty(),
-                        revision = paywall.revision ?: 0L,
-                        sourceProducts = it
+                        paywallName = paywall.name.orEmpty(),
+                        isConsumable = dto.isConsumable == true,
+                        basePlanId = dto.basePlanId.orEmpty(),
+                        offerIds = dto.offerIds.orEmpty(),
                     )
-                }
+                }.orEmpty()
+
+                BotsiPaywall(
+                    id = paywall.id ?: 0L,
+                    placementId = placementId,
+                    name = paywall.name.orEmpty(),
+                    abTestId = paywall.abTestId ?: 0L,
+                    remoteConfigs = paywall.remoteConfigs.orEmpty(),
+                    revision = paywall.revision ?: 0L,
+                    sourceProducts = backendProducts
+                )
             }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun getPaywallProducts(paywall: BotsiPaywall): Flow<List<BotsiProduct>> {
+        return if (paywall.sourceProducts.isNotEmpty()) {
+            googleStoreManager.queryProductDetails(paywall.sourceProducts.map { it.productId })
+                .map { products ->
+                    val finalProducts = mutableListOf<BotsiProduct>()
+                    products.forEach { product ->
+                        val dto = paywall.sourceProducts
+                            .find { source -> source.productId == product.productId }
+
+                        val offers = dto?.offerIds.orEmpty().map {
+                            findCurrentOffer(
+                                subOfferDetails = product.subscriptionOfferDetails.orEmpty(),
+                                basePlanId = dto?.basePlanId.orEmpty(),
+                                offerId = it
+                            )
+                        }.ifEmpty {
+                            listOf(product.subscriptionOfferDetails?.lastOrNull())
+                        }
+
+                        offers.forEach {
+                            finalProducts.add(
+                                BotsiProduct(
+                                    productId = product.productId,
+                                    paywallName = paywall.name,
+                                    type = product.productType,
+                                    name = product.name,
+                                    title = product.title,
+                                    description = product.description,
+                                    isConsumable = dto?.isConsumable == true,
+                                    basePlanId = dto?.basePlanId.orEmpty(),
+                                    subscriptionOffer = BotsiSubscriptionOfferDetails.from(it),
+                                    onTimePurchaseOffers = BotsiOneTimePurchaseOfferDetails.from(product.oneTimePurchaseOfferDetails),
+                                    placementId = paywall.placementId,
+                                    paywallId = paywall.id,
+                                    abTestId = paywall.abTestId,
+                                )
+                            )
+                        }
+                    }
+                    finalProducts.toList()
+                }
+        } else {
+            flowOf(emptyList())
+        }
     }
 
     override fun getPaywallViewConfiguration(paywallId: Long): Flow<JsonElement> {

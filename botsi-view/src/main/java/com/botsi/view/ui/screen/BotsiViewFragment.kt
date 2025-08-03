@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import com.botsi.Botsi
 import com.botsi.domain.model.BotsiPaywall
+import com.botsi.domain.model.BotsiProduct
 import com.botsi.view.BotsiViewConfig
 import com.botsi.view.handler.BotsiActionType
 import com.botsi.view.handler.BotsiClickHandler
@@ -22,6 +23,7 @@ import com.botsi.view.ui.compose.entry_point.BotsiPaywallEntryPoint
 class BotsiViewFragment : Fragment() {
 
     private var paywall: BotsiPaywall? = null
+    private var products: List<BotsiProduct>? = null
     private var eventHandler: BotsiPublicEventHandler? = null
 
     /**
@@ -111,6 +113,10 @@ class BotsiViewFragment : Fragment() {
         this.paywall = paywall
     }
 
+    fun setProducts(products: List<BotsiProduct>?) {
+        this.products = products
+    }
+
     /**
      * Set a custom event handler for this fragment
      */
@@ -124,10 +130,12 @@ class BotsiViewFragment : Fragment() {
          */
         fun newInstance(
             paywall: BotsiPaywall?,
+            products: List<BotsiProduct>?,
             clickHandler: BotsiPublicEventHandler? = null
         ): BotsiViewFragment {
             return BotsiViewFragment().apply {
                 setPaywall(paywall)
+                setProducts(products)
                 setEventHandler(clickHandler)
             }
         }

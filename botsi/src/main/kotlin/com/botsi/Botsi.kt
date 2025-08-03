@@ -200,9 +200,10 @@ object Botsi {
     }
 
     /**
-     * Retrieves paywall configuration for the specified placement.
+     * Retrieves paywall configuration for the specified placement with backend-only data.
      *
      * A paywall represents a monetization screen that can be displayed to users.
+     * This method returns only backend parameters without Google logic.
      *
      * @param placementId The identifier for the paywall placement
      * @param successCallback Callback that is invoked when the paywall is successfully retrieved
@@ -218,6 +219,27 @@ object Botsi {
     ) {
         checkActivation()
         facade.getPaywall(placementId, successCallback, errorCallback)
+    }
+
+    /**
+     * Retrieves paywall configuration for the specified placement with Google products.
+     *
+     * A paywall represents a monetization screen that can be displayed to users.
+     * This method returns products enriched with Google Play Store data.
+     *
+     * @param successCallback Callback that is invoked when the paywall is successfully retrieved
+     * @param errorCallback Optional callback that is invoked when paywall retrieval fails
+     * @throws IllegalStateException if the SDK has not been activated
+     */
+    @JvmStatic
+    @JvmOverloads
+    fun getPaywallProducts(
+        paywall: BotsiPaywall,
+        successCallback: (List<BotsiProduct>) -> Unit,
+        errorCallback: ((Throwable) -> Unit)? = null,
+    ) {
+        checkActivation()
+        facade.getPaywallProducts(paywall, successCallback, errorCallback)
     }
 
     /**
