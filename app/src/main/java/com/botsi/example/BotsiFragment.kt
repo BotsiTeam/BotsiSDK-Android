@@ -329,7 +329,7 @@ class BotsiFragment : Fragment() {
                                     Botsi.makePurchase(
                                         activity = requireActivity(),
                                         product = sub,
-                                        callback = {
+                                        callback = { _, _ ->
                                             isSuccessPayment = true
                                             isLoading = false
                                             lifecycleScope.launch {

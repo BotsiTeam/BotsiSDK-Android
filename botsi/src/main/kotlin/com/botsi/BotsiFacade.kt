@@ -32,11 +32,12 @@ internal class BotsiFacade(
 
     @JvmSynthetic
     fun activate(
+        customerUserId: String?,
         successCallback: ((BotsiProfile) -> Unit)? = null,
         errorCallback: ((Throwable) -> Unit)? = null,
     ) {
         launch {
-            profileInteractor.getOrCreateProfile()
+            profileInteractor.getOrCreateProfile(customerUserId)
                 .retryIfNecessary()
                 .catch { errorCallback?.invoke(it) }
                 .collect { successCallback?.invoke(it) }
@@ -50,7 +51,7 @@ internal class BotsiFacade(
     ) {
         launch {
             profileInteractor
-                .getOrCreateProfile()
+                .getOrCreateProfile(null)
                 .retryIfNecessary()
                 .catch { errorCallback?.invoke(it) }
                 .collect { successCallback?.invoke(it) }
@@ -79,7 +80,7 @@ internal class BotsiFacade(
         activity: Activity,
         product: BotsiProduct,
         subscriptionUpdateParams: BotsiSubscriptionUpdateParameters?,
-        successCallback: ((BotsiPurchase) -> Unit)? = null,
+        successCallback: ((BotsiProfile, BotsiPurchase) -> Unit)? = null,
         errorCallback: ((Throwable) -> Unit)? = null,
     ) {
         launch {
@@ -91,7 +92,7 @@ internal class BotsiFacade(
                 )
             )
                 .catch { errorCallback?.invoke(it) }
-                .collect { successCallback?.invoke(it) }
+                .collect { successCallback?.invoke(it.first, it.second) }
         }
     }
 

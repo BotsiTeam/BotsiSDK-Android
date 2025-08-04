@@ -54,13 +54,14 @@ dependencies {
 
 ## Initialization
 
-### `activate(context, apiKey, clearCache?, successCallback?, errorCallback?)`
+### `activate(context, apiKey, customerUserId?, clearCache?, successCallback?, errorCallback?)`
 ```kotlin
 @JvmStatic
 @JvmOverloads
 fun activate(
     context: Context,
     apiKey: String,
+    customerUserId: String? = null,
     clearCache: Boolean = false,
     successCallback: ((BotsiProfile) -> Unit)? = null,
     errorCallback: ((Throwable) -> Unit)? = null
@@ -72,6 +73,7 @@ Activates and initializes the Botsi SDK with your API key. This method must be c
 **Parameters:**
 - `context`: The Android application context. Should be application context to avoid memory leaks.
 - `apiKey`: The API key for authenticating with Botsi services. Obtained from Botsi dashboard.
+- `customerUserId`: Optional user identifier to activate the SDK with. If null, an anonymous user will be created.
 - `clearCache`: Whether to clear any cached data during activation. Set to true to force fresh data retrieval.
 - `successCallback`: Optional callback invoked when activation succeeds, providing the current user profile. Called on the main thread.
 - `errorCallback`: Optional callback invoked when activation fails, providing the error details. Called on the main thread.
@@ -132,8 +134,8 @@ Botsi.getProfile(
 @JvmStatic
 @JvmOverloads
 fun updateProfile(
-    successCallback: (BotsiProfile) -> Unit,
     params: BotsiUpdateProfileParameters?,
+    successCallback: (BotsiProfile) -> Unit,
     errorCallback: ((Throwable) -> Unit)? = null
 )
 ```
@@ -167,12 +169,12 @@ Botsi.updateProfile(
 )
 ```
 
-### `identify(customerUserId?, successCallback, errorCallback?)`
+### `identify(customerUserId, successCallback?, errorCallback?)`
 ```kotlin
 @JvmStatic
 @JvmOverloads
 fun identify(
-    customerUserId: String?,
+    customerUserId: String,
     successCallback: (() -> Unit)? = null,
     errorCallback: ((Throwable) -> Unit)? = null
 )
@@ -181,8 +183,8 @@ fun identify(
 Logs in a user with the specified customer ID. This method authenticates a user with the Botsi service and retrieves their profile. If the user doesn't exist, a new profile will be created automatically.
 
 **Parameters:**
+- `customerUserId`: The user identifier to log in with.
 - `successCallback`: Optional callback invoked when identify succeeds. Called on the main thread.
-- `customerUserId`: The user identifier to log in with. Can be null to use anonymous user.
 - `errorCallback`: Optional callback invoked when login fails. Called on the main thread.
 
 **Throws:**
@@ -277,7 +279,7 @@ fun makePurchase(
     activity: Activity,
     product: BotsiProduct,
     subscriptionUpdateParams: BotsiSubscriptionUpdateParameters? = null,
-    callback: (BotsiPurchase) -> Unit,
+    callback: (BotsiProfile, BotsiPurchase) -> Unit,
     errorCallback: ((Throwable) -> Unit)? = null
 )
 ```
@@ -294,7 +296,7 @@ Initiates a purchase flow for the specified product. This method launches the Go
 - `activity`: The activity from which the purchase flow is launched. Must be in foreground.
 - `product`: The product to be purchased. Obtained from getPaywallProducts.
 - `subscriptionUpdateParams`: Optional parameters for subscription updates or replacements. Used when upgrading, downgrading, or changing subscription plans.
-- `callback`: Callback invoked when the purchase is completed successfully. Provides the BotsiPurchase with purchase details and updated profile. Called on the main thread.
+- `callback`: Callback invoked when the purchase is completed successfully. Provides the updated BotsiProfile and BotsiPurchase with purchase details. Called on the main thread.
 - `errorCallback`: Optional callback invoked when the purchase fails. Provides error details including billing errors and network issues. Called on the main thread.
 
 **Throws:**
@@ -305,9 +307,9 @@ Initiates a purchase flow for the specified product. This method launches the Go
 Botsi.makePurchase(
     activity = this,
     product = selectedProduct,
-    callback = { purchase ->
+    callback = { profile, purchase ->
         Log.d("Botsi", "Purchase successful: ${purchase.productId}")
-        Log.d("Botsi", "Updated profile: ${purchase.profile}")
+        Log.d("Botsi", "Updated profile: ${profile.customerUserId}")
     },
     errorCallback = { error ->
         Log.e("Botsi", "Purchase failed", error)
@@ -560,7 +562,7 @@ Botsi.activate(
 Botsi.makePurchase(
     activity = this,
     product = product,
-    callback = { purchase ->
+    callback = { profile, purchase ->
         // Handle successful purchase
         Log.d("Botsi", "Purchase successful: ${purchase.productId}")
     },

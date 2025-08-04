@@ -45,6 +45,7 @@ import com.google.gson.JsonElement
  * Botsi.activate(
  *     context = applicationContext,
  *     apiKey = "your-api-key",
+ *     customerUserId = "user123", // Optional: specify user ID or null for anonymous
  *     successCallback = { profile ->
  *         // SDK activated successfully
  *         Log.d("Botsi", "User profile: ${profile.customerUserId}")
@@ -94,6 +95,7 @@ object Botsi {
      * Botsi.activate(
      *     context = applicationContext,
      *     apiKey = "your-botsi-api-key",
+     *     customerUserId = "user123", // Optional: specify user ID or null for anonymous
      *     clearCache = false,
      *     successCallback = { profile ->
      *         // SDK is ready to use
@@ -108,6 +110,7 @@ object Botsi {
      *
      * @param context The Android application context. Should be application context to avoid memory leaks.
      * @param apiKey The API key for authenticating with Botsi services. Obtained from Botsi dashboard.
+     * @param customerUserId Optional user identifier to activate the SDK with. If null, an anonymous user will be created.
      * @param clearCache Whether to clear any cached data during activation. Set to true to force fresh data retrieval.
      * @param successCallback Optional callback invoked when activation succeeds, providing the current user profile.
      *                       Called on the main thread.
@@ -124,6 +127,7 @@ object Botsi {
     fun activate(
         context: Context,
         apiKey: String,
+        customerUserId: String? = null,
         clearCache: Boolean = false,
         successCallback: ((BotsiProfile) -> Unit)? = null,
         errorCallback: ((Throwable) -> Unit)? = null
@@ -142,6 +146,7 @@ object Botsi {
         }
 
         facade.activate(
+            customerUserId,
             successCallback,
             errorCallback,
         )
@@ -250,8 +255,8 @@ object Botsi {
      * This method authenticates a user with the Botsi service and retrieves their profile.
      * If the user doesn't exist, a new profile will be created automatically.
      *
-     * @param customerUserId The user identifier to log in with. Can be null to use anonymous user.
-     * @param successCallback Optional callback invoked when logout succeeds. Called on the main thread.
+     * @param customerUserId The user identifier to log in with.
+     * @param successCallback Optional callback invoked when identify succeeds. Called on the main thread.
      * @param errorCallback Optional callback invoked when login fails. Called on the main thread.
      * @throws IllegalStateException if the SDK has not been activated
      * @see getProfile
@@ -261,7 +266,7 @@ object Botsi {
     @JvmStatic
     @JvmOverloads
     fun identify(
-        customerUserId: String?,
+        customerUserId: String,
         successCallback: (() -> Unit)? = null,
         errorCallback: ((Throwable) -> Unit)? = null
     ) {
@@ -470,9 +475,9 @@ object Botsi {
      * Botsi.makePurchase(
      *     activity = this,
      *     product = selectedProduct,
-     *     callback = { purchase ->
+     *     callback = { profile, purchase ->
      *         println("Purchase successful: ${purchase.productId}")
-     *         println("Updated profile: ${purchase.profile}")
+     *         println("Updated profile: ${profile.customerUserId}")
      *     },
      *     errorCallback = { error ->
      *         Log.e("Botsi", "Purchase failed", error)
@@ -488,7 +493,7 @@ object Botsi {
      *     activity = this,
      *     product = newSubscriptionProduct,
      *     subscriptionUpdateParams = updateParams,
-     *     callback = { purchase -> /* handle success */ },
+     *     callback = { profile, purchase -> /* handle success */ },
      *     errorCallback = { error -> /* handle error */ }
      * )
      * ```
@@ -498,7 +503,7 @@ object Botsi {
      * @param subscriptionUpdateParams Optional parameters for subscription updates or replacements.
      *                                Used when upgrading, downgrading, or changing subscription plans.
      * @param callback Callback invoked when the purchase is completed successfully.
-     *                Provides the [BotsiPurchase] with purchase details and updated profile.
+     *                Provides the updated [BotsiProfile] and [BotsiPurchase] with purchase details.
      *                Called on the main thread.
      * @param errorCallback Optional callback invoked when the purchase fails.
      *                     Provides error details including billing errors and network issues.
@@ -515,7 +520,7 @@ object Botsi {
         activity: Activity,
         product: BotsiProduct,
         subscriptionUpdateParams: BotsiSubscriptionUpdateParameters? = null,
-        callback: (BotsiPurchase) -> Unit,
+        callback: (BotsiProfile, BotsiPurchase) -> Unit,
         errorCallback: ((Throwable) -> Unit)? = null,
     ) {
         checkActivation()

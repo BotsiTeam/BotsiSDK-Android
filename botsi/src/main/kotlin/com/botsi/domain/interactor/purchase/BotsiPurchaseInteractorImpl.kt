@@ -46,7 +46,7 @@ internal class BotsiPurchaseInteractorImpl(
         activity: Activity,
         product: BotsiProduct,
         subscriptionUpdateParams: BotsiSubscriptionUpdateParameters?,
-    ): Flow<BotsiPurchase> {
+    ): Flow<Pair<BotsiProfile, BotsiPurchase>> {
         return googlePlayManager.queryInfoForProduct(product.productId, product.type)
             .flatMapConcat { productDetails ->
                 val purchasableProduct = product
@@ -91,14 +91,14 @@ internal class BotsiPurchaseInteractorImpl(
     private fun validatePurchase(
         purchase: BotsiPurchase,
         product: BotsiPurchasableProduct,
-    ): Flow<BotsiPurchase> =
+    ): Flow<Pair<BotsiProfile, BotsiPurchase>> =
         repository.validatePurchase(purchase, product.toDto())
             .onEach {
                 googlePlayManager.acknowledgeOrConsume(purchase, product.toDto())
                     .catch { }
                     .collect()
             }
-            .map { purchase }
+            .map { profile -> profile.toDomain() to purchase }
             .catch {
                 val unsyncedPurchases = repository.getUnsyncedPurchases().toMutableList()
                 unsyncedPurchases.add(

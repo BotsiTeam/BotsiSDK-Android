@@ -26,10 +26,12 @@ internal class BotsiHttpManager(
 
     fun createProfile(
         profileId: String,
+        customerUserId: String?,
         installationMeta: BotsiInstallationMetaDto,
     ): BotsiProfileDto {
         val request = requestFactory.createProfileRequest(
             profileId = profileId,
+            customerUserId = customerUserId,
             installationMeta = installationMeta
         )
         val response = httpClient.newRequest<BotsiBaseResponse<BotsiProfileDto>>(

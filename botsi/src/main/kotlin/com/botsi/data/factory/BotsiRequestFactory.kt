@@ -49,12 +49,14 @@ internal class BotsiRequestFactory(
     @JvmSynthetic
     fun createProfileRequest(
         profileId: String,
+        customerUserId: String?,
         installationMeta: BotsiInstallationMetaDto?,
     ) = buildRequest {
         method = BotsiRequest.Method.POST
         body = gson.toJson(
             requestDataFactory.createCreateProfileRequest(
                 meta = installationMeta,
+                customerUserId = customerUserId
             )
         )
         endPoint = profileId.toProfileEndPoint()
