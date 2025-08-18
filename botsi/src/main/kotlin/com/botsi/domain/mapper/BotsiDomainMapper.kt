@@ -106,7 +106,13 @@ internal fun BotsiProfileDto.CustomEntryDto.toDomain(): BotsiProfile.CustomEntry
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 internal fun BotsiSubscriptionUpdateParameters.toDto(): BotsiSubscriptionUpdateParametersDto {
-    return BotsiSubscriptionUpdateParametersDto(oldSubVendorProductId, replacementMode)
+    return BotsiSubscriptionUpdateParametersDto(
+        oldSubVendorProductId = oldSubVendorProductId,
+        isOfferPersonalized = isOfferPersonalized,
+        obfuscatedAccountId = obfuscatedAccountId,
+        obfuscatedProfileId = obfuscatedProfileId,
+        replacementMode = replacementMode
+    )
 }
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
@@ -147,7 +153,7 @@ internal fun BotsiUpdateProfileParameters.toDto(): BotsiUpdateProfileParametersD
         birthday = birthday,
         email = email,
         userName = userName,
-        gender = gender,
+        gender = gender?.name?.replaceFirstChar { it.lowercase() },
         phone = phone,
         custom = custom.map {
             BotsiProfile.CustomEntry(

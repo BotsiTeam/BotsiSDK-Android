@@ -242,7 +242,13 @@ internal class BotsiGoogleStoreManager(
                         activity,
                         BillingFlowParams.newBuilder()
                             .setProductDetailsParamsList(listOf(params))
-                            .apply { billingFlowSubUpdateParams?.let(::setSubscriptionUpdateParams) }
+                            .apply {
+                                subscriptionUpdateParams?.isOfferPersonalized?.takeIf { it }
+                                    ?.let(::setIsOfferPersonalized)
+                                subscriptionUpdateParams?.obfuscatedAccountId?.let(::setObfuscatedAccountId)
+                                subscriptionUpdateParams?.obfuscatedProfileId?.let(::setObfuscatedProfileId)
+                                billingFlowSubUpdateParams?.let(::setSubscriptionUpdateParams)
+                            }
                             .build()
                     )
                 }

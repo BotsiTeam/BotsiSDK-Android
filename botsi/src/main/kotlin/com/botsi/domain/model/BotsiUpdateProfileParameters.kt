@@ -16,7 +16,7 @@ import androidx.annotation.Keep
  *     email = "user@example.com",
  *     userName = "john_doe",
  *     birthday = "1990-01-15",
- *     gender = "male",
+ *     gender = BotsiGender.Male,
  *     phone = "+1234567890",
  *     custom = listOf(
  *         BotsiUpdateProfileParameters.CustomAttributesEntry(
@@ -41,7 +41,7 @@ import androidx.annotation.Keep
  * @param birthday The user's birthday in ISO 8601 format (YYYY-MM-DD)
  * @param email The user's email address
  * @param userName The user's username or display name
- * @param gender The user's gender (e.g., "male", "female", "other")
+ * @param gender The user's gender using the BotsiGender enum (Male, Female, Other, PreferNotSay)
  * @param phone The user's phone number in international format
  * @param custom List of custom attributes to associate with the user profile
  * @since 1.0.0
@@ -53,7 +53,7 @@ data class BotsiUpdateProfileParameters(
     val birthday: String? = null,
     val email: String? = null,
     val userName: String? = null,
-    val gender: String? = null,
+    val gender: BotsiGender? = null,
     val phone: String? = null,
     val custom: List<CustomAttributesEntry> = emptyList()
 ) {
@@ -77,5 +77,13 @@ data class BotsiUpdateProfileParameters(
         val value: String? = null,
         val id: String? = null,
     )
+
+    @Keep
+    enum class BotsiGender{
+        Male,
+        Female,
+        Other,
+        PreferNotSay
+    }
 
 }
