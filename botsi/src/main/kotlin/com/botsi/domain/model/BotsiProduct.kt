@@ -16,7 +16,7 @@ import androidx.annotation.Keep
  *         println("Product: ${product.title}")
  *         println("Description: ${product.description}")
  *         println("Price: ${product.subscriptionOffer?.pricingPhases?.firstOrNull()?.formattedPrice}")
- *         
+ *
  *         // Check if it's a subscription or one-time purchase
  *         if (product.subscriptionOffer != null) {
  *             println("This is a subscription product")
@@ -62,3 +62,9 @@ data class BotsiProduct(
     val subscriptionOffer: BotsiSubscriptionOfferDetails?,
     val onTimePurchaseOffers: BotsiOneTimePurchaseOfferDetails?,
 )
+
+@Keep
+enum class BotsiSubscriptionRenewalType {
+    Prepaid,
+    Autorenewable,
+}
