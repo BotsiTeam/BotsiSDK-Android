@@ -4,6 +4,7 @@ import androidx.annotation.Keep
 
 @Keep
 data class BotsiBackendProduct(
+    val botsiProductId: Int,
     val productId: String,
     val paywallId: Long,
     val abTestId: Long,

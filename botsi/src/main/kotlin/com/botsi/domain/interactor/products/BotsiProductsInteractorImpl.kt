@@ -35,6 +35,7 @@ internal class BotsiProductsInteractorImpl(
             .map { paywall ->
                 val backendProducts = paywall.sourceProducts?.map { dto ->
                     BotsiBackendProduct(
+                        botsiProductId = dto.botsiProductId ?: 0,
                         productId = dto.sourcePoductId.orEmpty(),
                         paywallId = paywall.id ?: 0,
                         abTestId = paywall.abTestId ?: 0,
@@ -90,7 +91,9 @@ internal class BotsiProductsInteractorImpl(
                                     isConsumable = dto?.isConsumable == true,
                                     basePlanId = dto?.basePlanId.orEmpty(),
                                     subscriptionOffer = BotsiSubscriptionOfferDetails.from(it),
-                                    onTimePurchaseOffers = BotsiOneTimePurchaseOfferDetails.from(product.oneTimePurchaseOfferDetails),
+                                    onTimePurchaseOffers = BotsiOneTimePurchaseOfferDetails.from(
+                                        product.oneTimePurchaseOfferDetails
+                                    ),
                                     placementId = paywall.placementId,
                                     paywallId = paywall.id,
                                     abTestId = paywall.abTestId,
