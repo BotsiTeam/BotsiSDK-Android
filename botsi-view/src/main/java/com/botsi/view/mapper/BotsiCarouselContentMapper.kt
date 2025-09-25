@@ -8,6 +8,7 @@ import com.botsi.view.model.content.BotsiCarouselStyle
 import com.botsi.view.model.content.BotsiCarouselTiming
 import com.botsi.view.model.content.BotsiProductsContent
 import com.botsi.view.utils.toCapitalizedString
+import com.botsi.view.utils.toFillBehaviourIfPossible
 import com.botsi.view.utils.toHexColorIfPossible
 import com.botsi.view.utils.toIntList
 import com.google.gson.JsonElement
@@ -39,9 +40,15 @@ internal class BotsiCarouselContentMapper {
     private fun mapStyle(jsonElement: JsonElement): BotsiCarouselStyle {
         return with(jsonElement.asJsonObject) {
             BotsiCarouselStyle(
-                activeColor = runCatching { (get("active_color") ?: get("activeColor") ?: get("color")).toHexColorIfPossible() }.getOrNull(),
+                activeColor = runCatching {
+                    (get("active_color") ?: get("activeColor")
+                    ?: get("color")).toFillBehaviourIfPossible()
+                }.getOrNull(),
                 activeOpacity = runCatching { get("active_opacity").asFloat }.getOrNull(),
-                defaultColor = runCatching { (get("default_color") ?: get("defaultColor") ?: get("color")).toHexColorIfPossible() }.getOrNull(),
+                defaultColor = runCatching {
+                    (get("default_color") ?: get("defaultColor")
+                    ?: get("color")).toFillBehaviourIfPossible()
+                }.getOrNull(),
                 defaultOpacity = runCatching { get("default_opacity").asFloat }.getOrNull(),
                 size = runCatching { get("size").asInt }.getOrNull(),
                 sizeOption = runCatching {

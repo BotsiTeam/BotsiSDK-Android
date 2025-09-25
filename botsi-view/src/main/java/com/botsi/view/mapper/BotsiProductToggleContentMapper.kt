@@ -4,6 +4,7 @@ import com.botsi.view.model.content.BotsiProductToggleContent
 import com.botsi.view.model.content.BotsiProductToggleContentLayout
 import com.botsi.view.model.content.BotsiProductToggleState
 import com.botsi.view.model.content.BotsiProductToggleStyle
+import com.botsi.view.utils.toFillBehaviourIfPossible
 import com.botsi.view.utils.toHexColorIfPossible
 import com.botsi.view.utils.toIntList
 import com.google.gson.JsonElement
@@ -35,7 +36,7 @@ internal class BotsiProductToggleContentMapper(
     private fun mapToggleStyle(jsonElement: JsonElement): BotsiProductToggleStyle {
         return with(jsonElement.asJsonObject) {
             BotsiProductToggleStyle(
-                color = runCatching { (get("color") ?: get("fill_color") ?: get("fillColor")).toHexColorIfPossible() }.getOrNull(),
+                color = runCatching { (get("color") ?: get("fill_color") ?: get("fillColor")).toFillBehaviourIfPossible() }.getOrNull(),
                 opacity = runCatching { get("opacity").asFloat }.getOrNull(),
                 borderColor = runCatching { (get("border_color") ?: get("borderColor") ?: get("color")).toHexColorIfPossible() }.getOrNull(),
                 borderOpacity = runCatching { get("border_opacity").asFloat }.getOrNull(),

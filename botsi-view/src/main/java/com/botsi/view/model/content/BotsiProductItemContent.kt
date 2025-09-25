@@ -41,7 +41,7 @@ internal data class BotsiProductStateStyle(
 @Keep
 internal data class BotsiBadge(
     val badgeText: String? = null,
-    val badgeColor: String? = null,
+    val badgeColor: BotsiColorBehaviour? = null,
     val badgeOpacity: Float? = null,
     val badgeRadius: List<Int>? = null,
     val badgeTextFont: BotsiFont? = null,

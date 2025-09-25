@@ -29,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
@@ -40,7 +41,7 @@ import com.botsi.view.model.content.BotsiCarouselPageControlType
 import com.botsi.view.model.content.BotsiPaywallBlock
 import com.botsi.view.model.ui.BotsiPaywallUiAction
 import com.botsi.view.utils.toArrangementHorizontal
-import com.botsi.view.utils.toColor
+import com.botsi.view.utils.toBrush
 import com.botsi.view.utils.toContentPaddings
 import com.botsi.view.utils.toPaddings
 import kotlinx.coroutines.delay
@@ -178,7 +179,8 @@ internal fun BotsiCarouselComposable(
             val carouselPageControlComposable = @Composable {
                 if (content.pageControl == true) {
                     val paddings = remember(content) { content.style.toPaddings() }
-                    val arrangement = remember(content) { content.style.toArrangementHorizontal(Alignment.CenterHorizontally) }
+                    val arrangement =
+                        remember(content) { content.style.toArrangementHorizontal(Alignment.CenterHorizontally) }
                     Row(
                         Modifier
                             .fillMaxWidth()
@@ -186,11 +188,11 @@ internal fun BotsiCarouselComposable(
                         horizontalArrangement = arrangement,
                     ) {
                         repeat(state.pageCount) { iteration ->
-                            val color = remember(state.currentPage, content) {
+                            val brush = remember(state.currentPage, content) {
                                 if (state.currentPage == iteration) {
-                                    content.style?.activeColor.toColor(content.style?.activeOpacity)
+                                    content.style?.activeColor.toBrush(content.style?.activeOpacity)
                                 } else {
-                                    content.style?.defaultColor.toColor(content.style?.defaultOpacity)
+                                    content.style?.defaultColor.toBrush(content.style?.defaultOpacity)
                                 }
                             }
                             val size = remember { (content.style?.size ?: 0).dp }
@@ -198,7 +200,7 @@ internal fun BotsiCarouselComposable(
                             Box(
                                 modifier = Modifier
                                     .clip(CircleShape)
-                                    .background(color = color)
+                                    .background(brush = brush)
                                     .size(size)
                             )
                         }

@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
@@ -40,11 +41,14 @@ import com.botsi.view.model.content.BotsiCardContentLayout
 import com.botsi.view.model.content.BotsiCardStyle
 import com.botsi.view.model.content.BotsiCarouselContent
 import com.botsi.view.model.content.BotsiCarouselStyle
+import com.botsi.view.model.content.BotsiColor
+import com.botsi.view.model.content.BotsiColorBehaviour
 import com.botsi.view.model.content.BotsiContentLayout
 import com.botsi.view.model.content.BotsiFont
 import com.botsi.view.model.content.BotsiFontStyleType
 import com.botsi.view.model.content.BotsiFooterContent
 import com.botsi.view.model.content.BotsiFooterStyle
+import com.botsi.view.model.content.BotsiGradient
 import com.botsi.view.model.content.BotsiHeroImageContent
 import com.botsi.view.model.content.BotsiHeroImageContentStyle
 import com.botsi.view.model.content.BotsiHeroImageShape
@@ -56,6 +60,9 @@ import com.botsi.view.model.content.BotsiLinksContent
 import com.botsi.view.model.content.BotsiLinksContentLayout
 import com.botsi.view.model.content.BotsiListContent
 import com.botsi.view.model.content.BotsiMorePlansSheetContent
+import com.botsi.view.model.content.BotsiPlansContent
+import com.botsi.view.model.content.BotsiPlansControlContent
+import com.botsi.view.model.content.BotsiPlansControlContentLayout
 import com.botsi.view.model.content.BotsiProductContentLayout
 import com.botsi.view.model.content.BotsiProductStyle
 import com.botsi.view.model.content.BotsiProductTextStyle
@@ -68,9 +75,6 @@ import com.botsi.view.model.content.BotsiProductsContent
 import com.botsi.view.model.content.BotsiTabControlContent
 import com.botsi.view.model.content.BotsiTabControlState
 import com.botsi.view.model.content.BotsiTabGroupContent
-import com.botsi.view.model.content.BotsiPlansContent
-import com.botsi.view.model.content.BotsiPlansControlContent
-import com.botsi.view.model.content.BotsiPlansControlContentLayout
 import com.botsi.view.model.content.BotsiTextContent
 import com.botsi.view.model.content.BotsiTimerContent
 
@@ -96,8 +100,33 @@ internal fun BotsiHeroImageContent?.toImageHeightDp(): Dp {
 
 internal fun String?.toColor(opacity: Float? = null): Color {
     return runCatching {
-        this?.let { Color(it.toColorInt()).copy(alpha = (opacity ?: 100f) / 100f) } ?: Color.Unspecified
+        this?.let { Color(it.toColorInt()).copy(alpha = (opacity ?: 100f) / 100f) }
+            ?: Color.Unspecified
     }.getOrDefault(Color.Unspecified)
+}
+
+internal fun BotsiColorBehaviour?.toBrush(opacity: Float? = null): Brush {
+    return when (this) {
+        is BotsiColor -> {
+            val color = this.color.toColor(opacity)
+            Brush.linearGradient(colors = listOf(color, color))
+        }
+
+        is BotsiGradient -> {
+            if (colors.isNullOrEmpty()) {
+                return Brush.linearGradient(listOf(Color.Transparent, Color.Transparent))
+            }
+            val degrees = this.degrees ?: 0f
+
+            BotsiLinearGradient(
+                colors = colors.map { it.color.toColor() },
+                stops = colors.map { (it.position ?: 0f) / 100f },
+                angleInDegrees = degrees
+            )
+        }
+
+        null -> Brush.linearGradient(listOf(Color.Transparent, Color.Transparent))
+    }
 }
 
 @Composable
@@ -172,7 +201,7 @@ internal fun BotsiButtonStyle?.toBackground(): Modifier {
 internal fun BotsiButtonStyle?.toBackgroundFillColor(): Modifier {
     return this?.let { style ->
         Modifier.background(
-            color = style.fillColor.toColor(style.opacity),
+            brush = style.fillColor.toBrush(style.opacity),
             shape = style.toShape()
         )
     } ?: Modifier
@@ -182,7 +211,7 @@ internal fun BotsiButtonStyle?.toBackgroundFillColor(): Modifier {
 internal fun BotsiCardStyle?.toBackground(): Modifier {
     return this?.let { style ->
         Modifier.background(
-            color = style.color.toColor(style.opacity),
+            brush = style.color.toBrush(style.opacity),
             shape = style.toShape()
         )
     } ?: Modifier
@@ -315,7 +344,7 @@ internal fun BotsiCardStyle?.toShape(): Shape {
 internal fun BotsiProductStyle?.toBackground(): Modifier {
     return this?.let { style ->
         Modifier.background(
-            color = style.color.toColor(style.opacity),
+            brush = style.color.toBrush(style.opacity),
             shape = style.radius.toShape()
         )
     } ?: Modifier
@@ -325,7 +354,7 @@ internal fun BotsiProductStyle?.toBackground(): Modifier {
 internal fun BotsiBadge?.toBackground(): Modifier {
     return this?.let { style ->
         Modifier.background(
-            color = style.badgeColor.toColor(style.badgeOpacity),
+            brush = style.badgeColor.toBrush(style.badgeOpacity),
             shape = style.badgeRadius.toShape()
         )
     } ?: Modifier
@@ -545,7 +574,7 @@ internal fun BotsiMorePlansSheetContent?.toPaddings(): PaddingValues {
 internal fun BotsiProductToggleStyle?.toBackground(): Modifier {
     return this?.let { style ->
         Modifier.background(
-            color = style.color.toColor(style.opacity),
+            brush = style.color.toBrush(style.opacity),
             shape = style.radius.toShape()
         )
     } ?: Modifier

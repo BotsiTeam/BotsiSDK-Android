@@ -22,7 +22,7 @@ internal data class BotsiProductStyle(
     val borderColor: String? = null,
     val borderOpacity: Float? = null,
     val borderThickness: Int? = null,
-    val color: String? = null,
+    val color: BotsiColorBehaviour? = null,
     val opacity: Float? = null,
     val radius: List<Int>? = null
 )

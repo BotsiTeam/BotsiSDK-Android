@@ -13,7 +13,7 @@ internal data class BotsiCardContent(
 
 @Keep
 internal data class BotsiCardStyle(
-    val color: String? = null,
+    val color: BotsiColorBehaviour? = null,
     val opacity: Float? = null,
     val borderColor: String? = null,
     val borderOpacity: Float? = null,

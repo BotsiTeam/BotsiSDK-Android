@@ -12,6 +12,7 @@ import com.botsi.view.model.content.BotsiTemplate
 import com.botsi.view.model.content.BotsiTopButton
 import com.botsi.view.utils.toCapitalizedString
 import com.botsi.view.utils.toHexColorIfPossible
+import com.botsi.view.utils.toFillBehaviourIfPossible
 import com.botsi.view.utils.toIntList
 import com.google.gson.JsonElement
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +31,7 @@ internal class BotsiLayoutContentMapper(
                 BotsiLayoutContent(
                     darkMode = runCatching { get("dark_mode").asBoolean }.getOrNull(),
                     purchaseFlow = runCatching { get("purchase_flow").asString }.getOrNull(),
-                    fillColor = runCatching { (get("color") ?: get("fill_color") ?: get("fillColor")).toHexColorIfPossible() }.getOrNull(),
+                    fillColor = runCatching { (get("color") ?: get("fill_color") ?: get("fillColor")).toFillBehaviourIfPossible() }.getOrNull(),
                     contentLayout = runCatching { mapContentLayout(get("content_layout")) }.getOrNull(),
                     topButtons = runCatching { mapTopButtons(get("top_buttons")) }.getOrNull(),
                     defaultFont = runCatching { fontMapper.map(get("default_font")) }.getOrNull(),

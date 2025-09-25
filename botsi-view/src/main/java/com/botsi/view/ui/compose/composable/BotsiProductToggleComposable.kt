@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,12 +22,11 @@ import com.botsi.view.model.content.BotsiPaywallBlock
 import com.botsi.view.model.content.BotsiProductToggleContent
 import com.botsi.view.model.ui.BotsiPaywallUiAction
 import com.botsi.view.utils.toArrangementHorizontal
-import com.botsi.view.utils.toArrangementVertical
 import com.botsi.view.utils.toBackground
 import com.botsi.view.utils.toBorder
+import com.botsi.view.utils.toBrush
 import com.botsi.view.utils.toColor
 import com.botsi.view.utils.toPaddings
-import kotlinx.coroutines.CoroutineScope
 
 @Composable
 internal fun BotsiProductToggleComposable(

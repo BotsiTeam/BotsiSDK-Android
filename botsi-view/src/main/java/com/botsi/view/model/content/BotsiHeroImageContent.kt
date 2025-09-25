@@ -16,7 +16,7 @@ internal data class BotsiHeroImageContent(
 @Keep
 internal data class BotsiTint(
     val opacity: Float? = null,
-    val fillColor: String? = null
+    val fillColor: BotsiColorBehaviour? = null
 )
 
 @Keep

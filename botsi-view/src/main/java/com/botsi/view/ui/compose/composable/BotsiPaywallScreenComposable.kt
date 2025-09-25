@@ -41,7 +41,7 @@ import com.botsi.view.model.ui.BotsiPaywallUiAction
 import com.botsi.view.model.ui.BotsiPaywallUiState
 import com.botsi.view.ui.compose.scroll.BotsiHeroImageOverlayNestedScroll
 import com.botsi.view.utils.toArrangementVertical
-import com.botsi.view.utils.toColor
+import com.botsi.view.utils.toBrush
 import com.botsi.view.utils.toImageHeightPx
 import com.botsi.view.utils.toPaddings
 import com.botsi.view.utils.toShape
@@ -69,19 +69,24 @@ internal fun BotsiPaywallScreenComposable(
         heroImageContent?.style == BotsiHeroImageContentStyle.Transparent
     }
 
-    heroImageContent?.let {
-        if (isImageHeroTransparent) {
+    if (isImageHeroTransparent) {
+        heroImageContent?.let {
             BotsiHeroImageTransparentComposable(
                 modifier = Modifier,
                 content = it
             )
         }
+    } else {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(brush = contentLayout?.fillColor.toBrush())
+        )
     }
 
     Scaffold(
         modifier = modifier,
-        containerColor = contentLayout?.fillColor.toColor()
-            .takeIf { !isImageHeroTransparent } ?: Color.Unspecified,
+        containerColor = Color.Transparent,
         snackbarHost = {
             SnackbarHost(snackbarHostState)
         },
@@ -188,7 +193,7 @@ private fun Content(
                             )
                         }
                             .background(
-                                color = contentLayout.fillColor.toColor(),
+                                brush = contentLayout.fillColor.toBrush(),
                                 shape = heroImageContent.toShape(heroImageScrollOffsetState.floatValue)
                             )
                     } else {

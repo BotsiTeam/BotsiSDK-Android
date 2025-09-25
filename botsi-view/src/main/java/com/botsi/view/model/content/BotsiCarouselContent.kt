@@ -18,9 +18,9 @@ internal data class BotsiCarouselContent(
 
 @Keep
 internal data class BotsiCarouselStyle(
-    val activeColor: String? = null,
+    val activeColor: BotsiColorBehaviour? = null,
     val activeOpacity: Float? = null,
-    val defaultColor: String? = null,
+    val defaultColor: BotsiColorBehaviour? = null,
     val defaultOpacity: Float? = null,
     val size: Int? = null,
     val sizeOption: BotsiCarouselPageControlType? = null,

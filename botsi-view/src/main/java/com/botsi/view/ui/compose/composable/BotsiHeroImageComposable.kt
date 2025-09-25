@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import coil3.compose.AsyncImage
 import com.botsi.view.model.content.BotsiHeroImageContent
-import com.botsi.view.utils.toColor
+import com.botsi.view.utils.toBrush
 import com.botsi.view.utils.toImageHeightDp
 import com.botsi.view.utils.toPaddings
 import com.botsi.view.utils.toShape
@@ -107,8 +107,8 @@ internal fun BotsiHeroImageTransparentComposable(
 ) {
     val backgroundUrl = remember(content) { content.backgroundImage }
     val isVideo = remember(content) { content.type == "video" }
-    val color = remember(content.tint) {
-        content.tint?.fillColor.toColor()
+    val brush = remember(content.tint) {
+        content.tint?.fillColor.toBrush()
     }
     val alpha = remember(content.tint) {
         (content.tint?.opacity ?: 100f) / 100f
@@ -120,7 +120,7 @@ internal fun BotsiHeroImageTransparentComposable(
                 .fillMaxSize()
                 .drawWithContent {
                     drawContent()
-                    drawRect(color = color, alpha = alpha)
+                    drawRect(brush = brush, alpha = alpha)
                 },
             videoUrl = backgroundUrl,
             contentScale = ContentScale.Crop
@@ -131,7 +131,7 @@ internal fun BotsiHeroImageTransparentComposable(
                 .fillMaxSize()
                 .drawWithContent {
                     drawContent()
-                    drawRect(color = color, alpha = alpha)
+                    drawRect(brush = brush, alpha = alpha)
                 },
             model = backgroundUrl,
             contentDescription = null,

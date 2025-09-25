@@ -7,6 +7,7 @@ import com.botsi.view.model.content.BotsiHeroImageShape
 import com.botsi.view.model.content.BotsiTint
 import com.botsi.view.utils.toCapitalizedString
 import com.botsi.view.utils.toHexColorIfPossible
+import com.botsi.view.utils.toFillBehaviourIfPossible
 import com.botsi.view.utils.toIntList
 import com.google.gson.JsonElement
 import kotlinx.coroutines.Dispatchers
@@ -38,7 +39,7 @@ internal class BotsiHeroImageContentMapper {
         return with(jsonElement.asJsonObject) {
             BotsiTint(
                 opacity = runCatching { get("opacity").asFloat }.getOrNull(),
-                fillColor = runCatching { (get("color") ?: get("fill_color") ?: get("fillColor")).toHexColorIfPossible() }.getOrNull()
+                fillColor = runCatching { (get("color") ?: get("fill_color") ?: get("fillColor")).toFillBehaviourIfPossible() }.getOrNull()
             )
         }
     }

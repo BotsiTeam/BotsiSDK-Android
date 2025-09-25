@@ -41,7 +41,7 @@ internal data class BotsiProductTextStyle(
 
 @Keep
 internal data class BotsiButtonStyle(
-    val fillColor: String? = null,
+    val fillColor: BotsiColorBehaviour? = null,
     val color: String? = null,
     val opacity: Float? = null,
     val borderColor: String? = null,
@@ -49,3 +49,23 @@ internal data class BotsiButtonStyle(
     val borderThickness: Float? = null,
     val radius: List<Int>? = null
 )
+
+@Keep
+internal data class BotsiGradient(
+    val degrees: Float? = null,
+    val colors: List<BotsiGradientColor>? = null
+): BotsiColorBehaviour
+
+@Keep
+internal data class BotsiGradientColor(
+    val color: String? = null,
+    val position: Float? = null,
+)
+
+@Keep
+internal sealed interface BotsiColorBehaviour
+
+@Keep
+internal data class BotsiColor(
+    val color: String
+) : BotsiColorBehaviour

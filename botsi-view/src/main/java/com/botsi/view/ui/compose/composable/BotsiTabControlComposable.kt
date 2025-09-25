@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,14 +28,11 @@ import com.botsi.view.model.content.BotsiContentType
 import com.botsi.view.model.content.BotsiPaywallBlock
 import com.botsi.view.model.content.BotsiTabControlContent
 import com.botsi.view.model.content.BotsiTabGroupContent
-import com.botsi.view.model.content.BotsiTabState
 import com.botsi.view.model.ui.BotsiPaywallUiAction
-import com.botsi.view.utils.toBackground
 import com.botsi.view.utils.toBackgroundFillColor
 import com.botsi.view.utils.toBorder
 import com.botsi.view.utils.toPaddings
 import com.botsi.view.utils.toColor
-import kotlinx.coroutines.CoroutineScope
 
 @Composable
 internal fun BotsiTabControlComposable(

@@ -17,7 +17,7 @@ internal data class BotsiProductToggleContent(
 
 @Keep
 internal data class BotsiProductToggleStyle(
-    val color: String? = null,
+    val color: BotsiColorBehaviour? = null,
     val opacity: Float? = null,
     val borderColor: String? = null,
     val borderOpacity: Float? = null,

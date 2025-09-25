@@ -6,7 +6,7 @@ import androidx.annotation.Keep
 internal data class BotsiLayoutContent(
     val darkMode: Boolean? = null,
     val purchaseFlow: String? = null,
-    val fillColor: String? = null,
+    val fillColor: BotsiColorBehaviour? = null,
     val defaultFont: BotsiFont? = null,
     val contentLayout: BotsiContentLayout? = null,
     val topButtons: List<BotsiTopButton>? = null,
