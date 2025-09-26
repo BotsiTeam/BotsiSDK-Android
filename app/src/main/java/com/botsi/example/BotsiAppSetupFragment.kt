@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -38,13 +37,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
 import androidx.fragment.app.Fragment
 import com.botsi.Botsi
+import com.botsi.example.BotsiAiFragment
 import com.botsi.view.ui.screen.BotsiViewFragment
 
 class BotsiAppSetupFragment : Fragment() {
@@ -107,6 +106,13 @@ class BotsiAppSetupFragment : Fragment() {
                                     )
 
                                     when (startDestination) {
+                                        BotsiFragments.Ai -> {
+                                            (requireActivity() as MainActivity).addFragment(
+                                                BotsiAiFragment.newInstance(),
+                                                true,
+                                                true
+                                            )
+                                        }
                                         BotsiFragments.Ui -> {
                                             isLoading = true
                                             Botsi.getPaywall(
@@ -253,6 +259,13 @@ class BotsiAppSetupFragment : Fragment() {
                                         onClick = {
                                             isDropdownExpanded = false
                                             startDestination = BotsiFragments.Ui
+                                        }
+                                    )
+                                    DropdownMenuItem(
+                                        text = { Text(text = "Botsi Ai") },
+                                        onClick = {
+                                            isDropdownExpanded = false
+                                            startDestination = BotsiFragments.Ai
                                         }
                                     )
                                 }

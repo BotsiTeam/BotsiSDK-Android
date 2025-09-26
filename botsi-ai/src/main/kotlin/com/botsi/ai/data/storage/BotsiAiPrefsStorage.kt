@@ -1,0 +1,87 @@
+package com.botsi.ai.data.storage
+
+import android.content.Context
+import androidx.annotation.RestrictTo
+import androidx.core.content.edit
+import com.google.gson.Gson
+
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+class BotsiAiPrefsStorage(
+    context: Context,
+    private val gson: Gson
+) {
+
+    private val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+    @JvmSynthetic
+    fun clearData(keys: Set<String>) {
+        prefs.edit(commit = true) {
+            keys.forEach(::remove)
+        }
+    }
+
+    @JvmSynthetic
+    fun clearData() {
+        prefs.edit(commit = true) {
+            clear()
+        }
+    }
+
+    @JvmSynthetic
+    fun getKeysToRemove(containsKeys: Set<String>, startsWithKeys: Set<String>): Set<String> =
+        prefs.all.keys.filterTo(mutableSetOf()) { key ->
+            key != null && (key in containsKeys || startsWithKeys.firstOrNull { key.startsWith(it) } != null)
+        }
+
+    @JvmSynthetic
+    fun getBoolean(key: String, defaultValue: Boolean?) =
+        if (prefs.contains(key)) {
+            prefs.getBoolean(key, defaultValue ?: false)
+        } else {
+            defaultValue
+        }
+
+    @JvmSynthetic
+    fun saveBoolean(key: String, value: Boolean) =
+        prefs.edit(commit = true) {
+            putBoolean(key, value)
+        }
+
+    @JvmSynthetic
+    fun getLong(key: String, defaultValue: Long?) =
+        if (prefs.contains(key)) {
+            prefs.getLong(key, defaultValue ?: 0L)
+        } else {
+            defaultValue
+        }
+
+    @JvmSynthetic
+    fun saveLong(key: String, value: Long) =
+        prefs.edit(commit = true) {
+            putLong(key, value)
+        }
+
+    @JvmSynthetic
+    fun getString(key: String) = prefs.getString(key, null)
+
+    @JvmSynthetic
+    fun saveString(key: String, value: String) =
+        prefs.edit(commit = true) {
+            putString(key, value)
+        }
+
+    @JvmSynthetic
+    fun saveStrings(map: Map<String, String>) =
+        prefs.edit(commit = true) {
+            map.forEach { (key, value) -> putString(key, value) }
+        }
+
+    @JvmSynthetic
+    fun contains(key: String) = prefs.contains(key)
+
+    private fun isNotEmpty(str: String) = str.length > 4
+
+    private companion object {
+        const val PREF_NAME = "BotsiAiPrefs"
+    }
+}
