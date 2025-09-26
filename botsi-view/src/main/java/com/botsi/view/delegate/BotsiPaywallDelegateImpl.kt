@@ -60,7 +60,8 @@ internal class BotsiPaywallDelegateImpl(
                 _uiState.update { BotsiPaywallUiState.Loading }
 
                 Botsi.getPaywallViewConfiguration(
-                    paywallId = 571,
+                    paywallId = action.paywallId,
+//                    paywallId = 571,
                     successCallback = {
                         coroutineScope.launch {
                             val content = paywallBlocksMapper.map(it)
