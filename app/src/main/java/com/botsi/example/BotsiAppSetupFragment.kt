@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -59,10 +60,15 @@ class BotsiAppSetupFragment : Fragment() {
         get() = app.botsiStorage
 
     @OptIn(ExperimentalMaterial3Api::class)
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return ComposeView(context = requireContext()).apply {
             setContent {
                 var appKey by remember { mutableStateOf(TextFieldValue(storage.appKey)) }
+                var secretKey by remember { mutableStateOf(TextFieldValue(storage.secretKey)) }
                 var placementId by remember { mutableStateOf(TextFieldValue(storage.placementId)) }
                 var isLoading by remember { mutableStateOf(false) }
 
@@ -93,11 +99,13 @@ class BotsiAppSetupFragment : Fragment() {
                                     .fillMaxWidth(),
                                 contentPadding = PaddingValues(vertical = 16.dp),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xffFF9542), disabledContainerColor = Color(0xFFFFCDA6)
+                                    containerColor = Color(0xffFF9542),
+                                    disabledContainerColor = Color(0xFFFFCDA6)
                                 ),
                                 onClick = {
                                     storage.appKey = appKey.text
                                     storage.placementId = placementId.text
+                                    storage.secretKey = secretKey.text
 
                                     Botsi.activate(
                                         context = requireContext(),
@@ -113,6 +121,7 @@ class BotsiAppSetupFragment : Fragment() {
                                                 true
                                             )
                                         }
+
                                         BotsiFragments.Ui -> {
                                             isLoading = true
                                             Botsi.getPaywall(
@@ -137,6 +146,13 @@ class BotsiAppSetupFragment : Fragment() {
                                                     )
                                                 },
                                                 errorCallback = {
+                                                    requireActivity().runOnUiThread {
+                                                        Toast.makeText(
+                                                            requireContext(),
+                                                            it.message.orEmpty(),
+                                                            Toast.LENGTH_LONG
+                                                        ).show()
+                                                    }
                                                     isLoading = false
                                                 }
                                             )
@@ -173,26 +189,51 @@ class BotsiAppSetupFragment : Fragment() {
                                 .padding(it)
                                 .padding(16.dp)
                         ) {
-
-                            TextField(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(
-                                        horizontal = 16.dp,
-                                    ),
-                                onValueChange = {
-                                    appKey = it
-                                },
-                                label = {
-                                    Text(
-                                        text = "App key",
-                                        style = TextStyle(
-                                            fontWeight = FontWeight.Medium
+                            if (startDestination == BotsiFragments.Classic ||
+                                startDestination == BotsiFragments.Ui
+                            ) {
+                                TextField(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(
+                                            horizontal = 16.dp,
                                         ),
-                                    )
-                                },
-                                value = appKey,
-                            )
+                                    onValueChange = {
+                                        appKey = it
+                                    },
+                                    label = {
+                                        Text(
+                                            text = "App key",
+                                            style = TextStyle(
+                                                fontWeight = FontWeight.Medium
+                                            ),
+                                        )
+                                    },
+                                    value = appKey,
+                                )
+                            }
+                            if (startDestination == BotsiFragments.Ai) {
+                                TextField(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(
+                                            horizontal = 16.dp,
+                                        ),
+                                    onValueChange = {
+                                        secretKey = it
+                                    },
+                                    label = {
+                                        Text(
+                                            text = "Secret key",
+                                            style = TextStyle(
+                                                fontWeight = FontWeight.Medium
+                                            ),
+                                        )
+                                    },
+                                    value = secretKey,
+                                )
+                            }
+
                             TextField(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -272,7 +313,10 @@ class BotsiAppSetupFragment : Fragment() {
 
                                 Button(
                                     modifier = Modifier.height(28.dp),
-                                    contentPadding = PaddingValues(vertical = 0.dp, horizontal = 24.dp),
+                                    contentPadding = PaddingValues(
+                                        vertical = 0.dp,
+                                        horizontal = 24.dp
+                                    ),
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = Color(0xffFF9542),
                                         disabledContainerColor = Color(0xFFFFCDA6)

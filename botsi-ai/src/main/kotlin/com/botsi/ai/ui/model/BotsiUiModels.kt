@@ -8,7 +8,11 @@ import kotlin.uuid.Uuid
 private fun randomId(): String = Uuid.random().toHexString()
 
 sealed interface BotsiAiUiAction {
-    data class Init(val placementId: String) : BotsiAiUiAction
+    data class Init(
+        val placementId: String,
+        val secretKey: String,
+    ) : BotsiAiUiAction
+
     data class Pay(val activity: Activity) : BotsiAiUiAction
     object Back : BotsiAiUiAction
     data class SelectProduct(val product: BotsiAiProductUi) : BotsiAiUiAction
@@ -24,6 +28,7 @@ data class BotsiAiUiState(
     val isLoadingButton: Boolean = false,
     val isSuccess: Boolean = false,
     val placementId: String = "",
+    val secretKey: String = "",
     val paywallType: BotsiUiPaywallType = BotsiUiPaywallType.None,
     val paywall: BotsiAiPaywallUi = BotsiAiPaywallUi(),
     val selectedProduct: BotsiAiProductUi? = null,

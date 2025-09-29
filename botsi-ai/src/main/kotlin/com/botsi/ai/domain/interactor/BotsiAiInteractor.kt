@@ -8,10 +8,15 @@ import com.botsi.ai.domain.model.BotsiAiPaywall
 import com.botsi.ai.domain.model.BotsiAiProduct
 
 interface BotsiAiInteractor {
-    suspend fun createProfileIfNecessary()
-    suspend fun getPaywall(placementId: String): BotsiAiPaywall
+    suspend fun createProfileIfNecessary(secretKey: String)
+    suspend fun getPaywall(
+        placementId: String,
+        secretKey: String,
+    ): BotsiAiPaywall
+
     suspend fun makePurchase(
         placementId: String,
+        secretKey: String,
         activity: Activity,
         paywall: BotsiAiPaywall,
         product: BotsiAiProduct
@@ -22,12 +27,15 @@ class BotsiAiInteractorImpl(
     private val repository: BotsiAiRepository
 ) : BotsiAiInteractor {
 
-    override suspend fun createProfileIfNecessary() {
-        repository.createProfileIfNecessary()
+    override suspend fun createProfileIfNecessary(secretKey: String) {
+        repository.createProfileIfNecessary(secretKey)
     }
 
-    override suspend fun getPaywall(placementId: String): BotsiAiPaywall {
-        val paywall = repository.getPaywall(placementId)
+    override suspend fun getPaywall(
+        placementId: String,
+        secretKey: String,
+    ): BotsiAiPaywall {
+        val paywall = repository.getPaywall(placementId, secretKey)
         val marketProducts = repository.getMarketProducts(
             ids = paywall.sourceProducts.orEmpty().mapNotNull { it.sourcePoductId }
         )
@@ -37,12 +45,14 @@ class BotsiAiInteractorImpl(
 
     override suspend fun makePurchase(
         placementId: String,
+        secretKey: String,
         activity: Activity,
         paywall: BotsiAiPaywall,
         product: BotsiAiProduct
     ): Boolean {
         return repository.makePurchase(
             placementId = placementId,
+            secretKey = secretKey,
             activity = activity,
             paywall = paywall.toDto(),
             product = product.toDto(),

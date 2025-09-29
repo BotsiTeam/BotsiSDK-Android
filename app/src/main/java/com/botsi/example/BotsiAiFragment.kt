@@ -29,6 +29,8 @@ class BotsiAiFragment : Fragment() {
                 MaterialTheme {
                     BotsiAiEntryPoint(
                         activity = requireActivity(),
+                        placementId = app.botsiStorage.placementId,
+                        secretKey = app.botsiStorage.secretKey,
                         onBack = {
                             activity?.supportFragmentManager?.popBackStack()
                         }

@@ -52,11 +52,15 @@ class BotsiAiDelegateImpl(
                         _state.update {
                             it.copy(
                                 isLoading = true,
-                                placementId = action.placementId
+                                placementId = action.placementId,
+                                secretKey = action.secretKey
                             )
                         }
-                        interactor.createProfileIfNecessary()
-                        val paywall = interactor.getPaywall(action.placementId)
+                        interactor.createProfileIfNecessary(action.secretKey)
+                        val paywall = interactor.getPaywall(
+                            placementId = action.placementId,
+                            secretKey = action.secretKey,
+                        )
                         val paywallUi = paywall.toUi()
                         _state.update {
                             it.copy(
@@ -83,6 +87,7 @@ class BotsiAiDelegateImpl(
                         try {
                             _state.update { it.copy(isLoadingButton = true) }
                             val result = interactor.makePurchase(
+                                secretKey = state.value.secretKey,
                                 placementId = state.value.placementId,
                                 activity = action.activity,
                                 paywall = state.value.paywall.toDomain(),

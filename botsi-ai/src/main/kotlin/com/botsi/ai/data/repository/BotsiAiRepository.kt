@@ -16,10 +16,11 @@ import kotlin.coroutines.resumeWithException
 
 interface BotsiAiRepository {
 
-    suspend fun createProfileIfNecessary()
-    suspend fun getPaywall(placementId: String): BotsiAiPaywallDto
+    suspend fun createProfileIfNecessary(secretKey: String)
+    suspend fun getPaywall(placementId: String, secretKey: String): BotsiAiPaywallDto
     suspend fun getMarketProducts(ids: List<String>): List<ProductDetails>
     suspend fun makePurchase(
+        secretKey: String,
         placementId: String,
         activity: Activity,
         paywall: BotsiAiPaywallDto,
@@ -36,20 +37,23 @@ class BotsiAiRepositoryImpl(
     private val storageManager: BotsiAiStorageManager,
 ) : BotsiAiRepository {
 
-    override suspend fun createProfileIfNecessary() {
+    override suspend fun createProfileIfNecessary(secretKey: String) {
         if (!storageManager.profileId.isNullOrEmpty()) return
 
         val profile = apiService.createProfile(
-            secretKey = SECRET_KEY,
+            secretKey = secretKey,
             meta = installationMetaService.installationMetaFlow(storageManager.deviceId).first()
         ).data
 
         storageManager.profileId = profile.profileId
     }
 
-    override suspend fun getPaywall(placementId: String): BotsiAiPaywallDto {
+    override suspend fun getPaywall(
+        placementId: String,
+        secretKey: String
+    ): BotsiAiPaywallDto {
         return apiService.getPaywall(
-            secretKey = SECRET_KEY,
+            secretKey = secretKey,
             body = installationMetaService.getPaywallBodyFlow(
                 profileId = storageManager.profileId!!,
                 placementId = placementId
@@ -62,6 +66,7 @@ class BotsiAiRepositoryImpl(
     }
 
     override suspend fun makePurchase(
+        secretKey: String,
         placementId: String,
         activity: Activity,
         paywall: BotsiAiPaywallDto,
@@ -84,7 +89,7 @@ class BotsiAiRepositoryImpl(
         }
 
         return apiService.validatePayment(
-            secretKey = SECRET_KEY,
+            secretKey = secretKey,
             body = BotsiAiValidatePurchaseDto(
                 token = purchase?.purchaseToken,
                 placementId = placementId,
@@ -118,9 +123,4 @@ class BotsiAiRepositoryImpl(
             )
         ).status
     }
-
-    companion object {
-        private const val SECRET_KEY = "sk_ElLDOD5E8Eq4v5y.XlJOTtEIqK9bL15J3C7ofuxag"
-    }
-
 }
