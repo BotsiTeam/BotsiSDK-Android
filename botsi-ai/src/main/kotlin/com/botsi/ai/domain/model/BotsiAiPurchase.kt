@@ -20,21 +20,19 @@ data class BotsiAiPurchase(
         /**
          * Creates a [BotsiAiPurchase] from [Purchase]
          */
-        fun from(purchase: Purchase?): BotsiAiPurchase? {
-            return purchase?.let {
-                BotsiAiPurchase(
-                    purchaseToken = it.purchaseToken,
-                    purchaseTime = it.purchaseTime,
-                    products = it.products,
-                    purchaseState = it.purchaseState,
-                    orderId = it.orderId,
-                    isAcknowledged = it.isAcknowledged,
-                    isAutoRenewing = it.isAutoRenewing,
-                    packageName = it.packageName,
-                    originalJson = it.originalJson,
-                    signature = it.signature,
-                )
-            }
+        fun from(purchase: Purchase?): BotsiAiPurchase {
+            return BotsiAiPurchase(
+                purchaseToken = purchase?.purchaseToken.orEmpty(),
+                purchaseTime = purchase?.purchaseTime ?: 0,
+                products = purchase?.products.orEmpty(),
+                purchaseState = purchase?.purchaseState ?: 0,
+                orderId = purchase?.orderId,
+                isAcknowledged = purchase?.isAcknowledged ?: false,
+                isAutoRenewing = purchase?.isAutoRenewing ?: false,
+                packageName = purchase?.packageName.orEmpty(),
+                originalJson = purchase?.originalJson.orEmpty(),
+                signature = purchase?.signature.orEmpty(),
+            )
         }
     }
 }

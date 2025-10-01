@@ -11,7 +11,10 @@ import com.botsi.ai.data.model.BotsiAiValidatePurchaseDto
 import com.botsi.ai.data.service.BotsiAiInstallationMetaRetrieverService
 import com.botsi.ai.data.storage.BotsiAiStorageManager
 import com.botsi.ai.domain.mapper.toPurchasableProductDto
+import com.botsi.ai.domain.model.BotsiAiPurchase
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resumeWithException
@@ -76,11 +79,11 @@ class BotsiAiRepositoryImpl(
         productDetails: ProductDetails,
     ): Boolean {
         val makePurchaseChannel = Channel<Purchase?>()
-
+        val purchasableDto = product.toPurchasableProductDto(productDetails)
         storeManager.makePurchase(
             activity = activity,
             subscriptionUpdateParams = null,
-            purchaseableProduct = product.toPurchasableProductDto(productDetails),
+            purchaseableProduct = purchasableDto,
             callback = { purchase, error ->
                 if (error != null) {
                     makePurchaseChannel.close(error)
@@ -92,7 +95,7 @@ class BotsiAiRepositoryImpl(
 
         val purchase = makePurchaseChannel.receive()
 
-        return apiService.validatePayment(
+        val status = apiService.validatePayment(
             secretKey = secretKey,
             body = BotsiAiValidatePurchaseDto(
                 token = purchase?.purchaseToken,
@@ -126,5 +129,14 @@ class BotsiAiRepositoryImpl(
                     },
             )
         ).status
+
+        storeManager.acknowledgeOrConsume(
+            purchase = BotsiAiPurchase.from(purchase),
+            product = purchasableDto
+        )
+            .catch { }
+            .first()
+
+        return status
     }
 }
