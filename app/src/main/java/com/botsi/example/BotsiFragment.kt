@@ -232,7 +232,7 @@ class BotsiFragment : Fragment() {
                                     ),
                                     title = product.name,
                                     description = product.title,
-                                    price = product.subscriptionOffer?.pricingPhases?.firstOrNull()?.formattedPrice.orEmpty(),
+                                    price = product.subscriptionOffer?.pricingPhases?.firstOrNull()?.formattedPrice ?: "Free",
                                     textColor = textColor,
                                     selected = selectedSub?.basePlanId == product.basePlanId,
                                     onClick = {

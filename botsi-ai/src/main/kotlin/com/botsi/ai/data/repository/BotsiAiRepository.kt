@@ -2,6 +2,7 @@ package com.botsi.ai.data.repository
 
 import android.app.Activity
 import com.android.billingclient.api.ProductDetails
+import com.android.billingclient.api.Purchase
 import com.botsi.ai.common.store.BotsiAiGoogleStoreManager
 import com.botsi.ai.data.api.BotsiAiApiService
 import com.botsi.ai.data.model.BotsiAiPaywallDto
@@ -10,6 +11,7 @@ import com.botsi.ai.data.model.BotsiAiValidatePurchaseDto
 import com.botsi.ai.data.service.BotsiAiInstallationMetaRetrieverService
 import com.botsi.ai.data.storage.BotsiAiStorageManager
 import com.botsi.ai.domain.mapper.toPurchasableProductDto
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resumeWithException
@@ -73,20 +75,22 @@ class BotsiAiRepositoryImpl(
         product: BotsiAiProductDto,
         productDetails: ProductDetails,
     ): Boolean {
-        val purchase = suspendCancellableCoroutine { con ->
-            storeManager.makePurchase(
-                activity = activity,
-                subscriptionUpdateParams = null,
-                purchaseableProduct = product.toPurchasableProductDto(productDetails),
-                callback = { purchase, error ->
-                    if (error != null) {
-                        con.resumeWithException(error)
-                    } else {
-                        con.resumeWith(Result.success(purchase))
-                    }
-                },
-            )
-        }
+        val makePurchaseChannel = Channel<Purchase?>()
+
+        storeManager.makePurchase(
+            activity = activity,
+            subscriptionUpdateParams = null,
+            purchaseableProduct = product.toPurchasableProductDto(productDetails),
+            callback = { purchase, error ->
+                if (error != null) {
+                    makePurchaseChannel.close(error)
+                } else {
+                    makePurchaseChannel.trySend(purchase)
+                }
+            },
+        )
+
+        val purchase = makePurchaseChannel.receive()
 
         return apiService.validatePayment(
             secretKey = secretKey,
