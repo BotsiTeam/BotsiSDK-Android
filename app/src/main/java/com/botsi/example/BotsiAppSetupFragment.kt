@@ -103,6 +103,7 @@ class BotsiAppSetupFragment : Fragment() {
                                     disabledContainerColor = Color(0xFFFFCDA6)
                                 ),
                                 onClick = {
+                                    val clearCache = storage.appKey != appKey.text
                                     storage.appKey = appKey.text
                                     storage.placementId = placementId.text
                                     storage.secretKey = secretKey.text
@@ -110,7 +111,7 @@ class BotsiAppSetupFragment : Fragment() {
                                     Botsi.activate(
                                         context = requireContext(),
                                         apiKey = app.botsiStorage.appKey,
-                                        clearCache = true,
+                                        clearCache = clearCache,
                                     )
 
                                     when (startDestination) {
