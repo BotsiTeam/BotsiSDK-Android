@@ -5,7 +5,7 @@ import androidx.annotation.RestrictTo
 import com.android.billingclient.api.BillingClient.BillingResponseCode
 import com.botsi.BotsiException
 import com.botsi.data.google_store.BotsiGoogleStoreManager
-import com.botsi.data.model.dto.BotsiUnsyncPurchaseDto
+import com.botsi.data.model.dto.BotsiSyncPurchaseDto
 import com.botsi.data.repository.BotsiRepository
 import com.botsi.domain.interactor.profile.BotsiProfileInteractor
 import com.botsi.domain.mapper.toDomain
@@ -20,17 +20,14 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onEmpty
+import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resumeWithException
 
@@ -94,20 +91,22 @@ internal class BotsiPurchaseInteractorImpl(
     ): Flow<Pair<BotsiProfile, BotsiPurchase>> =
         repository.validatePurchase(purchase, product.toDto())
             .onEach {
-                googlePlayManager.acknowledgeOrConsume(purchase, product.toDto())
+                googlePlayManager.acknowledgeOrConsume(purchase, product.isConsumable)
                     .catch { }
                     .collect()
             }
             .map { profile -> profile.toDomain() to purchase }
-            .catch {
-                val unsyncedPurchases = repository.getUnsyncedPurchases().toMutableList()
+            .onEach {
+                val unsyncedPurchases = repository.getSyncedPurchases().toMutableList()
                 unsyncedPurchases.add(
-                    BotsiUnsyncPurchaseDto(
-                        purchase = purchase,
-                        product = product,
+                    BotsiSyncPurchaseDto(
+                        purchaseToken = purchase.purchaseToken,
+                        purchaseTime = purchase.purchaseTime,
+                        products = purchase.products,
+                        type = product.type,
                     )
                 )
-                repository.saveUnsyncedPurchases(unsyncedPurchases)
+                repository.saveSyncedPurchases(unsyncedPurchases)
             }
 
     private suspend fun makePurchase(
@@ -129,55 +128,56 @@ internal class BotsiPurchaseInteractorImpl(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun syncPurchases(): Flow<BotsiProfile> {
-        return flow { emit(repository.getUnsyncedPurchases()) }
-            .flatMapLatest { unsyncPurchases ->
-                if (unsyncPurchases.isNotEmpty()) {
-                    merge(
-                        *unsyncPurchases.map {
-                            // Use the BotsiPurchase returned by validatePurchase, but only keep the profile
-                            validatePurchase(it.purchase, it.product)
-                                .map { (profile, _) -> profile }
-                        }.toTypedArray()
+    override fun syncPurchases(byUser: Boolean): Flow<BotsiProfile> {
+        return googlePlayManager.getPurchaseHistoryDataToRestore()
+            .zip(flow { emit(repository.getSyncedPurchases()) }) { p1, p2 ->
+                p1 to p2
+            }
+            .flatMapLatest { (historyData, syncedPurchases) ->
+                val dataToSync = when {
+                    byUser -> historyData
+                    else -> {
+                        historyData.filter { historyRecord ->
+                            syncedPurchases.firstOrNull { dto ->
+                                dto.purchaseToken == historyRecord.purchaseToken &&
+                                        dto.purchaseTime == historyRecord.purchaseTime
+                            } == null
+                        }
+                    }
+                }
+                if (dataToSync.isNotEmpty()) {
+                    googlePlayManager.queryProductDetails(
+                        productList = dataToSync.mapNotNull { it.products.firstOrNull() }
                     )
+                        .flatMapConcat { marketDetails ->
+                            repository.syncPurchases(
+                                marketDetails.map {
+                                    dataToSync.first { data ->
+                                        data.products.firstOrNull() == it.productId
+                                    } to it
+                                }
+                            )
+                                .onEach {
+                                    val syncedPurchases =
+                                        repository.getSyncedPurchases().toMutableList()
+                                    syncedPurchases.addAll(
+                                        dataToSync.map {
+                                            BotsiSyncPurchaseDto(
+                                                purchaseToken = it.purchaseToken,
+                                                purchaseTime = it.purchaseTime,
+                                                products = it.products,
+                                                type = it.type,
+                                            )
+                                        }
+                                    )
+                                    repository.saveSyncedPurchases(syncedPurchases)
+                                }
+                        }
                 } else {
                     flowOf(null)
                 }
             }
-            .flatMapMerge {
-                googlePlayManager.getPurchaseHistoryDataToRestore()
-                    .map { history ->
-                        val profile = repository.profileStateFlow.first()
-
-                        val alreadyPurchased = profile.subscriptions.orEmpty()
-                            .mapNotNull { it.value.sourceProductId } +
-                                profile.nonSubscriptions.orEmpty()
-                                    .map { it.value.sourceProductId }
-
-                        history.filter { item ->
-                            item.products.none { product ->
-                                alreadyPurchased.contains(product)
-                            }
-                        }
-                    }
-                    .filter { it.isNotEmpty() }
-                    .flatMapLatest {
-                        googlePlayManager.queryProductDetails(
-                            it.mapNotNull { it.products.firstOrNull() }
-                        ).map { products ->
-                            products.map { product ->
-                                it.first { history ->
-                                    history.products.contains(product.productId)
-                                } to product
-                            }
-                        }
-                    }
-                    .flatMapLatest {
-                        repository.syncPurchases(it)
-                    }
-                    .map { it.toDomain() }
-                    .onEmpty { emit(profileInteractor.profileFlow.first()) }
-            }
+            .map { profileInteractor.profileFlow.first() }
     }
 
 }

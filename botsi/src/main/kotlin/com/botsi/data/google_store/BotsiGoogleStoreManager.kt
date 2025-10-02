@@ -280,9 +280,9 @@ internal class BotsiGoogleStoreManager(
             }
 
     @JvmSynthetic
-    fun acknowledgeOrConsume(purchase: BotsiPurchase, product: BotsiPurchasableProductDto) =
+    fun acknowledgeOrConsume(purchase: BotsiPurchase, isProductConsumable: Boolean) =
         onConnected {
-            if (product.isConsumable) {
+            if (isProductConsumable) {
                 storeHelper.consumePurchase(purchase)
             } else {
                 storeHelper.acknowledgePurchase(purchase)

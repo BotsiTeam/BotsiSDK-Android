@@ -2,12 +2,11 @@ package com.botsi.data.repository
 
 import androidx.annotation.RestrictTo
 import com.android.billingclient.api.ProductDetails
-import com.android.billingclient.api.Purchase
 import com.botsi.data.model.dto.BotsiPaywallDto
 import com.botsi.data.model.dto.BotsiProfileDto
 import com.botsi.data.model.dto.BotsiPurchasableProductDto
 import com.botsi.data.model.dto.BotsiPurchaseRecordDto
-import com.botsi.data.model.dto.BotsiUnsyncPurchaseDto
+import com.botsi.data.model.dto.BotsiSyncPurchaseDto
 import com.botsi.data.model.dto.BotsiUpdateProfileParametersDto
 import com.botsi.domain.model.BotsiPurchase
 import com.google.gson.JsonElement
@@ -35,8 +34,8 @@ internal interface BotsiRepository {
 
     fun syncPurchases(details: List<Pair<BotsiPurchaseRecordDto, ProductDetails>>): Flow<BotsiProfileDto>
 
-    fun saveUnsyncedPurchases(purchases: List<BotsiUnsyncPurchaseDto>)
-    fun getUnsyncedPurchases(): List<BotsiUnsyncPurchaseDto>
+    fun saveSyncedPurchases(purchases: List<BotsiSyncPurchaseDto>)
+    fun getSyncedPurchases(): List<BotsiSyncPurchaseDto>
 
     fun clearCache()
 

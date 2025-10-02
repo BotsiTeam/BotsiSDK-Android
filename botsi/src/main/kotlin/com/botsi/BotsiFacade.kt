@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.retryWhen
 
@@ -38,6 +39,7 @@ internal class BotsiFacade(
     ) {
         launch {
             profileInteractor.getOrCreateProfile(customerUserId)
+                .onCompletion { purchaseInteractor.syncPurchases().collect() }
                 .retryIfNecessary()
                 .catch { errorCallback?.invoke(it) }
                 .collect { successCallback?.invoke(it) }
@@ -103,7 +105,7 @@ internal class BotsiFacade(
     ) {
         launch {
             profileInteractor.doOnProfileReady(
-                purchaseInteractor.syncPurchases()
+                purchaseInteractor.syncPurchases(true)
             )
                 .catch { errorCallback?.invoke(it) }
                 .collect { successCallback?.invoke(it) }

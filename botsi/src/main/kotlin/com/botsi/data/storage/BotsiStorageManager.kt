@@ -2,7 +2,7 @@ package com.botsi.data.storage
 
 import androidx.annotation.RestrictTo
 import com.botsi.data.model.dto.BotsiProfileDto
-import com.botsi.data.model.dto.BotsiUnsyncPurchaseDto
+import com.botsi.data.model.dto.BotsiSyncPurchaseDto
 import java.util.UUID
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
@@ -60,14 +60,14 @@ internal class BotsiStorageManager(
     val isProfileTemp: Boolean
         get() = profile == null
 
-    var unsyncedPurchases: List<BotsiUnsyncPurchaseDto>?
-        get() = prefsStorage.getData<List<BotsiUnsyncPurchaseDto>>(UNSYNCED_PURCHASES)
+    var syncedPurchases: List<BotsiSyncPurchaseDto>?
+        get() = prefsStorage.getData<List<BotsiSyncPurchaseDto>>(SYNCED_PURCHASES)
         set(value) {
-            prefsStorage.saveData(UNSYNCED_PURCHASES, value)
+            prefsStorage.saveData(SYNCED_PURCHASES, value)
         }
 
     private companion object {
-        const val UNSYNCED_PURCHASES = "UNSYNCED_PURCHASES"
+        const val SYNCED_PURCHASES = "SYNCED_PURCHASES"
         const val PROFILE_ID_KEY = "PROFILE_ID"
         const val PROFILE_KEY = "PROFILE"
         const val PROFILE_SYNC_TIME_KEY = "PROFILE_SYNC_TIME"

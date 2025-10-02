@@ -2,13 +2,12 @@ package com.botsi.data.repository
 
 import androidx.annotation.RestrictTo
 import com.android.billingclient.api.ProductDetails
-import com.android.billingclient.api.Purchase
 import com.botsi.data.http.BotsiHttpManager
 import com.botsi.data.model.dto.BotsiPaywallDto
 import com.botsi.data.model.dto.BotsiProfileDto
 import com.botsi.data.model.dto.BotsiPurchasableProductDto
 import com.botsi.data.model.dto.BotsiPurchaseRecordDto
-import com.botsi.data.model.dto.BotsiUnsyncPurchaseDto
+import com.botsi.data.model.dto.BotsiSyncPurchaseDto
 import com.botsi.data.model.dto.BotsiUpdateProfileParametersDto
 import com.botsi.data.service.BotsiInstallationMetaRetrieverService
 import com.botsi.data.storage.BotsiStorageManager
@@ -109,12 +108,12 @@ internal class BotsiRepositoryImpl(
             }
     }
 
-    override fun saveUnsyncedPurchases(purchases: List<BotsiUnsyncPurchaseDto>) {
-        storageManager.unsyncedPurchases = purchases
+    override fun saveSyncedPurchases(purchases: List<BotsiSyncPurchaseDto>) {
+        storageManager.syncedPurchases = purchases
     }
 
-    override fun getUnsyncedPurchases(): List<BotsiUnsyncPurchaseDto> {
-        return storageManager.unsyncedPurchases.orEmpty()
+    override fun getSyncedPurchases(): List<BotsiSyncPurchaseDto> {
+        return storageManager.syncedPurchases.orEmpty()
     }
 
     override fun clearCache() {

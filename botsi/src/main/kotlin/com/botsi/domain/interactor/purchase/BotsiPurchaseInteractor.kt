@@ -18,6 +18,6 @@ internal interface BotsiPurchaseInteractor {
         subscriptionUpdateParams: BotsiSubscriptionUpdateParameters?,
     ): Flow<Pair<BotsiProfile, BotsiPurchase>>
 
-    fun syncPurchases(): Flow<BotsiProfile>
+    fun syncPurchases(byUser: Boolean = false): Flow<BotsiProfile>
 
 }
