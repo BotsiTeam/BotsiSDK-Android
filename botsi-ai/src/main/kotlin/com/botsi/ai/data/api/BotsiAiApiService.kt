@@ -32,7 +32,7 @@ interface BotsiAiApiService {
         @Body body: BotsiAiValidatePurchaseDto
     ): BotsiAiResponse<BotsiAiProfileDto>
 
-    @POST("/v1/web-api/purchases/play-store/restore")
+    @POST("v1/web-api/purchases/play-store/restore")
     suspend fun restorePurchases(
         @Header("Authorization") secretKey: String,
         @Body body: BotsiAiRestoreProductInfoRequest
@@ -41,7 +41,7 @@ interface BotsiAiApiService {
     @POST("v1/web-api/events")
     suspend fun logPaywallShown(
         @Header("Authorization") secretKey: String,
-        @Body event: BotsiAiEventRequest
+        @Body event: List<BotsiAiEventRequest>
     )
 
 }

@@ -108,12 +108,6 @@ class BotsiAppSetupFragment : Fragment() {
                                     storage.placementId = placementId.text
                                     storage.secretKey = secretKey.text
 
-                                    Botsi.activate(
-                                        context = requireContext(),
-                                        apiKey = app.botsiStorage.appKey,
-                                        clearCache = clearCache,
-                                    )
-
                                     when (startDestination) {
                                         BotsiFragments.Ai -> {
                                             (requireActivity() as MainActivity).addFragment(
@@ -125,6 +119,11 @@ class BotsiAppSetupFragment : Fragment() {
 
                                         BotsiFragments.Ui -> {
                                             isLoading = true
+                                            Botsi.activate(
+                                                context = requireContext(),
+                                                apiKey = app.botsiStorage.appKey,
+                                                clearCache = clearCache,
+                                            )
                                             Botsi.getPaywall(
                                                 placementId = app.botsiStorage.placementId,
                                                 successCallback = {
@@ -159,11 +158,18 @@ class BotsiAppSetupFragment : Fragment() {
                                             )
                                         }
 
-                                        BotsiFragments.Classic -> (requireActivity() as MainActivity).addFragment(
-                                            BotsiFragment.newInstance(),
-                                            true,
-                                            true
-                                        )
+                                        BotsiFragments.Classic -> {
+                                            Botsi.activate(
+                                                context = requireContext(),
+                                                apiKey = app.botsiStorage.appKey,
+                                                clearCache = clearCache,
+                                            )
+                                            (requireActivity() as MainActivity).addFragment(
+                                                BotsiFragment.newInstance(),
+                                                true,
+                                                true
+                                            )
+                                        }
                                     }
                                 },
                             ) {

@@ -182,13 +182,15 @@ class BotsiAiRepositoryImpl(
     ) {
         apiService.logPaywallShown(
             secretKey = secretKey,
-            event = BotsiAiEventRequest(
-                profileId = storageManager.profileId!!,
-                eventType = "paywall_shown",
-                paywallId = paywallId,
-                placementId = placementId,
-                isExperiment = isExperiment,
-                aiPricingModelId = aiPricingModelId
+            event = listOf(
+                BotsiAiEventRequest(
+                    profileId = storageManager.profileId!!,
+                    eventType = "paywall_shown",
+                    paywallId = paywallId,
+                    placementId = placementId,
+                    isExperiment = isExperiment,
+                    aiPricingModelId = aiPricingModelId
+                )
             )
         )
     }
