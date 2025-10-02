@@ -31,6 +31,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,6 +55,9 @@ fun Paywall2Ui(
     state: BotsiAiUiState,
     onAction: (BotsiAiUiAction) -> Unit
 ) {
+    LaunchedEffect(Unit) {
+        onAction(BotsiAiUiAction.View)
+    }
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -216,7 +220,7 @@ fun Paywall2Ui(
             Spacer(modifier = Modifier.Companion.height(8.dp))
 
             TextButton(
-                onClick = { /* Handle restore */ }
+                onClick = { onAction(BotsiAiUiAction.Restore(activity)) }
             ) {
                 Text(
                     text = "Restore purchase",

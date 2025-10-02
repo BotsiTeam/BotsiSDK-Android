@@ -21,6 +21,15 @@ interface BotsiAiInteractor {
         paywall: BotsiAiPaywall,
         product: BotsiAiProduct
     ): Boolean
+
+    suspend fun restorePurchases(secretKey: String)
+    suspend fun logPaywallShown(
+        secretKey: String,
+        paywallId: Long,
+        placementId: String,
+        isExperiment: Boolean,
+        aiPricingModelId: Long,
+    )
 }
 
 class BotsiAiInteractorImpl(
@@ -57,6 +66,26 @@ class BotsiAiInteractorImpl(
             paywall = paywall.toDto(),
             product = product.toDto(),
             productDetails = product.productDetails
+        )
+    }
+
+    override suspend fun restorePurchases(secretKey: String) {
+        repository.restorePurchases(secretKey)
+    }
+
+    override suspend fun logPaywallShown(
+        secretKey: String,
+        paywallId: Long,
+        placementId: String,
+        isExperiment: Boolean,
+        aiPricingModelId: Long,
+    ) {
+        repository.logPaywallShown(
+            secretKey = secretKey,
+            paywallId = paywallId,
+            placementId = placementId,
+            isExperiment = isExperiment,
+            aiPricingModelId = aiPricingModelId,
         )
     }
 

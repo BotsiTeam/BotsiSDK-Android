@@ -110,6 +110,41 @@ class BotsiAiDelegateImpl(
                 }
             }
 
+            is BotsiAiUiAction.Restore -> {
+                scope.launch {
+                    try {
+                        _state.update { it.copy(isLoadingButton = true) }
+                        interactor.restorePurchases(state.value.secretKey)
+                    } catch (t: Throwable) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                action.activity,
+                                t.message.orEmpty(),
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    } finally {
+                        _state.update { it.copy(isLoadingButton = false) }
+                    }
+                }
+            }
+
+            is BotsiAiUiAction.View -> {
+                scope.launch {
+                    try {
+                        interactor.logPaywallShown(
+                            secretKey = state.value.secretKey,
+                            paywallId = state.value.paywall.id,
+                            placementId = state.value.placementId,
+                            isExperiment = state.value.paywall.isExperiment,
+                            aiPricingModelId = state.value.paywall.aiPricingModelId
+                        )
+                    } catch (t: Throwable) {
+                        t.printStackTrace()
+                    }
+                }
+            }
+
             is BotsiAiUiAction.SelectProduct -> {
                 _state.update { it.copy(selectedProduct = action.product) }
             }

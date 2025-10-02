@@ -5,9 +5,11 @@ import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.botsi.ai.common.store.BotsiAiGoogleStoreManager
 import com.botsi.ai.data.api.BotsiAiApiService
+import com.botsi.ai.data.model.BotsiAiEventRequest
 import com.botsi.ai.data.model.BotsiAiPaywallDto
 import com.botsi.ai.data.model.BotsiAiProductDto
 import com.botsi.ai.data.model.BotsiAiValidatePurchaseDto
+import com.botsi.ai.data.model.createSyncProductInfoRequest
 import com.botsi.ai.data.service.BotsiAiInstallationMetaRetrieverService
 import com.botsi.ai.data.storage.BotsiAiStorageManager
 import com.botsi.ai.domain.mapper.toPurchasableProductDto
@@ -16,6 +18,8 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resumeWithException
 
@@ -33,6 +37,14 @@ interface BotsiAiRepository {
         productDetails: ProductDetails
     ): Boolean
 
+    suspend fun restorePurchases(secretKey: String)
+    suspend fun logPaywallShown(
+        secretKey: String,
+        paywallId: Long,
+        placementId: String,
+        isExperiment: Boolean,
+        aiPricingModelId: Long,
+    )
 }
 
 class BotsiAiRepositoryImpl(
@@ -138,5 +150,46 @@ class BotsiAiRepositoryImpl(
             .first()
 
         return status
+    }
+
+    override suspend fun restorePurchases(secretKey: String) {
+        apiService.restorePurchases(
+            secretKey = secretKey,
+            body = createSyncProductInfoRequest(
+                profileId = storageManager.profileId!!,
+                purchases = storeManager.getPurchaseHistoryDataToRestore()
+                    .flatMapConcat { dataToSync ->
+                        storeManager.queryProductDetails(
+                            productList = dataToSync.mapNotNull { it.products.firstOrNull() }
+                        )
+                            .map {
+                                it.map { product ->
+                                    dataToSync.first { data -> data.products.firstOrNull() == product.productId } to product
+                                }
+                            }
+                    }
+                    .first()
+            )
+        )
+    }
+
+    override suspend fun logPaywallShown(
+        secretKey: String,
+        paywallId: Long,
+        placementId: String,
+        isExperiment: Boolean,
+        aiPricingModelId: Long,
+    ) {
+        apiService.logPaywallShown(
+            secretKey = secretKey,
+            event = BotsiAiEventRequest(
+                profileId = storageManager.profileId!!,
+                eventType = "paywall_shown",
+                paywallId = paywallId,
+                placementId = placementId,
+                isExperiment = isExperiment,
+                aiPricingModelId = aiPricingModelId
+            )
+        )
     }
 }

@@ -1,10 +1,12 @@
 package com.botsi.ai.data.api
 
+import com.botsi.ai.data.model.BotsiAiEventRequest
 import com.botsi.ai.data.model.BotsiAiGetPaywallRequestDto
 import com.botsi.ai.data.model.BotsiAiInstallationMetaDto
 import com.botsi.ai.data.model.BotsiAiPaywallDto
 import com.botsi.ai.data.model.BotsiAiProfileDto
 import com.botsi.ai.data.model.BotsiAiResponse
+import com.botsi.ai.data.model.BotsiAiRestoreProductInfoRequest
 import com.botsi.ai.data.model.BotsiAiValidatePurchaseDto
 import retrofit2.http.Body
 import retrofit2.http.Header
@@ -29,5 +31,17 @@ interface BotsiAiApiService {
         @Header("Authorization") secretKey: String,
         @Body body: BotsiAiValidatePurchaseDto
     ): BotsiAiResponse<BotsiAiProfileDto>
+
+    @POST("/v1/web-api/purchases/play-store/restore")
+    suspend fun restorePurchases(
+        @Header("Authorization") secretKey: String,
+        @Body body: BotsiAiRestoreProductInfoRequest
+    )
+
+    @POST("v1/web-api/events")
+    suspend fun logPaywallShown(
+        @Header("Authorization") secretKey: String,
+        @Body event: BotsiAiEventRequest
+    )
 
 }

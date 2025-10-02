@@ -14,7 +14,9 @@ sealed interface BotsiAiUiAction {
     ) : BotsiAiUiAction
 
     data class Pay(val activity: Activity) : BotsiAiUiAction
-    object Back : BotsiAiUiAction
+    data class Restore(val activity: Activity) : BotsiAiUiAction
+    data object Back : BotsiAiUiAction
+    data object View : BotsiAiUiAction
     data class SelectProduct(val product: BotsiAiProductUi) : BotsiAiUiAction
 }
 
