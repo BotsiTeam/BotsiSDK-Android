@@ -115,6 +115,7 @@ class BotsiAiDelegateImpl(
                     try {
                         _state.update { it.copy(isLoadingButton = true) }
                         interactor.restorePurchases(state.value.secretKey)
+                        _state.update { it.copy(isSuccess = true) }
                     } catch (t: Throwable) {
                         withContext(Dispatchers.Main) {
                             Toast.makeText(
