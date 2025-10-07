@@ -12,7 +12,7 @@ import kotlinx.coroutines.withContext
 
 
 internal class BotsiButtonContentMapper(
-    private val buttonStyleMapper: BotsiButtonStyleMapper,
+    private val buttonStyleMapper: BotsiComponentStyleMapper,
     private val textMapper: BotsiTextMapper,
 ) {
     suspend fun map(json: JsonElement): BotsiButtonContent {

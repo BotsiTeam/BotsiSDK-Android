@@ -3,7 +3,6 @@ package com.botsi.view.mapper
 import com.botsi.view.model.content.BotsiTabControlContent
 import com.botsi.view.model.content.BotsiTabControlState
 import com.botsi.view.model.content.BotsiTabState
-import com.botsi.view.model.content.BotsiButtonStyle
 import com.botsi.view.utils.toCapitalizedString
 import com.botsi.view.utils.toHexColorIfPossible
 import com.botsi.view.utils.toIntList
@@ -13,7 +12,7 @@ import kotlinx.coroutines.withContext
 
 internal class BotsiTabControlContentMapper(
     private val fontMapper: BotsiFontMapper,
-    private val buttonStyleMapper: BotsiButtonStyleMapper
+    private val buttonStyleMapper: BotsiComponentStyleMapper
 ) {
     suspend fun map(json: JsonElement): BotsiTabControlContent {
         return withContext(Dispatchers.Default) {

@@ -41,7 +41,8 @@ internal fun BotsiTextComposable(
     val padding = remember(textContent) { textContent.toPaddings() }
     val verticalOffset = remember(textContent) { (textContent.verticalOffset ?: 0).dp }
     val maxLines = remember(textContent) { textContent.maxLines ?: Int.MAX_VALUE }
-    val autoScale = remember(textContent) { textContent.onOverflow == BotsiOnOverflowBehavior.Scale }
+    val autoScale =
+        remember(textContent) { textContent.onOverflow == BotsiOnOverflowBehavior.Scale }
 
     text?.let { text ->
         BotsiTextComposable(
@@ -65,9 +66,27 @@ internal fun BotsiTextComposable(
     autoScale: Boolean = false,
 ) {
     val textString = remember(text) { text.text.orEmpty() }
-    val textStyle = remember(text) { text.font.toTextStyle() }
-    val textColor = remember(text) { text.color.toColor(text.opacity) }
-    val textSize = remember(text) { text.size.toFontSize() }
+    val textStyle = remember(text) {
+        if (text.style != null) {
+            text.style.font.toTextStyle()
+        } else {
+            text.font.toTextStyle()
+        }
+    }
+    val textColor = remember(text) {
+        if (text.style != null) {
+            text.style.color.toColor(text.opacity)
+        } else {
+            text.color.toColor(text.opacity)
+        }
+    }
+    val textSize = remember(text) {
+        if (text.style != null) {
+            text.style.size.toFontSize()
+        } else {
+            text.size.toFontSize()
+        }
+    }
     val textAlign = remember(text) {
         when (text.align) {
             BotsiAlign.Left -> TextAlign.Left
@@ -101,7 +120,7 @@ internal fun BotsiTextComposable(
                 derivedStateOf {
                     findOptimalFontSize(
                         text = text.text.orEmpty(),
-                        containerWidthPx = containerWidthPx.toFloat(),
+                        containerWidthPx = containerWidthPx,
                         maxLines = maxLines,
                         minFontSize = 8.sp,
                         maxFontSize = textSize,

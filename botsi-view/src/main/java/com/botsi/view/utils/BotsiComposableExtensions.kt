@@ -35,7 +35,7 @@ import com.botsi.view.model.content.BotsiAlign
 import com.botsi.view.model.content.BotsiBadge
 import com.botsi.view.model.content.BotsiButtonContent
 import com.botsi.view.model.content.BotsiButtonContentLayout
-import com.botsi.view.model.content.BotsiButtonStyle
+import com.botsi.view.model.content.BotsiComponentStyle
 import com.botsi.view.model.content.BotsiCardContent
 import com.botsi.view.model.content.BotsiCardContentLayout
 import com.botsi.view.model.content.BotsiCardStyle
@@ -130,7 +130,7 @@ internal fun BotsiColorBehaviour?.toBrush(opacity: Float? = null): Brush {
 }
 
 @Composable
-internal fun BotsiButtonStyle?.toBorder(): Modifier {
+internal fun BotsiComponentStyle?.toBorder(): Modifier {
     return this?.let { style ->
         if (style.borderThickness == null || style.borderThickness == 0f) {
             Modifier
@@ -174,7 +174,7 @@ internal fun BotsiCardStyle?.toBorder(): Modifier {
     } ?: Modifier
 }
 
-internal fun BotsiButtonStyle?.toBorderStroke(): BorderStroke? {
+internal fun BotsiComponentStyle?.toBorderStroke(): BorderStroke? {
     return this?.let { style ->
         if (style.borderThickness == null || style.borderThickness == 0f) {
             BorderStroke(0.dp, Color.Transparent)
@@ -188,7 +188,7 @@ internal fun BotsiButtonStyle?.toBorderStroke(): BorderStroke? {
 }
 
 @Composable
-internal fun BotsiButtonStyle?.toBackground(): Modifier {
+internal fun BotsiComponentStyle?.toBackground(): Modifier {
     return this?.let { style ->
         Modifier.background(
             color = style.color.toColor(style.opacity),
@@ -198,7 +198,7 @@ internal fun BotsiButtonStyle?.toBackground(): Modifier {
 }
 
 @Composable
-internal fun BotsiButtonStyle?.toBackgroundFillColor(): Modifier {
+internal fun BotsiComponentStyle?.toBackgroundFillColor(): Modifier {
     return this?.let { style ->
         Modifier.background(
             brush = style.fillColor.toBrush(style.opacity),
@@ -328,7 +328,7 @@ internal fun BotsiHeroImageContent?.toShape(offsetValue: Float = 0f): Shape {
     } ?: RectangleShape
 }
 
-internal fun BotsiButtonStyle?.toShape(): Shape {
+internal fun BotsiComponentStyle?.toShape(): Shape {
     return this?.radius.toShape()
 }
 

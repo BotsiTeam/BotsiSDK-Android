@@ -9,7 +9,8 @@ internal data class BotsiText(
     val size: Float? = null,
     val color: String? = null,
     val opacity: Float? = null,
-    val align: BotsiAlign? = null
+    val align: BotsiAlign? = null,
+    val style: BotsiComponentStyle? = null
 )
 
 @Keep
@@ -40,14 +41,16 @@ internal data class BotsiProductTextStyle(
 )
 
 @Keep
-internal data class BotsiButtonStyle(
+internal data class BotsiComponentStyle(
     val fillColor: BotsiColorBehaviour? = null,
     val color: String? = null,
     val opacity: Float? = null,
     val borderColor: String? = null,
     val borderOpacity: Float? = null,
     val borderThickness: Float? = null,
-    val radius: List<Int>? = null
+    val font: BotsiFont? = null,
+    val size: Float? = null,
+    val radius: List<Int>? = null,
 )
 
 @Keep

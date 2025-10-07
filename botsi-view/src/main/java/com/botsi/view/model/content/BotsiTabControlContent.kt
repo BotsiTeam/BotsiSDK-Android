@@ -6,7 +6,7 @@ import androidx.annotation.Keep
 internal data class BotsiTabControlContent(
     val selectedTab: String? = null,
     val tabState: BotsiTabState? = null,
-    val containerStyle: BotsiButtonStyle? = null,
+    val containerStyle: BotsiComponentStyle? = null,
     val activeState: BotsiTabControlState? = null,
     val inactiveState: BotsiTabControlState? = null,
     val tabTextFont: BotsiFont? = null,
@@ -17,7 +17,7 @@ internal data class BotsiTabControlContent(
 
 @Keep
 internal data class BotsiTabControlState(
-    val stateStyle: BotsiButtonStyle? = null,
+    val stateStyle: BotsiComponentStyle? = null,
     val padding: List<Int>? = null,
     val fontColor: String? = null,
     val fontOpacity: Float? = null

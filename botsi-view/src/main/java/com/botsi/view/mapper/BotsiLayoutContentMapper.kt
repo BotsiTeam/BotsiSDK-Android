@@ -21,7 +21,7 @@ import kotlinx.coroutines.withContext
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 internal class BotsiLayoutContentMapper(
     private val fontMapper: BotsiFontMapper,
-    private val buttonStyleMapper: BotsiButtonStyleMapper,
+    private val buttonStyleMapper: BotsiComponentStyleMapper,
     private val textMapper: BotsiTextMapper,
 ) {
 

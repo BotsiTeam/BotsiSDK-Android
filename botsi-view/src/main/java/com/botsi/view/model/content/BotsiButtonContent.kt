@@ -8,7 +8,7 @@ internal data class BotsiButtonContent(
     val actionLabel: String? = null,
     val text: BotsiText? = null,
     val secondaryText: BotsiText? = null,
-    val style: BotsiButtonStyle? = null,
+    val style: BotsiComponentStyle? = null,
     val margin: List<Int>? = null,
     val verticalOffset: Int? = null,
     val contentLayout: BotsiButtonContentLayout? = null

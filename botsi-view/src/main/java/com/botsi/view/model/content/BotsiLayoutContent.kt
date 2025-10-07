@@ -27,7 +27,7 @@ internal data class BotsiTopButton(
     val buttonType: BotsiButtonType? = null,
     val buttonAlign: BotsiAlign? = null,
     val delay: Long? = null,
-    val style: BotsiButtonStyle? = null,
+    val style: BotsiComponentStyle? = null,
     val text: BotsiText? = null,
     val icon: BotsiIconStyle? = null
 )

@@ -11,6 +11,7 @@ import kotlinx.coroutines.withContext
 
 internal class BotsiTextMapper(
     private val fontMapper: BotsiFontMapper,
+    private val styleMapper: BotsiComponentStyleMapper,
 ) {
     suspend fun map(json: JsonElement): BotsiText {
         return withContext(Dispatchers.Default) {
@@ -19,11 +20,15 @@ internal class BotsiTextMapper(
                     text = runCatching { get("text").asString }.getOrNull(),
                     font = runCatching { fontMapper.map(get("font")) }.getOrNull(),
                     size = runCatching { get("size").asFloat }.getOrNull(),
-                    color = runCatching { (get("color") ?: get("fill_color") ?: get("fillColor")).toHexColorIfPossible() }.getOrNull(),
+                    color = runCatching {
+                        (get("color") ?: get("fill_color")
+                        ?: get("fillColor")).toHexColorIfPossible()
+                    }.getOrNull(),
                     opacity = runCatching { get("opacity").asFloat }.getOrNull(),
                     align = runCatching {
                         BotsiAlign.valueOf(get("align").toCapitalizedString())
                     }.getOrNull(),
+                    style = runCatching { styleMapper.map(get("text_style")) }.getOrNull()
                 )
             }
         }

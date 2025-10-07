@@ -6,7 +6,7 @@ import com.botsi.view.delegate.BotsiPaywallDelegateImpl
 import com.botsi.view.handler.BotsiClickHandler
 import com.botsi.view.mapper.BotsiBlockMetaMapper
 import com.botsi.view.mapper.BotsiButtonContentMapper
-import com.botsi.view.mapper.BotsiButtonStyleMapper
+import com.botsi.view.mapper.BotsiComponentStyleMapper
 import com.botsi.view.mapper.BotsiCardContentMapper
 import com.botsi.view.mapper.BotsiCarouselContentMapper
 import com.botsi.view.mapper.BotsiFontMapper
@@ -41,12 +41,17 @@ internal class BotsiPaywallDIManager(
         with(dependencies) {
             put(BotsiFontMapper::class.java, BotsiFontMapper())
             put(BotsiImageContentMapper::class.java, BotsiImageContentMapper())
-            put(BotsiButtonStyleMapper::class.java, BotsiButtonStyleMapper())
+            put(
+                BotsiComponentStyleMapper::class.java, BotsiComponentStyleMapper(
+                    inject()
+                )
+            )
             put(BotsiBlockMetaMapper::class.java, BotsiBlockMetaMapper())
             put(BotsiFooterContentMapper::class.java, BotsiFooterContentMapper())
             put(
                 BotsiTextMapper::class.java, BotsiTextMapper(
-                    fontMapper = inject()
+                    fontMapper = inject(),
+                    styleMapper = inject()
                 )
             )
             put(BotsiHeroImageContentMapper::class.java, BotsiHeroImageContentMapper())
@@ -106,7 +111,10 @@ internal class BotsiPaywallDIManager(
                     buttonStyleMapper = inject()
                 )
             )
-            put(BotsiProductToggleStateContentMapper::class.java, BotsiProductToggleStateContentMapper())
+            put(
+                BotsiProductToggleStateContentMapper::class.java,
+                BotsiProductToggleStateContentMapper()
+            )
             put(
                 BotsiProductToggleContentMapper::class.java, BotsiProductToggleContentMapper(
                     textMapper = inject()

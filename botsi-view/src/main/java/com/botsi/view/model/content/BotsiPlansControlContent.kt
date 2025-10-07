@@ -7,7 +7,7 @@ internal data class BotsiPlansControlContent(
     val state: Boolean? = null,
     val defaultText: BotsiPlansControlText? = null,
     val morePlansShownText: BotsiPlansControlText? = null,
-    val style: BotsiButtonStyle? = null,
+    val style: BotsiComponentStyle? = null,
     val margin: List<Int>? = null,
     val verticalOffset: Int? = null,
     val contentLayout: BotsiPlansControlContentLayout? = null
