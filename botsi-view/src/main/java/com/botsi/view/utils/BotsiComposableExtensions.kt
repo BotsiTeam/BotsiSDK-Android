@@ -121,7 +121,7 @@ internal fun BotsiColorBehaviour?.toBrush(opacity: Float? = null): Brush {
             BotsiLinearGradient(
                 colors = colors.map { it.color.toColor() },
                 stops = colors.map { (it.position ?: 0f) / 100f },
-                angleInDegrees = degrees
+                angleInDegrees = degrees,
             )
         }
 
@@ -174,7 +174,7 @@ internal fun BotsiCardStyle?.toBorder(): Modifier {
     } ?: Modifier
 }
 
-internal fun BotsiComponentStyle?.toBorderStroke(): BorderStroke? {
+internal fun BotsiComponentStyle?.toBorderStroke(): BorderStroke {
     return this?.let { style ->
         if (style.borderThickness == null || style.borderThickness == 0f) {
             BorderStroke(0.dp, Color.Transparent)
@@ -184,7 +184,7 @@ internal fun BotsiComponentStyle?.toBorderStroke(): BorderStroke? {
                 color = style.borderColor.toColor(style.borderOpacity),
             )
         }
-    }
+    } ?: BorderStroke(0.dp, Color.Transparent)
 }
 
 @Composable

@@ -1,6 +1,10 @@
 package com.botsi.view.ui.compose.composable
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -15,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.botsi.view.model.content.BotsiAlign
 import com.botsi.view.model.content.BotsiButtonContent
 import com.botsi.view.utils.toBorderStroke
+import com.botsi.view.utils.toBrush
 import com.botsi.view.utils.toColor
 import com.botsi.view.utils.toPaddings
 import com.botsi.view.utils.toShape
@@ -29,7 +34,7 @@ internal fun BotsiButtonComposable(
     val innerPaddings = remember(buttonContent) { buttonContent.contentLayout.toPaddings() }
     val verticalOffset = remember(buttonContent) { (buttonContent.verticalOffset ?: 0).dp }
     val buttonColor = remember(buttonContent) {
-        buttonContent.style?.color.toColor(
+        buttonContent.style?.fillColor.toBrush(
             buttonContent.style?.opacity
         )
     }
@@ -44,18 +49,18 @@ internal fun BotsiButtonComposable(
         }
     }
 
-    Button(
+    Box(
         modifier = modifier
             .padding(outerPaddings)
             .fillMaxWidth()
+            .background(
+                brush = buttonColor,
+                shape = buttonShape,
+            )
+            .border(buttonBorder)
             .padding(innerPaddings)
-            .offset(y = verticalOffset),
-        onClick = onClick,
-        colors = ButtonDefaults.textButtonColors(
-            containerColor = buttonColor,
-        ),
-        border = buttonBorder,
-        shape = buttonShape
+            .offset(y = verticalOffset)
+            .clickable(onClick = onClick),
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
