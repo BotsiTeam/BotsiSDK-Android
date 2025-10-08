@@ -64,7 +64,7 @@ class BotsiAiDelegateImpl(
                         val paywallUi = paywall.toUi()
                         _state.update {
                             it.copy(
-                                paywallType = paywall.externalId.toPaywallType(),
+                                paywallType = paywall.name.toPaywallType(),
                                 paywall = paywallUi,
                                 selectedProduct = paywallUi.sourceProducts.firstOrNull()
                             )
