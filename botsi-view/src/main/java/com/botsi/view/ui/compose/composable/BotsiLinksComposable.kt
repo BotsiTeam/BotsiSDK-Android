@@ -55,8 +55,8 @@ internal fun BotsiLinksComposable(
         val items = mutableListOf<Pair<BotsiLinksText?, BotsiButtonAction>>()
         if (content.hasTermOfService == true) items.add(content.termOfService to BotsiButtonAction.Link(content.termOfService?.url.orEmpty()))
         if (content.hasPrivacyPolicy == true) items.add(content.privacyPolicy to BotsiButtonAction.Link(content.privacyPolicy?.url.orEmpty()))
-        if (content.hasLoginButton == true) items.add(content.loginButton to BotsiButtonAction.Login)
         if (content.hasRestoreButton == true) items.add(content.restoreButton to BotsiButtonAction.Restore)
+        if (content.hasLoginButton == true) items.add(content.loginButton to BotsiButtonAction.Login)
         items.filter { it.first != null }
     }
     val containerArrangement = remember(content) { content.contentLayout.toArrangementVertical() }
@@ -71,7 +71,7 @@ internal fun BotsiLinksComposable(
         .offset(y = verticalOffset)
 
     val isDividersVisible = remember(content) { (content.style?.dividersThickness ?: 0) > 0 }
-    LaunchedEffect(containerSize, items) {
+    LaunchedEffect(containerSize, items, content.style?.size) {
         if (containerSize != IntSize.Zero && items.isNotEmpty()) {
             val spacerCount = items.size - 1
             var availableWidth = containerSize.width - with(density) {
@@ -90,36 +90,44 @@ internal fun BotsiLinksComposable(
                 availableHeight -= dividersSpacedPx
             }
 
-            var testSize = 24.sp
+            // Get the incoming font size from style, prioritize it
+            val incomingFontSize = content.style?.size.toFontSize()
+            var testSize = incomingFontSize
             var finalSize = 10.sp
 
-            for (size in 24 downTo 10) {
-                testSize = size.sp * 1.2f
+            // Helper function to check if text fits within bounds
+            fun checkTextFits(fontSize: TextUnit): Boolean {
                 var estimatedTotalWidth = 0
                 var estimatedTotalHeight = 0
                 for ((_, text) in items.withIndex()) {
                     val textLayoutResult = textMeasurer.measure(
                         text = text.first?.text.orEmpty(),
-                        style = TextStyle(fontSize = testSize)
+                        style = TextStyle(fontSize = fontSize)
                     )
 
                     estimatedTotalWidth += textLayoutResult.size.width
                     estimatedTotalHeight += textLayoutResult.size.height
                 }
 
-                when (content.contentLayout?.layout) {
-                    BotsiLayoutDirection.Vertical -> {
-                        if (estimatedTotalHeight <= availableHeight) {
-                            finalSize = testSize
-                            break
-                        }
-                    }
+                return when (content.contentLayout?.layout) {
+                    BotsiLayoutDirection.Vertical -> estimatedTotalHeight <= availableHeight
+                    else -> estimatedTotalWidth <= availableWidth
+                }
+            }
 
-                    else -> {
-                        if (estimatedTotalWidth <= availableWidth) {
-                            finalSize = testSize
-                            break
-                        }
+            // First try the incoming font size
+            if (checkTextFits(incomingFontSize)) {
+                finalSize = incomingFontSize
+            } else {
+                // If incoming size doesn't fit, decrease it until it fits
+                val incomingSizeValue = incomingFontSize.value
+                val minSize = 10f
+
+                for (sizeValue in incomingSizeValue.toInt() downTo minSize.toInt()) {
+                    testSize = sizeValue.sp
+                    if (checkTextFits(testSize)) {
+                        finalSize = testSize
+                        break
                     }
                 }
             }
