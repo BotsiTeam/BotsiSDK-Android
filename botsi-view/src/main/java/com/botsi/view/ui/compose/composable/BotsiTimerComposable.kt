@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -13,6 +15,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.botsi.view.model.content.BotsiTimerContent
+import com.botsi.view.model.ui.BotsiPaywallUiAction
+import com.botsi.view.timer.BotsiTimerManager
 import com.botsi.view.utils.toPaddings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -24,31 +28,52 @@ internal fun BotsiTimerComposable(
     modifier: Modifier = Modifier,
     content: BotsiTimerContent,
     scope: CoroutineScope,
+    timerManager: BotsiTimerManager,
+    timerInternalId: String?,
+    onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     val paddings = remember(content) { content.toPaddings() }
     val verticalOffset = remember(content) { (content.verticalOffset ?: 0).dp }
     val startTime = remember(content) { content.startTime ?: 0 }
     var timerValue by rememberSaveable(startTime) { mutableLongStateOf(startTime) }
-    var isTimerActive by rememberSaveable(startTime) { mutableStateOf(false) }
-    var dateFormatted by rememberSaveable(content) { mutableStateOf(formatDate(content, timerValue)) }
+    var dateFormatted by rememberSaveable(content) {
+        mutableStateOf(
+            formatDate(
+                content,
+                timerValue
+            )
+        )
+    }
+
+    LaunchedEffect(timerInternalId) {
+        // Start timer using timer manager
+        timerInternalId?.let { internalId ->
+            timerManager.startTimer(
+                timerInternalId = internalId,
+                timerId = content.timerId,
+                timerMode = content.timerMode,
+                startTime = startTime,
+                scope = scope,
+                onTimerUpdate = { value ->
+                    timerValue = value
+                    dateFormatted = formatDate(content, value)
+                },
+                onTimerFinished = {
+                    // Handle timer finished
+                    if (content.triggerCustomAction == true && content.customActionId != null) {
+                        onAction(
+                            BotsiPaywallUiAction.CustomAction(
+                                actionId = content.customActionId,
+                                actionLabel = null
+                            )
+                        )
+                    }
+                }
+            )
+        }
+    }
 
     content.style?.let {
-        if (!isTimerActive) {
-            scope.launch {
-                isTimerActive = true
-                val delay = 1000L
-                while (isTimerActive) {
-                    delay(delay)
-                    if (timerValue == 0L) {
-                        isTimerActive = false
-                        break
-                    }
-                    timerValue -= delay
-                    dateFormatted = formatDate(content, timerValue)
-                }
-            }
-        }
-
         BotsiTextComposable(
             modifier = modifier
                 .padding(paddings)

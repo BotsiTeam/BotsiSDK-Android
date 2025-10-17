@@ -18,6 +18,7 @@ import com.google.gson.JsonElement
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -39,7 +40,7 @@ internal class BotsiFacade(
     ) {
         launch {
             profileInteractor.getOrCreateProfile(customerUserId)
-                .onCompletion { purchaseInteractor.syncPurchases().collect() }
+                .flatMapConcat { purchaseInteractor.syncPurchases() }
                 .retryIfNecessary()
                 .catch { errorCallback?.invoke(it) }
                 .collect { successCallback?.invoke(it) }

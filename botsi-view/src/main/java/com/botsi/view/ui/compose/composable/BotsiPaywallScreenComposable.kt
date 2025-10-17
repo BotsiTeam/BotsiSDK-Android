@@ -39,6 +39,7 @@ import com.botsi.view.model.content.BotsiLayoutContent
 import com.botsi.view.model.content.BotsiPaywallContentStructure
 import com.botsi.view.model.ui.BotsiPaywallUiAction
 import com.botsi.view.model.ui.BotsiPaywallUiState
+import com.botsi.view.timer.BotsiTimerManager
 import com.botsi.view.ui.compose.scroll.BotsiHeroImageOverlayNestedScroll
 import com.botsi.view.utils.toArrangementVertical
 import com.botsi.view.utils.toBrush
@@ -54,9 +55,10 @@ internal fun BotsiPaywallScreenComposable(
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState,
     uiState: BotsiPaywallUiState,
+    timerManager: BotsiTimerManager,
+    scope: CoroutineScope,
     onAction: (BotsiPaywallUiAction) -> Unit
 ) {
-    val scope = rememberCoroutineScope()
     val contentLayout = remember(uiState) {
         (uiState as? BotsiPaywallUiState.Success)?.content?.layout?.content as? BotsiLayoutContent
     }
@@ -95,6 +97,7 @@ internal fun BotsiPaywallScreenComposable(
                 BotsiFooterComposable(
                     footerBlock = it,
                     scope = scope,
+                    timerManager = timerManager,
                     onAction = onAction
                 )
             }
@@ -113,6 +116,7 @@ internal fun BotsiPaywallScreenComposable(
                         contentLayout = it,
                         structure = uiState.content,
                         scope = scope,
+                        timerManager = timerManager,
                         onAction = onAction
                     )
                 }
@@ -132,6 +136,7 @@ private fun Content(
     contentLayout: BotsiLayoutContent,
     structure: BotsiPaywallContentStructure,
     scope: CoroutineScope,
+    timerManager: BotsiTimerManager,
     onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     val density = LocalDensity.current
@@ -217,6 +222,7 @@ private fun Content(
             BotsiScopedContent(
                 children = structure.content.orEmpty(),
                 scope = scope,
+                timerManager = timerManager,
                 onAction = onAction
             )
         }

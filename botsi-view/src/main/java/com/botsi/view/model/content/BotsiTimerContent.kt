@@ -15,4 +15,8 @@ internal data class BotsiTimerContent(
     val style: BotsiText? = null,
     val padding: List<Int>? = null,
     val verticalOffset: Int? = null,
+    val timerMode: BotsiTimerMode? = null,
+    val triggerCustomAction: Boolean? = null,
+    val customActionId: String? = null,
+    val timerId: String? = null,
 ) : BotsiBlockContent

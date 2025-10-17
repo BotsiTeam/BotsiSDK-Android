@@ -2,6 +2,7 @@ package com.botsi.view.mapper
 
 import com.botsi.view.model.content.BotsiTimerContent
 import com.botsi.view.model.content.BotsiTimerFormat
+import com.botsi.view.model.content.BotsiTimerMode
 import com.botsi.view.model.content.BotsiTimerSeparator
 import com.botsi.view.utils.toCapitalizedString
 import com.botsi.view.utils.toIntList
@@ -66,6 +67,10 @@ internal class BotsiTimerContentMapper(
                     style = runCatching { textMapper.map(get("style")) }.getOrNull(),
                     padding = runCatching { get("padding").toIntList() }.getOrNull(),
                     verticalOffset = runCatching { get("vertical_offset").asInt }.getOrNull(),
+                    timerMode = runCatching { BotsiTimerMode.findByKey(get("timer_mode").asString) }.getOrNull(),
+                    triggerCustomAction = runCatching { get("trigger_custom_action").asBoolean }.getOrNull(),
+                    customActionId = runCatching { get("custom_action_id").asString }.getOrNull(),
+                    timerId = runCatching { get("timer_id").asString }.getOrNull(),
                 )
             }
         }

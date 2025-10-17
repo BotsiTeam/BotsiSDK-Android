@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import com.botsi.view.model.content.BotsiPaywallBlock
 import com.botsi.view.model.content.BotsiPlansContent
 import com.botsi.view.model.ui.BotsiPaywallUiAction
+import com.botsi.view.timer.BotsiTimerManager
 import com.botsi.view.utils.toAlignmentHorizontal
 import com.botsi.view.utils.toArrangementVertical
 import com.botsi.view.utils.toPaddings
@@ -19,6 +20,7 @@ import com.botsi.view.utils.toPaddings
 internal fun BotsiPlansComposable(
     modifier: Modifier = Modifier,
     item: BotsiPaywallBlock,
+    timerManager: BotsiTimerManager,
     onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     val content: BotsiPlansContent = remember { item.content as BotsiPlansContent }
@@ -44,6 +46,7 @@ internal fun BotsiPlansComposable(
                 item = childBlock,
                 parentItem = item,
                 align = content.contentLayout?.align,
+                timerManager = timerManager,
                 onAction = onAction
             )
         }

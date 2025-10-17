@@ -12,6 +12,7 @@ import com.botsi.view.model.content.BotsiLayoutDirection
 import com.botsi.view.model.content.BotsiPaywallBlock
 import com.botsi.view.model.content.BotsiProductToggleStateContent
 import com.botsi.view.model.ui.BotsiPaywallUiAction
+import com.botsi.view.timer.BotsiTimerManager
 import com.botsi.view.utils.toAlignmentHorizontal
 import com.botsi.view.utils.toAlignmentVertical
 import com.botsi.view.utils.toArrangementHorizontal
@@ -23,6 +24,7 @@ import kotlinx.coroutines.CoroutineScope
 internal fun BotsiProductToggleStateComposable(
     modifier: Modifier = Modifier,
     item: BotsiPaywallBlock,
+    timerManager: BotsiTimerManager,
     onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     val content = remember(item) { item.content as? BotsiProductToggleStateContent }
@@ -40,6 +42,7 @@ internal fun BotsiProductToggleStateComposable(
                 item = child,
                 parentItem = item,
                 align = content.contentLayout?.align,
+                timerManager = timerManager,
                 onAction = onAction
             )
         }

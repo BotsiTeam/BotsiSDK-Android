@@ -3,6 +3,19 @@ package com.botsi.view.model.content
 import androidx.annotation.Keep
 
 @Keep
+internal enum class BotsiTimerMode(val key: String) {
+    ResetEveryTime("Reset timer on every paywall view"),
+    ResetEveryLaunch("Reset timer on every app launch"),
+    KeepTimer("Keep timer across app launches"),
+    DeveloperDefined("Developer defined");
+
+    companion object {
+        fun findByKey(key: String): BotsiTimerMode =
+            entries.find { it.key == key } ?: ResetEveryTime
+    }
+}
+
+@Keep
 internal enum class BotsiAlign {
     Left,
     Right,
@@ -129,7 +142,8 @@ internal enum class BotsiTimerFormat(val format: String) {
     DdHhMmSs("dd hh mm ss");
 
     companion object {
-        fun findByFormat(key: String): BotsiTimerFormat? = BotsiTimerFormat.entries.find { it.format == key }
+        fun findByFormat(key: String): BotsiTimerFormat? =
+            BotsiTimerFormat.entries.find { it.format == key }
     }
 }
 

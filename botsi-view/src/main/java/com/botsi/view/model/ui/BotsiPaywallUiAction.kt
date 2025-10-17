@@ -10,7 +10,6 @@ internal sealed interface BotsiPaywallUiAction {
     data object None : BotsiPaywallUiAction
     data object View : BotsiPaywallUiAction
     data object Dispose : BotsiPaywallUiAction
-
     // Click actions
     data class ButtonClick(
         val action: BotsiButtonAction,

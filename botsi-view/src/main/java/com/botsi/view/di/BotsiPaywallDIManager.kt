@@ -3,7 +3,7 @@ package com.botsi.view.di
 import androidx.annotation.RestrictTo
 import com.botsi.view.delegate.BotsiPaywallDelegate
 import com.botsi.view.delegate.BotsiPaywallDelegateImpl
-import com.botsi.view.handler.BotsiClickHandler
+import com.botsi.view.handler.BotsiActionHandler
 import com.botsi.view.mapper.BotsiBlockMetaMapper
 import com.botsi.view.mapper.BotsiButtonContentMapper
 import com.botsi.view.mapper.BotsiComponentStyleMapper
@@ -30,15 +30,23 @@ import com.botsi.view.mapper.BotsiTabGroupContentMapper
 import com.botsi.view.mapper.BotsiTextContentMapper
 import com.botsi.view.mapper.BotsiTextMapper
 import com.botsi.view.mapper.BotsiTimerContentMapper
+import com.botsi.view.timer.BotsiTimerManager
+import com.botsi.view.timer.BotsiTimerManagerImpl
+import com.botsi.view.timer.BotsiTimerStorage
+import com.botsi.view.timer.BotsiTimerStorageImpl
+import android.content.Context
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 internal class BotsiPaywallDIManager(
-    private val clickHandler: BotsiClickHandler? = null
+    private val context: Context,
+    private val clickHandler: BotsiActionHandler? = null
 ) {
     private val dependencies = mutableMapOf<Class<*>, Any>()
 
     init {
         with(dependencies) {
+            put(BotsiTimerStorage::class.java, BotsiTimerStorageImpl(context))
+            put(BotsiTimerManager::class.java, BotsiTimerManagerImpl(inject(), clickHandler))
             put(BotsiFontMapper::class.java, BotsiFontMapper())
             put(BotsiImageContentMapper::class.java, BotsiImageContentMapper())
             put(
@@ -164,6 +172,7 @@ internal class BotsiPaywallDIManager(
             put(
                 BotsiPaywallDelegate::class.java, BotsiPaywallDelegateImpl(
                     paywallBlocksMapper = inject(),
+                    timerManager = inject(),
                     clickHandler = clickHandler
                 )
             )

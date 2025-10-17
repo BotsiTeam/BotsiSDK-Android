@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -20,7 +18,6 @@ import com.botsi.view.model.content.BotsiAlign
 import com.botsi.view.model.content.BotsiButtonContent
 import com.botsi.view.utils.toBorderStroke
 import com.botsi.view.utils.toBrush
-import com.botsi.view.utils.toColor
 import com.botsi.view.utils.toPaddings
 import com.botsi.view.utils.toShape
 
@@ -58,9 +55,9 @@ internal fun BotsiButtonComposable(
                 shape = buttonShape,
             )
             .border(buttonBorder)
+            .clickable(onClick = onClick)
             .padding(innerPaddings)
-            .offset(y = verticalOffset)
-            .clickable(onClick = onClick),
+            .offset(y = verticalOffset),
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),

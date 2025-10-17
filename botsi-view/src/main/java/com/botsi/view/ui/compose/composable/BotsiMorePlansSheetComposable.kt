@@ -20,6 +20,7 @@ import com.botsi.view.R
 import com.botsi.view.model.content.BotsiMorePlansSheetContent
 import com.botsi.view.model.content.BotsiPaywallBlock
 import com.botsi.view.model.ui.BotsiPaywallUiAction
+import com.botsi.view.timer.BotsiTimerManager
 import com.botsi.view.utils.toAlignmentHorizontal
 import com.botsi.view.utils.toBackground
 import com.botsi.view.utils.toBorder
@@ -32,6 +33,7 @@ import com.botsi.view.utils.toShape
 internal fun BotsiMorePlansSheetComposable(
     modifier: Modifier = Modifier,
     item: BotsiPaywallBlock,
+    timerManager: BotsiTimerManager,
     onCloseClick: () -> Unit,
     onAction: (BotsiPaywallUiAction) -> Unit
 ) {
@@ -100,6 +102,7 @@ internal fun BotsiMorePlansSheetComposable(
                     item = childBlock,
                     parentItem = item,
                     align = content.contentLayout?.align,
+                    timerManager = timerManager,
                     onAction = onAction
                 )
             }
@@ -110,6 +113,7 @@ internal fun BotsiMorePlansSheetComposable(
                     modifier = Modifier.fillMaxWidth(),
                     item = childBlock,
                     scope = rememberCoroutineScope(),
+                    timerManager = timerManager,
                     onAction = onAction
                 )
             }

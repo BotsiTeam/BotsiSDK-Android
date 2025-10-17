@@ -5,7 +5,7 @@ package com.botsi.view.handler
  * This handler provides callbacks for various button actions that can occur
  * within the paywall UI.
  */
-internal interface BotsiClickHandler {
+internal interface BotsiActionHandler {
 
     /**
      * Called when a button with a specific action is clicked.
@@ -45,5 +45,11 @@ internal interface BotsiClickHandler {
     fun onCustomAction(
         actionId: String,
         actionLabel: String? = null
+    )
+
+    fun onTimerAction(
+        timerId: String,
+        actionId: String,
+        value: Long,
     )
 }

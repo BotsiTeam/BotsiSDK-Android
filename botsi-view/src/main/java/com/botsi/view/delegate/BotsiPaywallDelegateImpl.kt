@@ -3,9 +3,10 @@ package com.botsi.view.delegate
 import androidx.annotation.RestrictTo
 import com.botsi.Botsi
 import com.botsi.view.handler.BotsiActionType
-import com.botsi.view.handler.BotsiClickHandler
+import com.botsi.view.handler.BotsiActionHandler
 import com.botsi.view.mapper.BotsiPaywallBlocksMapper
 import com.botsi.view.model.content.BotsiButtonAction
+import com.botsi.view.timer.BotsiTimerManager
 import com.botsi.view.model.ui.BotsiPaywallUiAction
 import com.botsi.view.model.ui.BotsiPaywallUiSideEffect
 import com.botsi.view.model.ui.BotsiPaywallUiState
@@ -24,7 +25,8 @@ import kotlinx.coroutines.launch
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 internal class BotsiPaywallDelegateImpl(
     private val paywallBlocksMapper: BotsiPaywallBlocksMapper,
-    private val clickHandler: BotsiClickHandler? = null,
+    private val timerManager: BotsiTimerManager,
+    private val clickHandler: BotsiActionHandler? = null,
 ) : BotsiPaywallDelegate {
 
     private lateinit var coroutineScope: CoroutineScope

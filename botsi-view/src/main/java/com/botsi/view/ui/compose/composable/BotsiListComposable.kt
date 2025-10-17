@@ -66,11 +66,13 @@ internal fun BotsiListComposable(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     val itemHeightDp = remember(itemHeight) { with(density) { itemHeight.toDp() } }
-                    val connectorThickness = remember(content) { (content?.connectorThickness ?: 0).dp }
-                    val connectorColor = remember(content) {
-                        content?.connectorColor.toColor(content?.connectorOpacity)
+                    val connectorThickness =
+                        remember(child) { (child.connectorThickness ?: 0).dp }
+                    val connectorColor = remember(child) {
+                        child.connectorColor.toColor(child.connectorOpacity?.toFloat())
                     }
-                    val contentAlignment = remember(content) { content?.iconPlacement.toAlignment() }
+                    val contentAlignment =
+                        remember(content) { content?.iconPlacement.toAlignment() }
                     Box(
                         modifier = Modifier.height(itemHeightDp),
                         contentAlignment = Alignment.BottomCenter
@@ -87,8 +89,10 @@ internal fun BotsiListComposable(
                             contentAlignment = contentAlignment
                         ) {
                             val icon = remember(child) { child.icon }
-                            val iconHeight = remember(content) { content?.height?.dp ?: Dp.Unspecified }
-                            val iconWidth = remember(content) { content?.width?.dp ?: Dp.Unspecified }
+                            val iconHeight =
+                                remember(content) { content?.height?.dp ?: Dp.Unspecified }
+                            val iconWidth =
+                                remember(content) { content?.width?.dp ?: Dp.Unspecified }
                             if (!icon.isNullOrEmpty()) {
                                 AsyncImage(
                                     modifier = Modifier.size(

@@ -29,6 +29,7 @@ import com.botsi.view.model.content.BotsiPaywallBlock
 import com.botsi.view.model.content.BotsiTabControlContent
 import com.botsi.view.model.content.BotsiTabGroupContent
 import com.botsi.view.model.ui.BotsiPaywallUiAction
+import com.botsi.view.timer.BotsiTimerManager
 import com.botsi.view.utils.toBackgroundFillColor
 import com.botsi.view.utils.toBorder
 import com.botsi.view.utils.toPaddings
@@ -39,6 +40,7 @@ internal fun BotsiTabControlComposable(
     modifier: Modifier = Modifier,
     item: BotsiPaywallBlock,
     parentItem: BotsiPaywallBlock,
+    timerManager: BotsiTimerManager,
     onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     val content: BotsiTabControlContent = remember { item.content as BotsiTabControlContent }
@@ -107,6 +109,7 @@ internal fun BotsiTabControlComposable(
         selectedTabContent?.let {
             BotsiTabGroupComposable(
                 item = it,
+                timerManager = timerManager,
                 onAction = onAction
             )
         }

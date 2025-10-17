@@ -15,6 +15,7 @@ import com.botsi.view.model.content.BotsiLayoutDirection
 import com.botsi.view.model.content.BotsiPaywallBlock
 import com.botsi.view.model.content.BotsiProductsContent
 import com.botsi.view.model.ui.BotsiPaywallUiAction
+import com.botsi.view.timer.BotsiTimerManager
 import com.botsi.view.utils.toAlignmentHorizontal
 import com.botsi.view.utils.toAlignmentVertical
 import com.botsi.view.utils.toArrangementHorizontal
@@ -25,6 +26,7 @@ import com.botsi.view.utils.toPaddings
 internal fun BotsiProductsComposable(
     modifier: Modifier = Modifier,
     item: BotsiPaywallBlock,
+    timerManager: BotsiTimerManager,
     onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     val content: BotsiProductsContent = remember { item.content as BotsiProductsContent }
@@ -55,6 +57,7 @@ internal fun BotsiProductsComposable(
                     item = productBlock,
                     parentItem = item,
                     align = content.contentLayout?.align,
+                    timerManager = timerManager,
                     onAction = onAction,
                 )
             }
@@ -77,6 +80,7 @@ internal fun BotsiProductsComposable(
                     item = productBlock,
                     parentItem = item,
                     align = content.contentLayout?.align,
+                    timerManager = timerManager,
                     onAction = onAction
                 )
             }
@@ -90,6 +94,7 @@ internal fun BotsiProductsContent(
     item: BotsiPaywallBlock,
     parentItem: BotsiPaywallBlock,
     align: BotsiAlign? = null,
+    timerManager: BotsiTimerManager,
     onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     when (item.meta?.type) {
@@ -103,6 +108,7 @@ internal fun BotsiProductsContent(
             modifier = modifier,
             item = item,
             parentItem = parentItem,
+            timerManager = timerManager,
             onAction = onAction
         )
 
@@ -110,6 +116,7 @@ internal fun BotsiProductsContent(
             modifier = modifier,
             item = item,
             parentItem = parentItem,
+            timerManager = timerManager,
             onAction = onAction
         )
 
@@ -117,6 +124,7 @@ internal fun BotsiProductsContent(
             modifier = modifier,
             item = item,
             parentItem = parentItem,
+            timerManager = timerManager,
             onAction = onAction
         )
 

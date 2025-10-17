@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import com.botsi.view.model.content.BotsiFooterContent
 import com.botsi.view.model.content.BotsiPaywallBlock
 import com.botsi.view.model.ui.BotsiPaywallUiAction
+import com.botsi.view.timer.BotsiTimerManager
 import com.botsi.view.utils.toArrangementVertical
 import com.botsi.view.utils.toBackground
 import com.botsi.view.utils.toBorder
@@ -21,6 +22,7 @@ internal fun BotsiFooterComposable(
     modifier: Modifier = Modifier,
     footerBlock: BotsiPaywallBlock,
     scope: CoroutineScope,
+    timerManager: BotsiTimerManager,
     onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     val footerContent = remember(footerBlock) {
@@ -39,6 +41,7 @@ internal fun BotsiFooterComposable(
         BotsiScopedContent(
             children = footerBlock.children.orEmpty(),
             scope = scope,
+            timerManager = timerManager,
             onAction = onAction
         )
     }

@@ -12,11 +12,13 @@ import com.botsi.view.model.content.BotsiPaywallBlock
 import com.botsi.view.model.content.BotsiTextContent
 import com.botsi.view.model.content.BotsiTimerContent
 import com.botsi.view.model.ui.BotsiPaywallUiAction
+import com.botsi.view.timer.BotsiTimerManager
 import kotlinx.coroutines.CoroutineScope
 
 internal fun LazyListScope.BotsiScopedContent(
     children: List<BotsiPaywallBlock>,
     scope: CoroutineScope,
+    timerManager: BotsiTimerManager,
     onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     items(children) { item ->
@@ -24,6 +26,7 @@ internal fun LazyListScope.BotsiScopedContent(
             modifier = Modifier.animateItem(),
             item = item,
             scope = scope,
+            timerManager = timerManager,
             onAction = onAction
         )
     }
@@ -34,6 +37,7 @@ internal fun BotsiContentComposable(
     modifier: Modifier = Modifier,
     item: BotsiPaywallBlock,
     scope: CoroutineScope,
+    timerManager: BotsiTimerManager,
     onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     when (item.meta?.type) {
@@ -75,12 +79,14 @@ internal fun BotsiContentComposable(
             modifier = modifier,
             cardBlock = item,
             scope = scope,
+            timerManager = timerManager,
             onAction = onAction
         )
 
         BotsiContentType.Carousel -> BotsiCarouselComposable(
             modifier = modifier,
             carousel = item,
+            timerManager = timerManager,
             onAction = onAction
         )
 
@@ -110,13 +116,17 @@ internal fun BotsiContentComposable(
             BotsiTimerComposable(
                 modifier = modifier,
                 content = content,
-                scope = scope
+                scope = scope,
+                timerManager = timerManager,
+                timerInternalId = item.meta.id,
+                onAction = onAction
             )
         }
 
         BotsiContentType.Products -> BotsiProductsComposable(
             modifier = modifier,
             item = item,
+            timerManager = timerManager,
             onAction = onAction
         )
 

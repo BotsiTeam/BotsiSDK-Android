@@ -18,6 +18,7 @@ import coil3.compose.AsyncImage
 import com.botsi.view.model.content.BotsiCardContent
 import com.botsi.view.model.content.BotsiPaywallBlock
 import com.botsi.view.model.ui.BotsiPaywallUiAction
+import com.botsi.view.timer.BotsiTimerManager
 import com.botsi.view.utils.toAlignmentHorizontal
 import com.botsi.view.utils.toBackground
 import com.botsi.view.utils.toBorder
@@ -30,6 +31,7 @@ internal fun BotsiCardComposable(
     modifier: Modifier = Modifier,
     cardBlock: BotsiPaywallBlock,
     scope: CoroutineScope,
+    timerManager: BotsiTimerManager,
     onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     val content = remember(cardBlock) { cardBlock.content as? BotsiCardContent }
@@ -58,6 +60,7 @@ internal fun BotsiCardComposable(
                     BotsiContentComposable(
                         item = child,
                         scope = scope,
+                        timerManager = timerManager,
                         onAction = onAction
                     )
                 }

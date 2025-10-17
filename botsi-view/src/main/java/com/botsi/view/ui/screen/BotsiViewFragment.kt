@@ -16,7 +16,7 @@ import com.botsi.domain.model.BotsiPaywall
 import com.botsi.domain.model.BotsiProduct
 import com.botsi.view.BotsiViewConfig
 import com.botsi.view.handler.BotsiActionType
-import com.botsi.view.handler.BotsiClickHandler
+import com.botsi.view.handler.BotsiActionHandler
 import com.botsi.view.handler.BotsiPublicEventHandler
 import com.botsi.view.ui.compose.entry_point.BotsiPaywallEntryPoint
 
@@ -30,7 +30,7 @@ class BotsiViewFragment : Fragment() {
      * Default implementation of BotsiPublicClickHandler with basic functionality
      * for handling different click actions in the Botsi paywall.
      */
-    private val defaultClickHandler = object : BotsiClickHandler {
+    private val defaultClickHandler = object : BotsiActionHandler {
 
         override fun onButtonClick(actionType: BotsiActionType, actionId: String?, url: String?) {
             when (actionType) {
@@ -83,6 +83,14 @@ class BotsiViewFragment : Fragment() {
 
         override fun onCustomAction(actionId: String, actionLabel: String?) {
             eventHandler?.onCustomAction(actionId, actionLabel)
+        }
+
+        override fun onTimerAction(
+            timerId: String,
+            actionId: String,
+            value: Long
+        ) {
+
         }
     }
 
