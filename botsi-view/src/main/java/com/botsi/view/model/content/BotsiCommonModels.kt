@@ -16,6 +16,7 @@ internal data class BotsiText(
 @Keep
 internal data class BotsiFont(
     val id: String? = null,
+    val url: String? = null,
     val name: String? = null,
     val isSelected: Boolean? = null,
     val types: List<BotsiFontType>? = null

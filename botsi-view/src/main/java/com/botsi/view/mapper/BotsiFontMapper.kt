@@ -15,6 +15,7 @@ internal class BotsiFontMapper {
             with(json.asJsonObject) {
                 BotsiFont(
                     id = runCatching { get("id").asString }.getOrNull(),
+                    url = runCatching { get("url").asString }.getOrNull(),
                     name = runCatching { get("name").asString }.getOrNull(),
                     isSelected = runCatching { get("isSelected").asBoolean }.getOrNull(),
                     types = runCatching { mapFontTypes(get("types")) }.getOrNull(),
