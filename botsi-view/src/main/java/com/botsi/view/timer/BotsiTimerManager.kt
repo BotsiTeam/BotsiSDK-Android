@@ -21,10 +21,6 @@ internal interface BotsiTimerManager {
         onTimerFinished: () -> Unit
     )
 
-    fun stopTimer(timerInternalId: String)
-    fun resetTimer(timerInternalId: String, timerId: String?, timerMode: BotsiTimerMode?)
-    fun setTimerValue(timerId: String, timerMode: BotsiTimerMode, value: Long)
-    fun getTimerValue(timerId: String, timerMode: BotsiTimerMode): Long?
     fun dispose(scope: CoroutineScope)
 }
 
@@ -131,42 +127,16 @@ internal class BotsiTimerManagerImpl(
         }
     }
 
-    override fun stopTimer(timerInternalId: String) {
+    private fun stopTimer(timerInternalId: String) {
         activeTimers[timerInternalId]?.let { timerState ->
             timerState.job?.cancel()
             activeTimers.remove(timerInternalId)
         }
     }
 
-    override fun resetTimer(timerInternalId: String, timerId: String?, timerMode: BotsiTimerMode?) {
-        val timerState = activeTimers[timerInternalId] ?: return
-        val mode = timerMode ?: BotsiTimerMode.ResetEveryTime
-
-        // Reset to start time
-        timerState.currentValue = timerState.startTime
-
-        // Update storage
-        timerId?.let { id ->
-            storage.setTimerValue(id, mode, timerState.startTime)
-        }
-    }
-
-    override fun setTimerValue(timerId: String, timerMode: BotsiTimerMode, value: Long) {
-        storage.setTimerValue(timerId, timerMode, value)
-
-        // Update active timer if it exists
-        activeTimers.values.find { it.timerId == timerId && it.timerMode == timerMode }
-            ?.let { timerState ->
-                timerState.currentValue = value
-            }
-    }
-
-    override fun getTimerValue(timerId: String, timerMode: BotsiTimerMode): Long? {
-        return storage.getTimerValue(timerId, timerMode)
-    }
-
     override fun dispose(scope: CoroutineScope) {
         activeTimers.forEach { entry ->
+            storage.setTimerCurrentTimeValue(entry.key, entry.value.timerMode!!)
             storage.setTimerValue(entry.key, entry.value.timerMode!!, entry.value.currentValue)
         }
         activeTimers.values.forEach { it.job?.cancel() }
