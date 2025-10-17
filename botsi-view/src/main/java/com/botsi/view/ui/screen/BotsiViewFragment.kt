@@ -18,13 +18,16 @@ import com.botsi.view.BotsiViewConfig
 import com.botsi.view.handler.BotsiActionType
 import com.botsi.view.handler.BotsiActionHandler
 import com.botsi.view.handler.BotsiPublicEventHandler
+import com.botsi.view.timer.BotsiTimerResolver
 import com.botsi.view.ui.compose.entry_point.BotsiPaywallEntryPoint
+import kotlin.concurrent.timer
 
 class BotsiViewFragment : Fragment() {
 
     private var paywall: BotsiPaywall? = null
     private var products: List<BotsiProduct>? = null
     private var eventHandler: BotsiPublicEventHandler? = null
+    private lateinit var timerResolver: BotsiTimerResolver
 
     /**
      * Default implementation of BotsiPublicClickHandler with basic functionality
@@ -84,17 +87,13 @@ class BotsiViewFragment : Fragment() {
         override fun onCustomAction(actionId: String, actionLabel: String?) {
             eventHandler?.onCustomAction(actionId, actionLabel)
         }
-
-        override fun onTimerAction(
-            timerId: String,
-            actionId: String,
-            value: Long
-        ) {
-
-        }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return ComposeView(context = requireContext()).apply {
             setContent {
                 MaterialTheme {
@@ -107,7 +106,8 @@ class BotsiViewFragment : Fragment() {
                         viewConfig = BotsiViewConfig(
                             paywallId = paywall?.id ?: 0L,
                         ),
-                        clickHandler = defaultClickHandler
+                        clickHandler = defaultClickHandler,
+                        timerResolver = timerResolver
                     )
                 }
             }
@@ -132,6 +132,10 @@ class BotsiViewFragment : Fragment() {
         this.eventHandler = clickHandler
     }
 
+    fun setTimerResolver(timerResolver: BotsiTimerResolver) {
+        this.timerResolver = timerResolver
+    }
+
     companion object {
         /**
          * Create a new instance of BotsiViewFragment
@@ -139,12 +143,14 @@ class BotsiViewFragment : Fragment() {
         fun newInstance(
             paywall: BotsiPaywall?,
             products: List<BotsiProduct>?,
-            clickHandler: BotsiPublicEventHandler? = null
+            clickHandler: BotsiPublicEventHandler? = null,
+            timerResolver: BotsiTimerResolver = BotsiTimerResolver.default
         ): BotsiViewFragment {
             return BotsiViewFragment().apply {
                 setPaywall(paywall)
                 setProducts(products)
                 setEventHandler(clickHandler)
+                setTimerResolver(timerResolver)
             }
         }
     }

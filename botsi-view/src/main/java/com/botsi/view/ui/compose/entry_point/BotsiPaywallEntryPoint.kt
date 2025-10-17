@@ -20,6 +20,7 @@ import com.botsi.view.isNotEmpty
 import com.botsi.view.model.ui.BotsiPaywallUiAction
 import com.botsi.view.model.ui.BotsiPaywallUiSideEffect
 import com.botsi.view.timer.BotsiTimerManager
+import com.botsi.view.timer.BotsiTimerResolver
 import com.botsi.view.ui.compose.composable.BotsiPaywallScreenComposable
 import kotlinx.coroutines.launch
 
@@ -27,11 +28,18 @@ import kotlinx.coroutines.launch
 @Composable
 internal fun BotsiPaywallEntryPoint(
     viewConfig: BotsiViewConfig,
-    clickHandler: BotsiActionHandler? = null
+    timerResolver: BotsiTimerResolver = BotsiTimerResolver.default,
+    clickHandler: BotsiActionHandler? = null,
 ) {
     val context = LocalContext.current
     val diManager =
-        remember(viewConfig, clickHandler) { BotsiPaywallDIManager(context, clickHandler) }
+        remember(viewConfig, clickHandler) {
+            BotsiPaywallDIManager(
+                context,
+                timerResolver,
+                clickHandler,
+            )
+        }
     val delegate = remember(viewConfig, clickHandler) { diManager.inject<BotsiPaywallDelegate>() }
     val snackbarHostState = remember(Unit) { SnackbarHostState() }
     val scope = rememberCoroutineScope()

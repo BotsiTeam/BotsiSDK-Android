@@ -1,7 +1,6 @@
 package com.botsi.view.timer
 
 import androidx.annotation.RestrictTo
-import com.botsi.view.handler.BotsiActionHandler
 import com.botsi.view.model.content.BotsiTimerMode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -27,7 +26,7 @@ internal interface BotsiTimerManager {
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 internal class BotsiTimerManagerImpl(
     private val storage: BotsiTimerStorage,
-    private val actionHandler: BotsiActionHandler?
+    private val timerResolver: BotsiTimerResolver
 ) : BotsiTimerManager {
 
     private val activeTimers = ConcurrentHashMap<String, TimerState>()
@@ -77,7 +76,10 @@ internal class BotsiTimerManagerImpl(
 
             BotsiTimerMode.DeveloperDefined -> {
                 // Use stored value if exists, otherwise start fresh
-                storage.getTimerValue(timerInternalId, mode) ?: initialTime
+                timerId?.let {
+                    val date = timerResolver.timerEndAtDate(timerId)
+                    date.time - System.currentTimeMillis()
+                } ?: initialTime
             }
         }
 
@@ -112,15 +114,6 @@ internal class BotsiTimerManagerImpl(
 
             // Timer finished
             timerState.onFinished()
-
-            // Trigger custom action if needed
-            timerState.timerId?.let { timerId ->
-                actionHandler?.onTimerAction(
-                    timerId = timerId,
-                    actionId = "", // This should come from BotsiTimerContent.customActionId
-                    value = 0L
-                )
-            }
 
             // Clean up
             activeTimers.remove(timerInternalId)

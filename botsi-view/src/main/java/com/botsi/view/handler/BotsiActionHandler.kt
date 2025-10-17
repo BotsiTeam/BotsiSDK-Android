@@ -46,10 +46,4 @@ internal interface BotsiActionHandler {
         actionId: String,
         actionLabel: String? = null
     )
-
-    fun onTimerAction(
-        timerId: String,
-        actionId: String,
-        value: Long,
-    )
 }

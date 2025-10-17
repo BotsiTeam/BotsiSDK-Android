@@ -1,14 +1,15 @@
 package com.botsi.view.di
 
+import android.content.Context
 import androidx.annotation.RestrictTo
 import com.botsi.view.delegate.BotsiPaywallDelegate
 import com.botsi.view.delegate.BotsiPaywallDelegateImpl
 import com.botsi.view.handler.BotsiActionHandler
 import com.botsi.view.mapper.BotsiBlockMetaMapper
 import com.botsi.view.mapper.BotsiButtonContentMapper
-import com.botsi.view.mapper.BotsiComponentStyleMapper
 import com.botsi.view.mapper.BotsiCardContentMapper
 import com.botsi.view.mapper.BotsiCarouselContentMapper
+import com.botsi.view.mapper.BotsiComponentStyleMapper
 import com.botsi.view.mapper.BotsiFontMapper
 import com.botsi.view.mapper.BotsiFooterContentMapper
 import com.botsi.view.mapper.BotsiHeroImageContentMapper
@@ -32,21 +33,27 @@ import com.botsi.view.mapper.BotsiTextMapper
 import com.botsi.view.mapper.BotsiTimerContentMapper
 import com.botsi.view.timer.BotsiTimerManager
 import com.botsi.view.timer.BotsiTimerManagerImpl
+import com.botsi.view.timer.BotsiTimerResolver
 import com.botsi.view.timer.BotsiTimerStorage
 import com.botsi.view.timer.BotsiTimerStorageImpl
-import android.content.Context
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 internal class BotsiPaywallDIManager(
     private val context: Context,
-    private val clickHandler: BotsiActionHandler? = null
+    private val timerResolver: BotsiTimerResolver,
+    private val clickHandler: BotsiActionHandler? = null,
 ) {
     private val dependencies = mutableMapOf<Class<*>, Any>()
 
     init {
         with(dependencies) {
             put(BotsiTimerStorage::class.java, BotsiTimerStorageImpl(context))
-            put(BotsiTimerManager::class.java, BotsiTimerManagerImpl(inject(), clickHandler))
+            put(
+                BotsiTimerManager::class.java, BotsiTimerManagerImpl(
+                    storage = inject(),
+                    timerResolver = timerResolver
+                )
+            )
             put(BotsiFontMapper::class.java, BotsiFontMapper())
             put(BotsiImageContentMapper::class.java, BotsiImageContentMapper())
             put(
