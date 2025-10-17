@@ -552,20 +552,17 @@ private fun createGoogleFontFamily(font: BotsiFont): FontFamily? {
 internal fun BotsiFont?.toTextStyle(): TextStyle {
     val context = LocalContext.current
     var fontFamily by remember { mutableStateOf<FontFamily?>(null) }
-    var isLoading by remember { mutableStateOf(false) }
 
     // Handle font loading
     LaunchedEffect(this?.url, this?.name) {
         this@toTextStyle?.let { font ->
             // Check if font has a URL for custom font download (URL is optional)
             if (!font.url.isNullOrBlank()) {
-                isLoading = true
                 try {
                     // Check cache first
                     val cachedFont = fontCache[font.url]
                     if (cachedFont != null) {
                         fontFamily = cachedFont
-                        isLoading = false
                         return@LaunchedEffect
                     }
 
@@ -578,8 +575,6 @@ internal fun BotsiFont?.toTextStyle(): TextStyle {
                 } catch (e: Exception) {
                     // Fall back to Google Fonts on error
                     fontFamily = createGoogleFontFamily(font)
-                } finally {
-                    isLoading = false
                 }
             } else {
                 // Use Google Fonts as fallback when URL is not provided

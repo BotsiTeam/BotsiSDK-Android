@@ -52,7 +52,7 @@ internal fun BotsiLinksComposable(
     val density = LocalDensity.current
 
     val items = remember(content) {
-        var items = mutableListOf<Pair<BotsiLinksText?, BotsiButtonAction>>()
+        val items = mutableListOf<Pair<BotsiLinksText?, BotsiButtonAction>>()
         if (content.hasTermOfService == true) items.add(content.termOfService to BotsiButtonAction.Link(content.termOfService?.url.orEmpty()))
         if (content.hasPrivacyPolicy == true) items.add(content.privacyPolicy to BotsiButtonAction.Link(content.privacyPolicy?.url.orEmpty()))
         if (content.hasLoginButton == true) items.add(content.loginButton to BotsiButtonAction.Login)
@@ -73,7 +73,7 @@ internal fun BotsiLinksComposable(
     val isDividersVisible = remember(content) { (content.style?.dividersThickness ?: 0) > 0 }
     LaunchedEffect(containerSize, items) {
         if (containerSize != IntSize.Zero && items.isNotEmpty()) {
-            var spacerCount = items.size - 1
+            val spacerCount = items.size - 1
             var availableWidth = containerSize.width - with(density) {
                 (containerArrangement.spacing * spacerCount).toPx().toInt()
             }
