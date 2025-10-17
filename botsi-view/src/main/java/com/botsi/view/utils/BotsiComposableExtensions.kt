@@ -8,7 +8,11 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
@@ -17,12 +21,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.Typeface
 import androidx.compose.ui.text.googlefonts.Font
 import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.unit.Dp
@@ -31,6 +37,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
 import com.botsi.view.R
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.net.URL
+import java.util.concurrent.ConcurrentHashMap
 import com.botsi.view.model.content.BotsiAlign
 import com.botsi.view.model.content.BotsiBadge
 import com.botsi.view.model.content.BotsiButtonContent
@@ -83,6 +94,9 @@ private val provider = GoogleFont.Provider(
     providerPackage = "com.google.android.gms",
     certificates = R.array.com_google_android_gms_fonts_certs
 )
+
+// Font cache to avoid re-downloading fonts
+private val fontCache = ConcurrentHashMap<String, FontFamily>()
 
 @Composable
 internal fun BotsiHeroImageContent?.toImageHeightPx(): Float {
@@ -464,34 +478,64 @@ internal fun Float?.toFontSize(): TextUnit {
     return ((this ?: 14f) * 1.2f).sp
 }
 
-internal fun BotsiFont?.toTextStyle(): TextStyle {
-    return this?.let {
-        val selectedType = types?.find { it.isSelected == true }
-        val fontName = it.name.orEmpty().run {
+// Helper function to download custom fonts
+private suspend fun downloadCustomFont(url: String, cacheDir: File): FontFamily? {
+    return withContext(Dispatchers.IO) {
+        try {
+            val connection = URL(url).openConnection()
+            connection.connectTimeout = 10000 // 10 seconds
+            connection.readTimeout = 30000 // 30 seconds
+
+            val inputStream = connection.getInputStream()
+            val fontFileName = "custom_font_${url.hashCode()}.ttf"
+            val fontFile = File(cacheDir, fontFileName)
+
+            // Download font file
+            inputStream.use { input ->
+                fontFile.outputStream().use { output ->
+                    input.copyTo(output)
+                }
+            }
+
+            // Create FontFamily from downloaded file
+            val typeface = android.graphics.Typeface.createFromFile(fontFile)
+            FontFamily(Typeface(typeface))
+
+        } catch (e: Exception) {
+            null
+        }
+    }
+}
+
+// Helper function to create Google Font family (existing logic)
+private fun createGoogleFontFamily(font: BotsiFont): FontFamily? {
+    return try {
+        val selectedType = font.types?.find { it.isSelected == true }
+        val fontName = font.name.orEmpty().run {
             replace(selectedType?.name.orEmpty(), "").trim()
         }
-        val font = GoogleFont(name = fontName.takeIf { !it.contains("System") } ?: "Roboto")
-        val fontFamily = FontFamily(
+        val googleFont = GoogleFont(name = fontName.takeIf { !it.contains("System") } ?: "Roboto")
+
+        FontFamily(
             Font(
-                googleFont = font,
+                googleFont = googleFont,
                 fontProvider = provider,
-                weight =
-                    if (selectedType?.fontStyle == BotsiFontStyleType.Bold) {
-                        FontWeight.W700
-                    } else {
-                        when (selectedType?.fontWeight) {
-                            FontWeight.W100.weight -> FontWeight.W100
-                            FontWeight.W200.weight -> FontWeight.W200
-                            FontWeight.W300.weight -> FontWeight.W300
-                            FontWeight.W400.weight -> FontWeight.W400
-                            FontWeight.W500.weight -> FontWeight.W500
-                            FontWeight.W600.weight -> FontWeight.W600
-                            FontWeight.W700.weight -> FontWeight.W700
-                            FontWeight.W800.weight -> FontWeight.W800
-                            FontWeight.W900.weight -> FontWeight.W900
-                            else -> FontWeight.Normal
-                        }
-                    },
+                weight = if (selectedType?.fontStyle == BotsiFontStyleType.Bold) {
+                    FontWeight.W700
+                } else {
+                    when (selectedType?.fontWeight) {
+                        FontWeight.W100.weight -> FontWeight.W100
+                        FontWeight.W200.weight -> FontWeight.W200
+                        FontWeight.W300.weight -> FontWeight.W300
+                        FontWeight.W400.weight -> FontWeight.W400
+                        FontWeight.W500.weight -> FontWeight.W500
+                        FontWeight.W600.weight -> FontWeight.W600
+                        FontWeight.W700.weight -> FontWeight.W700
+                        FontWeight.W800.weight -> FontWeight.W800
+                        FontWeight.W900.weight -> FontWeight.W900
+                        else -> FontWeight.Normal
+                    }
+                },
                 style = when (selectedType?.fontStyle) {
                     BotsiFontStyleType.Normal -> FontStyle.Normal
                     BotsiFontStyleType.Italic -> FontStyle.Italic
@@ -499,7 +543,55 @@ internal fun BotsiFont?.toTextStyle(): TextStyle {
                 }
             )
         )
-        TextStyle(fontFamily = fontFamily)
+    } catch (e: Exception) {
+        null
+    }
+}
+
+@Composable
+internal fun BotsiFont?.toTextStyle(): TextStyle {
+    val context = LocalContext.current
+    var fontFamily by remember { mutableStateOf<FontFamily?>(null) }
+    var isLoading by remember { mutableStateOf(false) }
+
+    // Handle font loading
+    LaunchedEffect(this?.url, this?.name) {
+        this@toTextStyle?.let { font ->
+            // Check if font has a URL for custom font download (URL is optional)
+            if (!font.url.isNullOrBlank()) {
+                isLoading = true
+                try {
+                    // Check cache first
+                    val cachedFont = fontCache[font.url]
+                    if (cachedFont != null) {
+                        fontFamily = cachedFont
+                        isLoading = false
+                        return@LaunchedEffect
+                    }
+
+                    // Download custom font
+                    val customFontFamily = downloadCustomFont(font.url, context.cacheDir)
+                    customFontFamily?.let {
+                        fontCache[font.url] = it
+                        fontFamily = it
+                    }
+                } catch (e: Exception) {
+                    // Fall back to Google Fonts on error
+                    fontFamily = createGoogleFontFamily(font)
+                } finally {
+                    isLoading = false
+                }
+            } else {
+                // Use Google Fonts as fallback when URL is not provided
+                fontFamily = createGoogleFontFamily(font)
+            }
+        }
+    }
+
+    return this?.let {
+        TextStyle(
+            fontFamily = fontFamily ?: createGoogleFontFamily(it) ?: FontFamily.Default
+        )
     } ?: TextStyle()
 }
 

@@ -66,12 +66,10 @@ internal fun BotsiTextComposable(
     autoScale: Boolean = false,
 ) {
     val textString = remember(text) { text.text.orEmpty() }
-    val textStyle = remember(text) {
-        if (text.style != null) {
-            text.style.font.toTextStyle()
-        } else {
-            text.font.toTextStyle()
-        }
+    val textStyle = if (text.style != null) {
+        text.style.font.toTextStyle()
+    } else {
+        text.font.toTextStyle()
     }
     val textColor = remember(text) {
         if (text.style != null) {

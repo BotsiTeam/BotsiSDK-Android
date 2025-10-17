@@ -223,11 +223,10 @@ private fun BotsiLinksTextComposable(
 ) {
     val contentText = remember(content) { content.text }
     val color = remember(content) { style?.color.toColor(style?.opacity) }
-    val textStyle = remember(content) {
-        style?.font.toTextStyle().copy(
-            fontSize = staticFontSize ?: style?.size.toFontSize()
-        )
-    }
+    val textStyle = style?.font.toTextStyle().copy(
+        fontSize = staticFontSize ?: style?.size.toFontSize()
+    )
+
     if (!contentText.isNullOrEmpty()) {
         Text(
             modifier = modifier,
