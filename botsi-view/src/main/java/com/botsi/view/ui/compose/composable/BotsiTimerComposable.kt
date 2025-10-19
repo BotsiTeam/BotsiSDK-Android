@@ -79,6 +79,8 @@ internal fun BotsiTimerComposable(
                 .padding(paddings)
                 .fillMaxWidth()
                 .offset(y = verticalOffset),
+            maxLines = 1,
+            autoScale = true,
             text = it.copy(text = "${content.beforeText} $dateFormatted ${content.afterText}")
         )
     }

@@ -12,14 +12,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalFontFamilyResolver
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -94,43 +92,42 @@ internal fun BotsiTextComposable(
         }
     }
 
-    val textComposable: @Composable (Modifier, TextUnit) -> Unit = { modifier, textUnit ->
+    val textComposable: @Composable (Modifier, TextUnit) -> Unit = { textModifier, textUnit ->
         Text(
-            modifier = modifier,
+            modifier = textModifier,
             text = textString,
             style = textStyle,
             color = textColor,
             fontSize = textUnit,
             textAlign = textAlign,
             maxLines = maxLines.takeIf { it > 0 } ?: Int.MAX_VALUE,
-            softWrap = maxLines >= 0
+            softWrap = true
         )
     }
 
     if (autoScale) {
         val density = LocalDensity.current
-        val fontFamilyResolver = LocalFontFamilyResolver.current
+        val textMeasurer = rememberTextMeasurer()
 
-        BoxWithConstraints(modifier = Modifier) {
+        BoxWithConstraints(modifier = modifier) {
             val containerWidthPx = with(density) { maxWidth.toPx() }
 
-            val optimalFontSize by remember(text.text, maxLines, textSize) {
+            val optimalFontSize by remember(textString, maxLines, textSize, containerWidthPx) {
                 derivedStateOf {
                     findOptimalFontSize(
-                        text = text.text.orEmpty(),
+                        text = textString,
                         containerWidthPx = containerWidthPx,
                         maxLines = maxLines,
                         minFontSize = 8.sp,
                         maxFontSize = textSize,
                         stepSize = 1.sp,
                         style = textStyle,
-                        density = density,
-                        fontFamilyResolver = fontFamilyResolver
+                        textMeasurer = textMeasurer
                     )
                 }
             }
 
-            textComposable(modifier, optimalFontSize)
+            textComposable(Modifier, optimalFontSize)
         }
 
     } else {
@@ -146,36 +143,52 @@ private fun findOptimalFontSize(
     maxFontSize: TextUnit,
     stepSize: TextUnit,
     style: TextStyle,
-    density: androidx.compose.ui.unit.Density,
-    fontFamilyResolver: FontFamily.Resolver
+    textMeasurer: TextMeasurer
 ): TextUnit {
     var currentSize = maxFontSize
 
     while (currentSize >= minFontSize) {
         val testStyle = style.copy(fontSize = currentSize)
 
-        val textLayoutResult = TextMeasurer(
-            defaultFontFamilyResolver = fontFamilyResolver,
-            defaultDensity = density,
-            defaultLayoutDirection = LayoutDirection.Ltr,
-        ).measure(
+        val textLayoutResult = textMeasurer.measure(
             text = AnnotatedString(text),
             style = testStyle,
             constraints = Constraints(
                 maxWidth = containerWidthPx.toInt()
-            )
+            ),
+            overflow = androidx.compose.ui.text.style.TextOverflow.Clip,
+            softWrap = true,
+            maxLines = if (maxLines == Int.MAX_VALUE) Int.MAX_VALUE else maxLines
         )
 
-        // Check if the text fits within the specified max lines
-        if (textLayoutResult.lineCount <= maxLines) {
+        // Check if the text fits:
+        // 1. The line count should not exceed maxLines
+        // 2. The text should not overflow horizontally
+        // 3. If maxLines is set, check that we're not truncating text (didOverflowHeight would be true if more lines needed)
+        val fitsInLines = if (maxLines == Int.MAX_VALUE) {
+            // No line limit, just check width overflow
+            !textLayoutResult.didOverflowWidth
+        } else {
+            // With line limit, check both that we don't exceed maxLines
+            // and that all text fits (no height overflow means no truncation)
+            textLayoutResult.lineCount <= maxLines &&
+                    !textLayoutResult.didOverflowHeight &&
+                    !textLayoutResult.didOverflowWidth
+        }
+
+        if (fitsInLines) {
             return currentSize
         }
 
         // Decrease font size by step
-        val newSize = with(density) {
-            (currentSize.toPx() - stepSize.toPx()).toSp()
+        currentSize = TextUnit(
+            value = (currentSize.value - stepSize.value).coerceAtLeast(minFontSize.value),
+            type = currentSize.type
+        )
+
+        if (currentSize <= minFontSize) {
+            break
         }
-        currentSize = if (newSize > minFontSize) newSize else minFontSize
     }
 
     return minFontSize
