@@ -69,6 +69,7 @@ internal fun BotsiButtonComposable(
                     BotsiTextComposable(
                         modifier = modifier,
                         text = text,
+                        fullWidth = false
                     )
                 }
             }
@@ -77,6 +78,7 @@ internal fun BotsiButtonComposable(
                     BotsiTextComposable(
                         modifier = modifier,
                         text = text,
+                        fullWidth = false
                     )
                 }
             }

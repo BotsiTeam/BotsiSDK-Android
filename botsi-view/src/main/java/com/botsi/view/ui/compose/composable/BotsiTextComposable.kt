@@ -62,6 +62,7 @@ internal fun BotsiTextComposable(
     text: BotsiText,
     maxLines: Int = Int.MAX_VALUE,
     autoScale: Boolean = false,
+    fullWidth: Boolean = true,
 ) {
     val textString = remember(text) { text.text.orEmpty() }
     val textStyle = if (text.style != null) {
@@ -94,7 +95,9 @@ internal fun BotsiTextComposable(
 
     val textComposable: @Composable (Modifier, TextUnit) -> Unit = { textModifier, textUnit ->
         Text(
-            modifier = textModifier,
+            modifier = textModifier.run {
+                if (fullWidth) this.fillMaxWidth() else this
+            },
             text = textString,
             style = textStyle,
             color = textColor,
