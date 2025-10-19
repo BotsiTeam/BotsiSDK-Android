@@ -66,12 +66,14 @@ internal class BotsiTimerManagerImpl(
 
             BotsiTimerMode.ResetEveryLaunch -> {
                 // Use stored value if exists, otherwise start fresh
-                storage.getTimerValue(timerInternalId, mode) ?: initialTime
+                storage.getTimerValue(timerInternalId, mode)
+                    ?.takeIf { it > 0 } ?: initialTime
             }
 
             BotsiTimerMode.KeepTimer -> {
                 // Use persistent stored value if exists, otherwise start fresh
-                storage.getTimerValue(timerInternalId, mode) ?: initialTime
+                storage.getTimerValue(timerInternalId, mode)
+                    ?.takeIf { it > 0 } ?: initialTime
             }
 
             BotsiTimerMode.DeveloperDefined -> {
