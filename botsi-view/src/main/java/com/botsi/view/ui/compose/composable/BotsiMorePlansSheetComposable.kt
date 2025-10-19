@@ -35,13 +35,16 @@ internal fun BotsiMorePlansSheetComposable(
     item: BotsiPaywallBlock,
     timerManager: BotsiTimerManager,
     onCloseClick: () -> Unit,
+    selectedProductId: Long?,
     onAction: (BotsiPaywallUiAction) -> Unit
 ) {
-    val content: BotsiMorePlansSheetContent = remember { item.content as BotsiMorePlansSheetContent }
+    val content: BotsiMorePlansSheetContent =
+        remember { item.content as BotsiMorePlansSheetContent }
     val outerPaddings = remember(content) { content.toPaddings() }
     val innerPaddings = remember(content) { content.contentLayout.toPaddings() }
     val verticalOffset = remember(content) { (content.verticalOffset ?: 0).dp }
-    val contentAlignment = remember(content) { content.contentLayout?.align.toAlignmentHorizontal() }
+    val contentAlignment =
+        remember(content) { content.contentLayout?.align.toAlignmentHorizontal() }
 
     ModalBottomSheet(
         modifier = modifier,
@@ -103,6 +106,7 @@ internal fun BotsiMorePlansSheetComposable(
                     parentItem = item,
                     align = content.contentLayout?.align,
                     timerManager = timerManager,
+                    selectedProductId = selectedProductId,
                     onAction = onAction
                 )
             }
@@ -114,6 +118,7 @@ internal fun BotsiMorePlansSheetComposable(
                     item = childBlock,
                     scope = rememberCoroutineScope(),
                     timerManager = timerManager,
+                    selectedProductId = selectedProductId,
                     onAction = onAction
                 )
             }

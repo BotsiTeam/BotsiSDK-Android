@@ -19,6 +19,7 @@ internal fun LazyListScope.BotsiScopedContent(
     children: List<BotsiPaywallBlock>,
     scope: CoroutineScope,
     timerManager: BotsiTimerManager,
+    selectedProductId: Long?,
     onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     items(children) { item ->
@@ -27,6 +28,7 @@ internal fun LazyListScope.BotsiScopedContent(
             item = item,
             scope = scope,
             timerManager = timerManager,
+            selectedProductId = selectedProductId,
             onAction = onAction
         )
     }
@@ -37,6 +39,7 @@ internal fun BotsiContentComposable(
     modifier: Modifier = Modifier,
     item: BotsiPaywallBlock,
     scope: CoroutineScope,
+    selectedProductId: Long?,
     timerManager: BotsiTimerManager,
     onAction: (BotsiPaywallUiAction) -> Unit
 ) {
@@ -80,6 +83,7 @@ internal fun BotsiContentComposable(
             cardBlock = item,
             scope = scope,
             timerManager = timerManager,
+            selectedProductId = selectedProductId,
             onAction = onAction
         )
 
@@ -87,6 +91,7 @@ internal fun BotsiContentComposable(
             modifier = modifier,
             carousel = item,
             timerManager = timerManager,
+            selectedProductId = selectedProductId,
             onAction = onAction
         )
 
@@ -127,6 +132,7 @@ internal fun BotsiContentComposable(
             modifier = modifier,
             item = item,
             timerManager = timerManager,
+            selectedProductId = selectedProductId,
             onAction = onAction
         )
 

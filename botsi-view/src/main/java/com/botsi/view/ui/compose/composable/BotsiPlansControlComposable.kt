@@ -29,13 +29,15 @@ internal fun BotsiPlansControlComposable(
     item: BotsiPaywallBlock,
     parentItem: BotsiPaywallBlock,
     timerManager: BotsiTimerManager,
+    selectedProductId: Long?,
     onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     val content: BotsiPlansControlContent = remember { item.content as BotsiPlansControlContent }
     val outerPaddings = remember(content) { content.toPaddings() }
     val innerPaddings = remember(content) { content.contentLayout.toPaddings() }
     val verticalOffset = remember(content) { (content.verticalOffset ?: 0).dp }
-    val contentAlignment = remember(content) { content.contentLayout?.align.toAlignmentHorizontal() }
+    val contentAlignment =
+        remember(content) { content.contentLayout?.align.toAlignmentHorizontal() }
 
     var isExpanded by remember { mutableStateOf(content.state ?: false) }
 
@@ -61,6 +63,7 @@ internal fun BotsiPlansControlComposable(
         BotsiPlansComposable(
             item = mainPlans,
             timerManager = timerManager,
+            selectedProductId = selectedProductId,
             onAction = onAction
         )
     }
@@ -101,6 +104,7 @@ internal fun BotsiPlansControlComposable(
         BotsiPlansComposable(
             item = morePlans,
             timerManager = timerManager,
+            selectedProductId = selectedProductId,
             onAction = onAction
         )
     }
@@ -110,6 +114,7 @@ internal fun BotsiPlansControlComposable(
             item = morePlansBottomSheet,
             timerManager = timerManager,
             onAction = onAction,
+            selectedProductId = selectedProductId,
             onCloseClick = { isExpanded = !isExpanded }
         )
     }

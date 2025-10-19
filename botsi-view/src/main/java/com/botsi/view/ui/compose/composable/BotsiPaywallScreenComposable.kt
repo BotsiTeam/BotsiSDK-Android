@@ -98,6 +98,7 @@ internal fun BotsiPaywallScreenComposable(
                     footerBlock = it,
                     scope = scope,
                     timerManager = timerManager,
+                    selectedProductId = uiState.selectedProductId,
                     onAction = onAction
                 )
             }
@@ -117,6 +118,7 @@ internal fun BotsiPaywallScreenComposable(
                         structure = uiState.content,
                         scope = scope,
                         timerManager = timerManager,
+                        selectedProductId = uiState.selectedProductId,
                         onAction = onAction
                     )
                 }
@@ -137,6 +139,7 @@ private fun Content(
     structure: BotsiPaywallContentStructure,
     scope: CoroutineScope,
     timerManager: BotsiTimerManager,
+    selectedProductId: Long?,
     onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     val density = LocalDensity.current
@@ -223,6 +226,7 @@ private fun Content(
                 children = structure.content.orEmpty(),
                 scope = scope,
                 timerManager = timerManager,
+                selectedProductId = selectedProductId,
                 onAction = onAction
             )
         }

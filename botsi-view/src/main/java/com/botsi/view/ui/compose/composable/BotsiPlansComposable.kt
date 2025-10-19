@@ -21,6 +21,7 @@ internal fun BotsiPlansComposable(
     modifier: Modifier = Modifier,
     item: BotsiPaywallBlock,
     timerManager: BotsiTimerManager,
+    selectedProductId: Long?,
     onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     val content: BotsiPlansContent = remember { item.content as BotsiPlansContent }
@@ -47,6 +48,7 @@ internal fun BotsiPlansComposable(
                 parentItem = item,
                 align = content.contentLayout?.align,
                 timerManager = timerManager,
+                selectedProductId = selectedProductId,
                 onAction = onAction
             )
         }

@@ -53,6 +53,7 @@ internal fun BotsiCarouselComposable(
     modifier: Modifier = Modifier,
     carousel: BotsiPaywallBlock,
     timerManager: BotsiTimerManager,
+    selectedProductId: Long?,
     onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     if (!carousel.children.isNullOrEmpty()) {
@@ -173,6 +174,7 @@ internal fun BotsiCarouselComposable(
                                 item = carousel.children[it],
                                 scope = scope,
                                 timerManager = timerManager,
+                                selectedProductId = selectedProductId,
                                 onAction = onAction,
                             )
                         }

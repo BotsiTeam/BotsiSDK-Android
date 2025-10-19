@@ -31,6 +31,7 @@ internal fun BotsiCardComposable(
     modifier: Modifier = Modifier,
     cardBlock: BotsiPaywallBlock,
     scope: CoroutineScope,
+    selectedProductId: Long?,
     timerManager: BotsiTimerManager,
     onAction: (BotsiPaywallUiAction) -> Unit
 ) {
@@ -61,6 +62,7 @@ internal fun BotsiCardComposable(
                         item = child,
                         scope = scope,
                         timerManager = timerManager,
+                        selectedProductId = selectedProductId,
                         onAction = onAction
                     )
                 }

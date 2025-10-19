@@ -16,5 +16,6 @@ internal data class BotsiBlockMeta(
     val type: BotsiContentType? = null,
     val icon: String? = null,
     val parentId: String? = null,
+    val productId: Long? = null,
     val offerType: String? = null,
 )

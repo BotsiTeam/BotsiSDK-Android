@@ -1,12 +1,14 @@
 package com.botsi.view.ui.compose.composable
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -28,6 +30,7 @@ internal fun BotsiProductsComposable(
     modifier: Modifier = Modifier,
     item: BotsiPaywallBlock,
     timerManager: BotsiTimerManager,
+    selectedProductId: Long?,
     onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     val content: BotsiProductsContent = remember { item.content as BotsiProductsContent }
@@ -35,6 +38,16 @@ internal fun BotsiProductsComposable(
     val innerPaddings = remember(content) { content.contentLayout.toPaddings() }
     val verticalOffset = remember(content) { (content.verticalOffset ?: 0).dp }
 
+    LaunchedEffect(item) {
+        val products = item.children?.filter { it.meta?.type == BotsiContentType.ProductItem }
+        if (products?.size == 1) {
+            onAction(
+                BotsiPaywallUiAction.ProductSelected(
+                    productId = products.first().meta?.productId
+                )
+            )
+        }
+    }
 
     val isHorizontalLayout = remember(content) {
         content.contentLayout?.layout == BotsiLayoutDirection.Horizontal
@@ -47,6 +60,7 @@ internal fun BotsiProductsComposable(
             modifier = modifier
                 .padding(outerPaddings)
                 .fillMaxWidth()
+                .height(IntrinsicSize.Min)
                 .offset(y = verticalOffset)
                 .padding(innerPaddings),
             horizontalArrangement = arrangement,
@@ -59,6 +73,8 @@ internal fun BotsiProductsComposable(
                     parentItem = item,
                     align = content.contentLayout?.align,
                     timerManager = timerManager,
+                    isHorizontal = true,
+                    selectedProductId = selectedProductId,
                     onAction = onAction,
                 )
             }
@@ -82,6 +98,7 @@ internal fun BotsiProductsComposable(
                     parentItem = item,
                     align = content.contentLayout?.align,
                     timerManager = timerManager,
+                    selectedProductId = selectedProductId,
                     onAction = onAction
                 )
             }
@@ -96,13 +113,18 @@ internal fun BotsiProductsContent(
     parentItem: BotsiPaywallBlock,
     align: BotsiAlign? = null,
     timerManager: BotsiTimerManager,
+    isHorizontal: Boolean = false,
+    selectedProductId: Long?,
     onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     when (item.meta?.type) {
         BotsiContentType.ProductItem -> BotsiProductItemComposable(
             modifier = modifier,
             item = item,
-            align = align
+            align = align,
+            isHorizontal = isHorizontal,
+            selectedProductId = selectedProductId,
+            onAction = onAction
         )
 
         BotsiContentType.Toggle -> BotsiProductToggleComposable(
@@ -110,6 +132,7 @@ internal fun BotsiProductsContent(
             item = item,
             parentItem = parentItem,
             timerManager = timerManager,
+            selectedProductId = selectedProductId,
             onAction = onAction
         )
 
@@ -118,6 +141,7 @@ internal fun BotsiProductsContent(
             item = item,
             parentItem = parentItem,
             timerManager = timerManager,
+            selectedProductId = selectedProductId,
             onAction = onAction
         )
 
@@ -126,6 +150,7 @@ internal fun BotsiProductsContent(
             item = item,
             parentItem = parentItem,
             timerManager = timerManager,
+            selectedProductId = selectedProductId,
             onAction = onAction
         )
 

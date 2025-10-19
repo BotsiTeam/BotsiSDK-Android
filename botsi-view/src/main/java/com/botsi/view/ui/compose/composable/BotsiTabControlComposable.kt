@@ -41,6 +41,7 @@ internal fun BotsiTabControlComposable(
     item: BotsiPaywallBlock,
     parentItem: BotsiPaywallBlock,
     timerManager: BotsiTimerManager,
+    selectedProductId: Long?,
     onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     val content: BotsiTabControlContent = remember { item.content as BotsiTabControlContent }
@@ -110,6 +111,7 @@ internal fun BotsiTabControlComposable(
             BotsiTabGroupComposable(
                 item = it,
                 timerManager = timerManager,
+                selectedProductId = selectedProductId,
                 onAction = onAction
             )
         }

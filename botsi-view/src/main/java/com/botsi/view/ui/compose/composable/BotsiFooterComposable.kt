@@ -23,6 +23,7 @@ internal fun BotsiFooterComposable(
     footerBlock: BotsiPaywallBlock,
     scope: CoroutineScope,
     timerManager: BotsiTimerManager,
+    selectedProductId: Long?,
     onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     val footerContent = remember(footerBlock) {
@@ -42,6 +43,7 @@ internal fun BotsiFooterComposable(
             children = footerBlock.children.orEmpty(),
             scope = scope,
             timerManager = timerManager,
+            selectedProductId = selectedProductId,
             onAction = onAction
         )
     }

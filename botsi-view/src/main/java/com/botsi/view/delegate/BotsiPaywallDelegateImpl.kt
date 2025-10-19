@@ -1,12 +1,12 @@
 package com.botsi.view.delegate
 
+import android.app.Activity
 import androidx.annotation.RestrictTo
 import com.botsi.Botsi
-import com.botsi.view.handler.BotsiActionType
 import com.botsi.view.handler.BotsiActionHandler
+import com.botsi.view.handler.BotsiActionType
 import com.botsi.view.mapper.BotsiPaywallBlocksMapper
 import com.botsi.view.model.content.BotsiButtonAction
-import com.botsi.view.timer.BotsiTimerManager
 import com.botsi.view.model.ui.BotsiPaywallUiAction
 import com.botsi.view.model.ui.BotsiPaywallUiSideEffect
 import com.botsi.view.model.ui.BotsiPaywallUiState
@@ -24,9 +24,9 @@ import kotlinx.coroutines.launch
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 internal class BotsiPaywallDelegateImpl(
+    private val activity: Activity,
     private val paywallBlocksMapper: BotsiPaywallBlocksMapper,
-    private val timerManager: BotsiTimerManager,
-    private val clickHandler: BotsiActionHandler? = null,
+    private val eventHandler: BotsiActionHandler? = null,
 ) : BotsiPaywallDelegate {
 
     private lateinit var coroutineScope: CoroutineScope
@@ -62,12 +62,17 @@ internal class BotsiPaywallDelegateImpl(
                 _uiState.update { BotsiPaywallUiState.Loading }
 
                 Botsi.getPaywallViewConfiguration(
-                    paywallId = action.paywallId,
-//                    paywallId = 571,
+                    paywallId = action.paywall.id,
                     successCallback = {
                         coroutineScope.launch {
                             val content = paywallBlocksMapper.map(it)
-                            _uiState.update { BotsiPaywallUiState.Success(content) }
+                            _uiState.update {
+                                BotsiPaywallUiState.Success(
+                                    content = content,
+                                    paywall = action.paywall,
+                                    products = action.products
+                                )
+                            }
                         }
                     },
                     errorCallback = { error ->
@@ -92,11 +97,39 @@ internal class BotsiPaywallDelegateImpl(
                     is BotsiButtonAction.Custom -> BotsiActionType.Custom
                     is BotsiButtonAction.Link -> BotsiActionType.Link
                 }
-                clickHandler?.onButtonClick(
-                    actionType = actionType,
-                    actionId = action.actionId,
-                    url = (action.action as? BotsiButtonAction.Link)?.url
-                )
+                when (action.actionId) {
+                    "Purchase" -> {
+                        if (uiState.value is BotsiPaywallUiState.Success) {
+                            (uiState.value as BotsiPaywallUiState.Success).selectedProductId?.let {
+                                val product = (uiState.value as BotsiPaywallUiState.Success)
+                                    .products.find {
+                                        it.botsiProductId == (uiState.value as BotsiPaywallUiState.Success).selectedProductId
+                                    }
+                                product?.let {
+                                    Botsi.makePurchase(
+                                        activity = activity,
+                                        product = it,
+                                        callback = { profile, purchase ->
+                                            eventHandler?.onSuccessPurchase(
+                                                profile,
+                                                purchase
+                                            )
+                                        },
+                                        errorCallback = { error ->
+                                            eventHandler?.onErrorPurchase(error)
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    else -> eventHandler?.onButtonClick(
+                        actionType = actionType,
+                        actionId = action.actionId,
+                        url = (action.action as? BotsiButtonAction.Link)?.url
+                    )
+                }
             }
 
             is BotsiPaywallUiAction.TopButtonClick -> {
@@ -109,15 +142,30 @@ internal class BotsiPaywallDelegateImpl(
                     is BotsiButtonAction.Link -> BotsiActionType.Link
                     null -> BotsiActionType.None
                 }
-                clickHandler?.onTopButtonClick(actionType, action.topButton.actionId)
+                eventHandler?.onTopButtonClick(actionType, action.topButton.actionId)
             }
 
             is BotsiPaywallUiAction.LinkClick -> {
-                clickHandler?.onLinkClick(action.url)
+                eventHandler?.onLinkClick(action.url)
             }
 
             is BotsiPaywallUiAction.CustomAction -> {
-                clickHandler?.onCustomAction(action.actionId, action.actionLabel)
+                eventHandler?.onCustomAction(
+                    action.actionId,
+                    action.actionLabel
+                )
+            }
+
+            is BotsiPaywallUiAction.ProductSelected -> {
+                _uiState.update {
+                    if (it is BotsiPaywallUiState.Success) {
+                        it.copy(
+                            selectedProductId = action.productId
+                        )
+                    } else {
+                        it
+                    }
+                }
             }
         }
     }

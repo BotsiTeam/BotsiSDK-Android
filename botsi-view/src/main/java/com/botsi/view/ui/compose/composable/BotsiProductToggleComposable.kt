@@ -35,6 +35,7 @@ internal fun BotsiProductToggleComposable(
     item: BotsiPaywallBlock,
     parentItem: BotsiPaywallBlock,
     timerManager: BotsiTimerManager,
+    selectedProductId: Long?,
     onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     val content = remember { item.content as BotsiProductToggleContent }
@@ -100,6 +101,7 @@ internal fun BotsiProductToggleComposable(
                             modifier = modifier,
                             item = it,
                             timerManager = timerManager,
+                            selectedProductId = selectedProductId,
                             onAction = onAction
                         )
                     }
@@ -111,6 +113,7 @@ internal fun BotsiProductToggleComposable(
                             modifier = modifier,
                             item = it,
                             timerManager = timerManager,
+                            selectedProductId = selectedProductId,
                             onAction = onAction
                         )
                     }

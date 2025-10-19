@@ -83,6 +83,9 @@ internal class BotsiProductsInteractorImpl(
                             finalProducts.add(
                                 BotsiProduct(
                                     productId = product.productId,
+                                    botsiProductId = paywall.sourceProducts
+                                        .find { it.productId == product.productId }
+                                        ?.botsiProductId?.toLong() ?: 0L,
                                     paywallName = paywall.name,
                                     type = product.productType,
                                     name = product.name,

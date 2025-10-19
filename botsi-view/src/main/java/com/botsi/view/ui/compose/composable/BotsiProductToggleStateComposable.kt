@@ -25,6 +25,7 @@ internal fun BotsiProductToggleStateComposable(
     modifier: Modifier = Modifier,
     item: BotsiPaywallBlock,
     timerManager: BotsiTimerManager,
+    selectedProductId: Long?,
     onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     val content = remember(item) { item.content as? BotsiProductToggleStateContent }
@@ -43,6 +44,7 @@ internal fun BotsiProductToggleStateComposable(
                 parentItem = item,
                 align = content.contentLayout?.align,
                 timerManager = timerManager,
+                selectedProductId = selectedProductId,
                 onAction = onAction
             )
         }
@@ -65,7 +67,8 @@ internal fun BotsiProductToggleStateComposable(
         }
 
         else -> {
-            val contentAlignment = remember(content) { content.contentLayout.toAlignmentHorizontal() }
+            val contentAlignment =
+                remember(content) { content.contentLayout.toAlignmentHorizontal() }
             val arrangement = remember(content) { content.contentLayout.toArrangementVertical() }
             Column(
                 modifier = modifier

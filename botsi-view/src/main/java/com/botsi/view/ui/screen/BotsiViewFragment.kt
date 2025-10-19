@@ -1,12 +1,9 @@
 package com.botsi.view.ui.screen
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.ComposeView
@@ -15,79 +12,21 @@ import com.botsi.Botsi
 import com.botsi.domain.model.BotsiPaywall
 import com.botsi.domain.model.BotsiProduct
 import com.botsi.view.BotsiViewConfig
-import com.botsi.view.handler.BotsiActionType
-import com.botsi.view.handler.BotsiActionHandler
 import com.botsi.view.handler.BotsiPublicEventHandler
 import com.botsi.view.timer.BotsiTimerResolver
 import com.botsi.view.ui.compose.entry_point.BotsiPaywallEntryPoint
-import kotlin.concurrent.timer
 
 class BotsiViewFragment : Fragment() {
 
     private var paywall: BotsiPaywall? = null
     private var products: List<BotsiProduct>? = null
     private var eventHandler: BotsiPublicEventHandler? = null
-    private lateinit var timerResolver: BotsiTimerResolver
+    private var timerResolver: BotsiTimerResolver? = null
 
     /**
      * Default implementation of BotsiPublicClickHandler with basic functionality
      * for handling different click actions in the Botsi paywall.
      */
-    private val defaultClickHandler = object : BotsiActionHandler {
-
-        override fun onButtonClick(actionType: BotsiActionType, actionId: String?, url: String?) {
-            when (actionType) {
-                BotsiActionType.Close -> {
-                    parentFragmentManager.popBackStack()
-                }
-
-                BotsiActionType.Login -> {
-                    eventHandler?.onLoginAction()
-                }
-
-                BotsiActionType.Restore -> {
-                    eventHandler?.onRestoreAction()
-                }
-
-                BotsiActionType.Custom -> {
-                    onCustomAction(actionId.orEmpty())
-                }
-
-                BotsiActionType.Link -> {
-                    // Handle link action
-                    url?.let { onLinkClick(it) }
-                }
-
-                BotsiActionType.None -> {
-                }
-            }
-        }
-
-        override fun onTopButtonClick(actionType: BotsiActionType, actionId: String?) {
-            when (actionType) {
-                BotsiActionType.Close -> {
-                    parentFragmentManager.popBackStack()
-                }
-
-                else -> {
-                    onButtonClick(actionType, actionId)
-                }
-            }
-        }
-
-        override fun onLinkClick(url: String) {
-            try {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                startActivity(intent)
-            } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Failed to open link", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        override fun onCustomAction(actionId: String, actionLabel: String?) {
-            eventHandler?.onCustomAction(actionId, actionLabel)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -97,17 +36,14 @@ class BotsiViewFragment : Fragment() {
         return ComposeView(context = requireContext()).apply {
             setContent {
                 MaterialTheme {
-                    LaunchedEffect(Unit) {
-                        paywall?.let {
-                            Botsi.logShowPaywall(it)
-                        }
-                    }
                     BotsiPaywallEntryPoint(
+                        activity = requireActivity(),
                         viewConfig = BotsiViewConfig(
-                            paywallId = paywall?.id ?: 0L,
+                            paywall = paywall,
+                            products = products,
                         ),
-                        clickHandler = defaultClickHandler,
-                        timerResolver = timerResolver
+                        eventHandler = eventHandler,
+                        timerResolver = timerResolver ?: BotsiTimerResolver.default
                     )
                 }
             }

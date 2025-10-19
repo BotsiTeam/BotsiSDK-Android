@@ -19,6 +19,7 @@ internal class BotsiBlockMetaMapper {
                     }.getOrNull(),
                     icon = runCatching { get("icon").asString }.getOrNull(),
                     parentId = runCatching { get("parentId").asString }.getOrNull(),
+                    productId = runCatching { get("productId").asLong }.getOrNull(),
                     offerType = runCatching { get("offerType").asString }.getOrNull(),
                 )
             }

@@ -1,5 +1,6 @@
 package com.botsi.view.ui.compose.composable
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,6 +21,7 @@ import com.botsi.view.model.content.BotsiAlign
 import com.botsi.view.model.content.BotsiPaywallBlock
 import com.botsi.view.model.content.BotsiProductItemContent
 import com.botsi.view.model.content.BotsiProductState
+import com.botsi.view.model.ui.BotsiPaywallUiAction
 import com.botsi.view.utils.toAlignmentHorizontal
 import com.botsi.view.utils.toBackground
 import com.botsi.view.utils.toBorder
@@ -31,22 +34,65 @@ internal fun BotsiProductItemComposable(
     modifier: Modifier = Modifier,
     item: BotsiPaywallBlock,
     align: BotsiAlign?,
+    isHorizontal: Boolean,
+    selectedProductId: Long?,
+    onAction: (BotsiPaywallUiAction) -> Unit,
 ) {
     val content = item.content as? BotsiProductItemContent
     if (content == null) return
 
-    val isSelected = remember(content) { content.state == BotsiProductState.Selected }
+    val isSelectedStateToDraw = remember(content.state) {
+        content.state == BotsiProductState.Selected
+    }
+    LaunchedEffect(content) {
+        if (isSelectedStateToDraw) {
+            item.meta?.productId?.let {
+                onAction(
+                    BotsiPaywallUiAction.ProductSelected(
+                        productId = it
+                    )
+                )
+            }
+        }
+    }
+    val isProductSelected =
+        remember(selectedProductId) {
+            (item.meta?.productId == null && isSelectedStateToDraw) ||
+                    (item.meta?.productId != null && selectedProductId == item.meta.productId)
+        }
 
-    val currentStyle = if (isSelected) content.selectedStyle else content.defaultStyle
+    val currentStyle = if (isProductSelected) content.selectedStyle else content.defaultStyle
 
     val currentText = remember(content) { content.defaultText }
 
-    Box(modifier = modifier) {
+    Box(
+        modifier = modifier
+            .run {
+                if (isHorizontal) {
+                    fillMaxHeight()
+                } else {
+                    this
+                }
+            }) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .run {
+                    if (isHorizontal) {
+                        fillMaxHeight()
+                    } else {
+                        this
+                    }
+                }
                 .then(currentStyle.toBorder())
                 .then(currentStyle.toBackground())
+                .clickable(onClick = {
+                    onAction(
+                        BotsiPaywallUiAction.ProductSelected(
+                            productId = item.meta?.productId
+                        )
+                    )
+                })
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = align.toAlignmentHorizontal()
@@ -55,7 +101,7 @@ internal fun BotsiProductItemComposable(
                 Text(
                     modifier = Modifier,
                     text = currentText.text1,
-                    style = if (isSelected) {
+                    style = if (isProductSelected) {
                         content.selectedState?.text1.toSelectedTextStyle()
                     } else {
                         content.defaultState?.text1.toTextStyle()
@@ -66,7 +112,7 @@ internal fun BotsiProductItemComposable(
                 Text(
                     modifier = Modifier,
                     text = currentText.text2,
-                    style = if (isSelected) {
+                    style = if (isProductSelected) {
                         content.selectedState?.text2.toSelectedTextStyle()
                     } else {
                         content.defaultState?.text2.toTextStyle()
@@ -77,7 +123,7 @@ internal fun BotsiProductItemComposable(
                 Text(
                     modifier = Modifier,
                     text = currentText.text3,
-                    style = if (isSelected) {
+                    style = if (isProductSelected) {
                         content.selectedState?.text3.toSelectedTextStyle()
                     } else {
                         content.defaultState?.text3.toTextStyle()
@@ -88,7 +134,7 @@ internal fun BotsiProductItemComposable(
                 Text(
                     modifier = Modifier,
                     text = currentText.text4,
-                    style = if (isSelected) {
+                    style = if (isProductSelected) {
                         content.selectedState?.text4.toSelectedTextStyle()
                     } else {
                         content.defaultState?.text4.toTextStyle()
