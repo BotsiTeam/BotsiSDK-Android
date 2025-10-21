@@ -20,7 +20,7 @@ fun BotsiAiPaywallDto.toDomain(marketProducts: List<ProductDetails>): BotsiAiPay
         sourceProducts = sourceProducts.orEmpty().map {
             it.toDomain(
                 marketProducts.first { marketProduct ->
-                    marketProduct.productId == it.sourcePoductId
+                    marketProduct.productId == it.sourceProductId
                 }
             )
         }
@@ -43,7 +43,7 @@ fun BotsiAiPaywall.toDto(): BotsiAiPaywallDto {
 fun BotsiAiProductDto.toDomain(productDetails: ProductDetails): BotsiAiProduct {
     return BotsiAiProduct(
         botsiProductId = botsiProductId ?: 0,
-        sourceProductId = sourcePoductId.orEmpty(),
+        sourceProductId = sourceProductId.orEmpty(),
         isConsumable = isConsumable ?: false,
         basePlanId = basePlanId.orEmpty(),
         offerIds = offerIds.orEmpty(),
@@ -54,7 +54,7 @@ fun BotsiAiProductDto.toDomain(productDetails: ProductDetails): BotsiAiProduct {
 fun BotsiAiProduct.toDto(): BotsiAiProductDto {
     return BotsiAiProductDto(
         botsiProductId = botsiProductId,
-        sourcePoductId = sourceProductId,
+        sourceProductId = sourceProductId,
         isConsumable = isConsumable,
         basePlanId = basePlanId,
         offerIds = offerIds

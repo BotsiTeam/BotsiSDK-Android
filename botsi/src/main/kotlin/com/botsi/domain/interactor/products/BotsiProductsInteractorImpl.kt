@@ -36,7 +36,7 @@ internal class BotsiProductsInteractorImpl(
                 val backendProducts = paywall.sourceProducts?.map { dto ->
                     BotsiBackendProduct(
                         botsiProductId = dto.botsiProductId ?: 0,
-                        productId = dto.sourcePoductId.orEmpty(),
+                        productId = dto.sourceProductId.orEmpty(),
                         paywallId = paywall.id ?: 0,
                         abTestId = paywall.abTestId ?: 0,
                         placementId = placementId,

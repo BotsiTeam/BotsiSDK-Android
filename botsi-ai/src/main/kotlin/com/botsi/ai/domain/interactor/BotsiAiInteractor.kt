@@ -46,7 +46,7 @@ class BotsiAiInteractorImpl(
     ): BotsiAiPaywall {
         val paywall = repository.getPaywall(placementId, secretKey)
         val marketProducts = repository.getMarketProducts(
-            ids = paywall.sourceProducts.orEmpty().mapNotNull { it.sourcePoductId }
+            ids = paywall.sourceProducts.orEmpty().mapNotNull { it.sourceProductId }
         )
 
         return paywall.toDomain(marketProducts)
