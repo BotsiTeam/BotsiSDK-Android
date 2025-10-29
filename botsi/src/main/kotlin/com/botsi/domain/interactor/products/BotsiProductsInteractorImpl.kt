@@ -62,7 +62,11 @@ internal class BotsiProductsInteractorImpl(
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getPaywallProducts(paywall: BotsiPaywall): Flow<List<BotsiProduct>> {
         return if (paywall.sourceProducts.isNotEmpty()) {
-            googleStoreManager.queryProductDetails(paywall.sourceProducts.map { it.productId })
+            googleStoreManager.queryProductDetails(
+                paywall.sourceProducts
+                    .filter { it.productId.isNotEmpty() }
+                    .map { it.productId }
+            )
                 .map { products ->
                     val finalProducts = mutableListOf<BotsiProduct>()
                     products.forEach { product ->

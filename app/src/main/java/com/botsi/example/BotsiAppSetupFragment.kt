@@ -123,37 +123,39 @@ class BotsiAppSetupFragment : Fragment() {
                                                 context = requireContext(),
                                                 apiKey = app.botsiStorage.appKey,
                                                 clearCache = clearCache,
-                                            )
-                                            Botsi.getPaywall(
-                                                placementId = app.botsiStorage.placementId,
                                                 successCallback = {
-                                                    Botsi.getPaywallProducts(
-                                                        paywall = it,
-                                                        successCallback = { result ->
-                                                            isLoading = false
-                                                            (requireActivity() as MainActivity).addFragment(
-                                                                BotsiViewFragment.newInstance(
-                                                                    paywall = it,
-                                                                    products = result
-                                                                ),
-                                                                true,
-                                                                true
+                                                    Botsi.getPaywall(
+                                                        placementId = app.botsiStorage.placementId,
+                                                        successCallback = {
+                                                            Botsi.getPaywallProducts(
+                                                                paywall = it,
+                                                                successCallback = { result ->
+                                                                    isLoading = false
+                                                                    (requireActivity() as MainActivity).addFragment(
+                                                                        BotsiViewFragment.newInstance(
+                                                                            paywall = it,
+                                                                            products = result
+                                                                        ),
+                                                                        true,
+                                                                        true
+                                                                    )
+                                                                },
+                                                                errorCallback = {
+                                                                    isLoading = false
+                                                                },
                                                             )
                                                         },
                                                         errorCallback = {
+                                                            requireActivity().runOnUiThread {
+                                                                Toast.makeText(
+                                                                    requireContext(),
+                                                                    it.message.orEmpty(),
+                                                                    Toast.LENGTH_LONG
+                                                                ).show()
+                                                            }
                                                             isLoading = false
-                                                        },
+                                                        }
                                                     )
-                                                },
-                                                errorCallback = {
-                                                    requireActivity().runOnUiThread {
-                                                        Toast.makeText(
-                                                            requireContext(),
-                                                            it.message.orEmpty(),
-                                                            Toast.LENGTH_LONG
-                                                        ).show()
-                                                    }
-                                                    isLoading = false
                                                 }
                                             )
                                         }

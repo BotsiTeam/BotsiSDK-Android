@@ -40,7 +40,10 @@ internal class BotsiFacade(
     ) {
         launch {
             profileInteractor.getOrCreateProfile(customerUserId)
-                .flatMapConcat { purchaseInteractor.syncPurchases() }
+                .flatMapConcat { profile ->
+                    purchaseInteractor.syncPurchases()
+                        .catch { emit(profile) }
+                }
                 .retryIfNecessary()
                 .catch { errorCallback?.invoke(it) }
                 .collect { successCallback?.invoke(it) }
