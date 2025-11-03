@@ -115,7 +115,15 @@ internal fun BotsiHeroImageContent?.toImageHeightDp(): Dp {
 
 internal fun String?.toColor(opacity: Float? = null): Color {
     return runCatching {
-        this?.let { Color(it.toColorInt()).copy(alpha = (opacity ?: 100f) / 100f) }
+        this?.let {
+            Color(it.toColorInt()).run {
+                if (opacity != null) {
+                    copy(alpha = opacity / 100f)
+                } else {
+                    this
+                }
+            }
+        }
             ?: Color.Unspecified
     }.getOrDefault(Color.Unspecified)
 }

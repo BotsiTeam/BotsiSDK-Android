@@ -1,6 +1,8 @@
 package com.botsi.view.ui.compose.composable
 
 import android.net.Uri
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -107,35 +109,29 @@ internal fun BotsiHeroImageTransparentComposable(
 ) {
     val backgroundUrl = remember(content) { content.backgroundImage }
     val isVideo = remember(content) { content.type == "video" }
-    val brush = remember(content.tint) {
-        content.tint?.fillColor.toBrush()
-    }
-    val alpha = remember(content.tint) {
-        (content.tint?.opacity ?: 100f) / 100f
-    }
 
     if (isVideo && !backgroundUrl.isNullOrEmpty()) {
         BotsiVideoView(
-            modifier = modifier
-                .fillMaxSize()
-                .drawWithContent {
-                    drawContent()
-                    drawRect(brush = brush, alpha = alpha)
-                },
+            modifier = modifier.fillMaxSize(),
             videoUrl = backgroundUrl,
             contentScale = ContentScale.Crop
         )
     } else {
         AsyncImage(
-            modifier = modifier
-                .fillMaxSize()
-                .drawWithContent {
-                    drawContent()
-                    drawRect(brush = brush, alpha = alpha)
-                },
+            modifier = modifier.fillMaxSize(),
             model = backgroundUrl,
             contentDescription = null,
             contentScale = ContentScale.Crop,
+        )
+    }
+    if (content.fillColor != null) {
+        val brush = remember(content.fillColor) {
+            content.fillColor.toBrush()
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(brush = brush)
         )
     }
 }

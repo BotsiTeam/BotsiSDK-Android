@@ -9,15 +9,9 @@ internal data class BotsiHeroImageContent(
     val backgroundImage: String? = null,
     val height: Float? = null,
     val shape: BotsiHeroImageShape? = null,
-    val tint: BotsiTint? = null,
+    val fillColor: BotsiColorBehaviour? = null,
     val layout: BotsiHeroLayout? = null
 ): BotsiBlockContent
-
-@Keep
-internal data class BotsiTint(
-    val opacity: Float? = null,
-    val fillColor: BotsiColorBehaviour? = null
-)
 
 @Keep
 internal data class BotsiHeroLayout(

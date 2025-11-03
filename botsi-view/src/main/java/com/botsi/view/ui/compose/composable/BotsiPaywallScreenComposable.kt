@@ -187,7 +187,6 @@ private fun Content(
     ) {
         LazyColumn(
             modifier = Modifier
-                .navigationBarsPadding()
                 .fillMaxSize()
                 .run {
                     if (isImageHeroOverlay && !heroImageContent?.backgroundImage.isNullOrEmpty()) {

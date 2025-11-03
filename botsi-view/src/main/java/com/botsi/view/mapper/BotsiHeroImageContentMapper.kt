@@ -1,12 +1,10 @@
 package com.botsi.view.mapper
 
-import com.botsi.view.model.content.BotsiHeroImageContentStyle
 import com.botsi.view.model.content.BotsiHeroImageContent
-import com.botsi.view.model.content.BotsiHeroLayout
+import com.botsi.view.model.content.BotsiHeroImageContentStyle
 import com.botsi.view.model.content.BotsiHeroImageShape
-import com.botsi.view.model.content.BotsiTint
+import com.botsi.view.model.content.BotsiHeroLayout
 import com.botsi.view.utils.toCapitalizedString
-import com.botsi.view.utils.toHexColorIfPossible
 import com.botsi.view.utils.toFillBehaviourIfPossible
 import com.botsi.view.utils.toIntList
 import com.google.gson.JsonElement
@@ -28,19 +26,10 @@ internal class BotsiHeroImageContentMapper {
                     shape = runCatching {
                         BotsiHeroImageShape.findByKey(get("shape").asString)
                     }.getOrDefault(BotsiHeroImageShape.Rectangle),
-                    tint = runCatching { mapTint(get("tint")) }.getOrNull(),
+                    fillColor = runCatching { get("fill_color").toFillBehaviourIfPossible() }.getOrNull(),
                     layout = runCatching { mapLayout(get("layout")) }.getOrNull(),
                 )
             }
-        }
-    }
-
-    private fun mapTint(jsonElement: JsonElement): BotsiTint {
-        return with(jsonElement.asJsonObject) {
-            BotsiTint(
-                opacity = runCatching { get("opacity").asFloat }.getOrNull(),
-                fillColor = runCatching { (get("color") ?: get("fill_color") ?: get("fillColor")).toFillBehaviourIfPossible() }.getOrNull()
-            )
         }
     }
 
