@@ -53,8 +53,16 @@ internal fun BotsiLinksComposable(
 
     val items = remember(content) {
         val items = mutableListOf<Pair<BotsiLinksText?, BotsiButtonAction>>()
-        if (content.hasTermOfService == true) items.add(content.termOfService to BotsiButtonAction.Link(content.termOfService?.url.orEmpty()))
-        if (content.hasPrivacyPolicy == true) items.add(content.privacyPolicy to BotsiButtonAction.Link(content.privacyPolicy?.url.orEmpty()))
+        if (content.hasTermOfService == true) items.add(
+            content.termOfService to BotsiButtonAction.Link(
+                content.termOfService?.url.orEmpty()
+            )
+        )
+        if (content.hasPrivacyPolicy == true) items.add(
+            content.privacyPolicy to BotsiButtonAction.Link(
+                content.privacyPolicy?.url.orEmpty()
+            )
+        )
         if (content.hasRestoreButton == true) items.add(content.restoreButton to BotsiButtonAction.Restore)
         if (content.hasLoginButton == true) items.add(content.loginButton to BotsiButtonAction.Login)
         items.filter { it.first != null }
@@ -70,7 +78,10 @@ internal fun BotsiLinksComposable(
         .onSizeChanged { containerSize = it }
         .offset(y = verticalOffset)
 
-    val isDividersVisible = remember(content) { (content.style?.dividersThickness ?: 0) > 0 }
+    val isDividersVisible = remember(content) {
+        (content.style?.dividersThickness ?: 0) > 0 &&
+                contentAlignment == BotsiLayoutDirection.Horizontal
+    }
     LaunchedEffect(containerSize, items, content.style?.size) {
         if (containerSize != IntSize.Zero && items.isNotEmpty()) {
             val spacerCount = items.size - 1
@@ -137,7 +148,7 @@ internal fun BotsiLinksComposable(
     }
 
     val contentComposable: @Composable () -> Unit = {
-        val textHeight = remember(content) {
+        val textHeight = remember(calculatedTextSize) {
             calculatedTextSize?.let {
                 textMeasurer.measure(
                     text = items.first().first?.text.orEmpty(),
@@ -145,7 +156,7 @@ internal fun BotsiLinksComposable(
                 ).size.height
             } ?: 0
         }
-        val textHeightDp = remember(content) { with(density) { textHeight.toDp() } }
+        val textHeightDp = remember(textHeight) { with(density) { textHeight.toDp() } }
 
         items.forEachIndexed { index, item ->
             item.first?.let {
@@ -166,20 +177,13 @@ internal fun BotsiLinksComposable(
                     isDividersVisible &&
                     !content.style?.dividersColor.isNullOrEmpty()
                 ) {
-                    val dividerThickness = remember(content) { (content.style.dividersThickness ?: 0).dp }
+                    val dividerThickness =
+                        remember(content) { (content.style.dividersThickness ?: 0).dp }
                     val dividerColor = remember(content) {
                         content.style.dividersColor.toColor(content.style.dividersOpacity)
                     }
                     when (contentAlignment) {
-                        BotsiLayoutDirection.Vertical -> {
-                            HorizontalDivider(
-                                modifier = Modifier.fillMaxWidth(),
-                                thickness = dividerThickness,
-                                color = dividerColor
-                            )
-                        }
-
-                        else -> {
+                        BotsiLayoutDirection.Horizontal -> {
                             VerticalDivider(
                                 modifier = Modifier
                                     .height(textHeightDp),
@@ -187,6 +191,8 @@ internal fun BotsiLinksComposable(
                                 color = dividerColor
                             )
                         }
+
+                        else -> {}
                     }
                 }
             }
