@@ -500,7 +500,6 @@ private suspend fun downloadCustomFont(url: String, cacheDir: File): FontFamily?
             // Create FontFamily from downloaded file
             val typeface = android.graphics.Typeface.createFromFile(fontFile)
             FontFamily(Typeface(typeface))
-
         } catch (e: Exception) {
             null
         }
@@ -552,6 +551,7 @@ private fun createGoogleFontFamily(font: BotsiFont): FontFamily? {
 internal fun BotsiFont?.toTextStyle(): TextStyle {
     val context = LocalContext.current
     var fontFamily by remember { mutableStateOf<FontFamily?>(null) }
+    val selectedType = this?.types?.find { it.isSelected == true }
 
     // Handle font loading
     LaunchedEffect(this?.url, this?.name) {
@@ -585,7 +585,28 @@ internal fun BotsiFont?.toTextStyle(): TextStyle {
 
     return this?.let {
         TextStyle(
-            fontFamily = fontFamily ?: createGoogleFontFamily(it) ?: FontFamily.Default
+            fontFamily = fontFamily ?: createGoogleFontFamily(it) ?: FontFamily.Default,
+            fontWeight = if (selectedType?.fontStyle == BotsiFontStyleType.Bold) {
+                FontWeight.W700
+            } else {
+                when (selectedType?.fontWeight) {
+                    FontWeight.W100.weight -> FontWeight.W100
+                    FontWeight.W200.weight -> FontWeight.W200
+                    FontWeight.W300.weight -> FontWeight.W300
+                    FontWeight.W400.weight -> FontWeight.W400
+                    FontWeight.W500.weight -> FontWeight.W500
+                    FontWeight.W600.weight -> FontWeight.W600
+                    FontWeight.W700.weight -> FontWeight.W700
+                    FontWeight.W800.weight -> FontWeight.W800
+                    FontWeight.W900.weight -> FontWeight.W900
+                    else -> FontWeight.Normal
+                }
+            },
+            fontStyle = when (selectedType?.fontStyle) {
+                BotsiFontStyleType.Normal -> FontStyle.Normal
+                BotsiFontStyleType.Italic -> FontStyle.Italic
+                else -> FontStyle.Normal
+            }
         )
     } ?: TextStyle()
 }
