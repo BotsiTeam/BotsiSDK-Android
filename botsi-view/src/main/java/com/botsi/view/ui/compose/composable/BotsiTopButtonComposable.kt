@@ -103,6 +103,7 @@ internal fun BotsiTopButtonComposable(
                                     .padding(vertical = 4.dp, horizontal = 16.dp),
                                 text = it,
                                 maxLines = 1,
+                                fullWidth = false,
                             )
                         }
                     }
