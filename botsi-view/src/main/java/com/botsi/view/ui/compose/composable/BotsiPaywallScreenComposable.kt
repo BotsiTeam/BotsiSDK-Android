@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -20,13 +21,18 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -47,6 +53,7 @@ import com.botsi.view.utils.toImageHeightPx
 import com.botsi.view.utils.toPaddings
 import com.botsi.view.utils.toShape
 import kotlinx.coroutines.CoroutineScope
+import kotlin.math.roundToInt
 
 @UnstableApi
 @Composable
@@ -70,6 +77,9 @@ internal fun BotsiPaywallScreenComposable(
     val isImageHeroTransparent = remember(heroImageContent?.style) {
         heroImageContent?.style == BotsiHeroImageContentStyle.Transparent
     }
+    val isImageHeroOverlay = remember(heroImageContent?.style) {
+        heroImageContent?.style == BotsiHeroImageContentStyle.Overlay
+    }
 
     if (isImageHeroTransparent) {
         heroImageContent?.let {
@@ -83,27 +93,19 @@ internal fun BotsiPaywallScreenComposable(
             modifier = Modifier
                 .fillMaxSize()
                 .background(brush = contentLayout?.fillColor.toBrush())
-        )
-    }
-
-    Scaffold(
-        modifier = modifier,
-        containerColor = Color.Transparent,
-        snackbarHost = {
-            SnackbarHost(snackbarHostState)
-        },
-        bottomBar = {
-            (uiState as? BotsiPaywallUiState.Success)?.content?.footer?.let {
-                BotsiFooterComposable(
-                    footerBlock = it,
-                    scope = scope,
-                    timerManager = timerManager,
-                    selectedProductId = uiState.selectedProductId,
-                    onAction = onAction
-                )
+        ) {
+            if (isImageHeroOverlay) {
+                heroImageContent?.let {
+                    BotsiHeroImageOverlayComposable(
+                        modifier = Modifier,
+                        content = it
+                    )
+                }
             }
         }
-    ) { paddings ->
+    }
+
+    Box(modifier = modifier) {
         when (uiState) {
             is BotsiPaywallUiState.None -> {}
             is BotsiPaywallUiState.Loading -> {
@@ -113,7 +115,7 @@ internal fun BotsiPaywallScreenComposable(
             is BotsiPaywallUiState.Success -> {
                 contentLayout?.let {
                     Content(
-                        modifier = Modifier.padding(paddings),
+                        modifier = Modifier,
                         contentLayout = it,
                         structure = uiState.content,
                         scope = scope,
@@ -169,6 +171,9 @@ private fun Content(
             offsetStateFlow = heroImageScrollOffsetState,
         )
     }
+
+    var footerHeight by remember { mutableIntStateOf(0) }
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -180,34 +185,29 @@ private fun Content(
                 }
             }
     ) {
-        if (isImageHeroOverlay) {
-            heroImageContent?.let {
-                BotsiHeroImageOverlayComposable(
-                    modifier = Modifier,
-                    content = it
-                )
-            }
-        }
-
         LazyColumn(
             modifier = Modifier
+                .navigationBarsPadding()
                 .fillMaxSize()
                 .run {
                     if (isImageHeroOverlay && !heroImageContent?.backgroundImage.isNullOrEmpty()) {
                         offset {
                             IntOffset(
-                                y = heroImageScrollOffsetState.floatValue.toInt(),
+                                y = heroImageScrollOffsetState.floatValue.roundToInt(),
                                 x = 0
                             )
                         }
                             .background(
                                 brush = contentLayout.fillColor.toBrush(),
-                                shape = heroImageContent.toShape(heroImageScrollOffsetState.floatValue)
+                                shape = heroImageContent.toShape(
+                                    contentListScrollState.canScrollBackward
+                                )
                             )
                     } else {
                         this
                     }
-                },
+                }
+                .padding(bottom = with(density) { footerHeight.toDp() }),
             state = contentListScrollState,
             contentPadding = contentLayout.contentLayout.toPaddings(),
             verticalArrangement = contentLayout.contentLayout.toArrangementVertical()
@@ -242,6 +242,21 @@ private fun Content(
                     )
                 }
             }
+
+        structure.footer?.let {
+            BotsiFooterComposable(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .onSizeChanged { bounds ->
+                        footerHeight = bounds.height
+                    },
+                footerBlock = it,
+                scope = scope,
+                timerManager = timerManager,
+                selectedProductId = selectedProductId,
+                onAction = onAction
+            )
+        }
     }
 }
 

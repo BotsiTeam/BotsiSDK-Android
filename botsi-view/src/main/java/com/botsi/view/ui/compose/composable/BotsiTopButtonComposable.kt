@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -58,8 +59,9 @@ internal fun BotsiTopButtonComposable(
         AnimatedVisibility(visible = isVisible, enter = fadeIn(), exit = fadeOut()) {
             Box(
                 modifier = modifier
+                    .statusBarsPadding()
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(horizontal = 16.dp),
             ) {
                 when (topButton.buttonType) {
                     BotsiButtonType.Icon -> {

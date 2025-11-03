@@ -1,5 +1,6 @@
 package com.botsi.view.utils
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -270,9 +271,9 @@ internal fun BotsiAlign?.toAlignmentVertical(): Alignment.Vertical {
     }
 }
 
-internal fun BotsiHeroImageContent?.toShape(offsetValue: Float = 0f): Shape {
+internal fun BotsiHeroImageContent?.toShape(defaultShape: Boolean = false): Shape {
     return this?.shape?.let {
-        if (this.style == BotsiHeroImageContentStyle.Overlay && offsetValue <= 0f) {
+        if (this.style == BotsiHeroImageContentStyle.Overlay && defaultShape) {
             return RectangleShape
         }
         when (it) {

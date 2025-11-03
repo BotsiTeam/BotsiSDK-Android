@@ -17,6 +17,7 @@ internal class BotsiHeroImageOverlayNestedScroll(
         source: NestedScrollSource
     ): Offset {
         if (scrollState.canScrollBackward) {
+            offsetStateFlow.value = 0f
             return Offset.Zero
         }
 
