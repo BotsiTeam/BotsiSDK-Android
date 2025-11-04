@@ -140,8 +140,15 @@ class BotsiAppSetupFragment : Fragment() {
                                                                         true
                                                                     )
                                                                 },
-                                                                errorCallback = {
+                                                                errorCallback = { e ->
                                                                     isLoading = false
+                                                                    requireActivity().runOnUiThread {
+                                                                        Toast.makeText(
+                                                                            requireContext(),
+                                                                            e.message.orEmpty(),
+                                                                            Toast.LENGTH_LONG
+                                                                        ).show()
+                                                                    }
                                                                 },
                                                             )
                                                         },
@@ -165,11 +172,22 @@ class BotsiAppSetupFragment : Fragment() {
                                                 context = requireContext(),
                                                 apiKey = app.botsiStorage.appKey,
                                                 clearCache = clearCache,
-                                            )
-                                            (requireActivity() as MainActivity).addFragment(
-                                                BotsiFragment.newInstance(),
-                                                true,
-                                                true
+                                                successCallback = {
+                                                    (requireActivity() as MainActivity).addFragment(
+                                                        BotsiFragment.newInstance(),
+                                                        true,
+                                                        true
+                                                    )
+                                                },
+                                                errorCallback = { e ->
+                                                    requireActivity().runOnUiThread {
+                                                        Toast.makeText(
+                                                            requireContext(),
+                                                            e.message.orEmpty(),
+                                                            Toast.LENGTH_LONG
+                                                        ).show()
+                                                    }
+                                                }
                                             )
                                         }
                                     }
