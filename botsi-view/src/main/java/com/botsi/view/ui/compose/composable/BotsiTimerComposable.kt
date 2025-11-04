@@ -36,7 +36,7 @@ internal fun BotsiTimerComposable(
     val verticalOffset = remember(content) { (content.verticalOffset ?: 0).dp }
     val startTime = remember(content) { content.startTime ?: 0 }
     var timerValue by rememberSaveable(startTime) { mutableLongStateOf(startTime) }
-    var dateFormatted by rememberSaveable(content) {
+    var dateFormatted by rememberSaveable(timerValue) {
         mutableStateOf(
             formatDate(
                 content,
@@ -45,14 +45,14 @@ internal fun BotsiTimerComposable(
         )
     }
 
-    LaunchedEffect(timerInternalId) {
+    LaunchedEffect(timerInternalId, startTime) {
         // Start timer using timer manager
         timerInternalId?.let { internalId ->
             timerManager.startTimer(
                 timerInternalId = internalId,
                 timerId = content.timerId,
                 timerMode = content.timerMode,
-                startTime = startTime,
+                startTime = timerValue,
                 scope = scope,
                 onTimerUpdate = { value ->
                     timerValue = value

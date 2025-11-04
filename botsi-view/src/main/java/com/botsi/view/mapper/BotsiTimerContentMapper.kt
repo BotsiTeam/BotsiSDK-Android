@@ -4,6 +4,7 @@ import com.botsi.view.model.content.BotsiTimerContent
 import com.botsi.view.model.content.BotsiTimerFormat
 import com.botsi.view.model.content.BotsiTimerMode
 import com.botsi.view.model.content.BotsiTimerSeparator
+import com.botsi.view.utils.TimeParsingUtils
 import com.botsi.view.utils.toCapitalizedString
 import com.botsi.view.utils.toIntList
 import com.google.gson.JsonElement
@@ -31,15 +32,26 @@ internal class BotsiTimerContentMapper(
                 val isSeparatorLetter = separator == BotsiTimerSeparator.Letter
 
                 val startText = runCatching { get("start_text").asString }.getOrNull().orEmpty()
-                    .run {
-                        if (isSeparatorLetter) {
-                            filter { it.isDigit() || it.isWhitespace() }
-                        } else {
-                            this
-                        }
+
+                // Parse time using the new flexible TimeParsingUtils
+                val startTimeMillis = when {
+                    isSeparatorLetter -> {
+                        // Handle letter separators like "1H 30M 45S"
+                        TimeParsingUtils.parseTimeWithLetterSeparators(startText)
                     }
+                    separator != null -> {
+                        // Handle specific separators (colon, dash, space)
+                        TimeParsingUtils.parseTimeToMilliseconds(startText, separator.symbol)
+                    }
+                    else -> {
+                        // Auto-detect separator
+                        TimeParsingUtils.parseTimeToMillisecondsAuto(startText)
+                    }
+                }
+
                 val noJavaFormatSupportSeparatorValues = if (isSeparatorLetter) {
-                    val startTextItemsCount = startText.split(" ").count()
+                    val cleanedStartText = startText.filter { it.isDigit() || it.isWhitespace() }
+                    val startTextItemsCount = cleanedStartText.split(" ").count()
                     val splitSeparator = separator.symbol.split(" ")
                     val separatorSliceStart = splitSeparator.count() - startTextItemsCount
                     splitSeparator.slice(separatorSliceStart..splitSeparator.lastIndex)
@@ -47,6 +59,7 @@ internal class BotsiTimerContentMapper(
                     null
                 }
 
+                // Keep the original SimpleDateFormat for backward compatibility with existing UI components
                 val correctFormat = format?.format?.replace("h", "H")
                 val pattern = if (isSeparatorLetter) {
                     correctFormat.orEmpty()
@@ -58,7 +71,7 @@ internal class BotsiTimerContentMapper(
 
                 BotsiTimerContent(
                     dateFormat = dateFormat,
-                    startTime = date?.time,
+                    startTime = startTimeMillis ?: date?.time,
                     noJavaFormatSupportSeparatorValues = noJavaFormatSupportSeparatorValues,
                     beforeText = runCatching { get("before_text").asString }.getOrNull(),
                     afterText = runCatching { get("after_text").asString }.getOrNull(),
