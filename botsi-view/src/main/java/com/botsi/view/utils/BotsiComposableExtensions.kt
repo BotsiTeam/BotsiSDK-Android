@@ -1,6 +1,5 @@
 package com.botsi.view.utils
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -279,9 +278,9 @@ internal fun BotsiAlign?.toAlignmentVertical(): Alignment.Vertical {
     }
 }
 
-internal fun BotsiHeroImageContent?.toShape(defaultShape: Boolean = false): Shape {
+internal fun BotsiHeroImageContent?.toShape(isDefaultShape: Boolean = false): Shape {
     return this?.shape?.let {
-        if (this.style == BotsiHeroImageContentStyle.Overlay && defaultShape) {
+        if (this.style == BotsiHeroImageContentStyle.Overlay && isDefaultShape) {
             return RectangleShape
         }
         when (it) {
@@ -316,7 +315,7 @@ internal fun BotsiHeroImageContent?.toShape(defaultShape: Boolean = false): Shap
             }
 
             BotsiHeroImageShape.ConcaveMask -> GenericShape { size, _ ->
-                val ovalDepth = size.height * 0.02f
+                val ovalDepth = size.height * 0.05f
                 moveTo(0f, 0f)
                 cubicTo(
                     size.width * 0.25f, ovalDepth,
@@ -325,25 +324,21 @@ internal fun BotsiHeroImageContent?.toShape(defaultShape: Boolean = false): Shap
                 )
                 lineTo(size.width, size.height)
                 lineTo(0f, size.height)
-                close()
             }
 
             BotsiHeroImageShape.ConvexMask -> GenericShape { size, _ ->
-                val ovalHeight = size.height * 0.02f
+                val ovalHeight = size.height * 0.1f
                 val ovalWidth = size.width
-                val ovalLeft = (size.width - ovalWidth) / 2f
-                val ovalRight = ovalLeft + ovalWidth
+                val ovalRight = ovalWidth
                 moveTo(0f, ovalHeight)
-                lineTo(ovalLeft, ovalHeight)
                 cubicTo(
-                    ovalLeft, ovalHeight * 0.5f,
+                    0f, ovalHeight * 0.5f,
                     ovalRight, ovalHeight * 0.5f,
                     ovalRight, ovalHeight
                 )
-                lineTo(size.width, ovalHeight)
-                lineTo(size.width, size.height)
+                lineTo(ovalWidth, ovalHeight)
+                lineTo(ovalWidth, size.height)
                 lineTo(0f, size.height)
-                close()
             }
 
             else -> RectangleShape

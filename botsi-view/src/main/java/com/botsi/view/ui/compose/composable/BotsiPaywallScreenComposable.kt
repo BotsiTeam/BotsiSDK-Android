@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,20 +15,17 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onSizeChanged
@@ -47,6 +43,7 @@ import com.botsi.view.model.ui.BotsiPaywallUiAction
 import com.botsi.view.model.ui.BotsiPaywallUiState
 import com.botsi.view.timer.BotsiTimerManager
 import com.botsi.view.ui.compose.scroll.BotsiHeroImageOverlayNestedScroll
+import com.botsi.view.utils.getStatusBarHeight
 import com.botsi.view.utils.toArrangementVertical
 import com.botsi.view.utils.toBrush
 import com.botsi.view.utils.toImageHeightPx
@@ -145,6 +142,7 @@ private fun Content(
     onAction: (BotsiPaywallUiAction) -> Unit
 ) {
     val density = LocalDensity.current
+    val statusBarHeight = remember(Unit) { getStatusBarHeight() }
     val heroImageContent = structure.heroImage?.let {
         it.content as? BotsiHeroImageContent
     }
@@ -156,7 +154,8 @@ private fun Content(
     }
     val heroImageHeight = heroImageContent.toImageHeightPx().takeIf { isImageHeroOverlay } ?: 0f
     val heroImageContentOffset = remember(heroImageHeight) {
-        heroImageHeight - (with(density) { 16.dp.toPx() })
+        val extraMargin = heroImageHeight * 0.25f
+        heroImageHeight - statusBarHeight - extraMargin
     }
     val heroImageScrollOffsetState = remember(heroImageHeight) {
         mutableFloatStateOf(heroImageContentOffset)
@@ -196,19 +195,15 @@ private fun Content(
                                 x = 0
                             )
                         }
-                            .background(
-                                brush = contentLayout.fillColor.toBrush(),
-                                shape = heroImageContent.toShape(
-                                    contentListScrollState.canScrollBackward
-                                )
-                            )
+                            .clip(heroImageContent.toShape(contentListScrollState.canScrollBackward))
+                            .background(brush = contentLayout.fillColor.toBrush())
                     } else {
                         this
                     }
                 }
                 .padding(bottom = with(density) { footerHeight.toDp() }),
-            state = contentListScrollState,
             contentPadding = contentLayout.contentLayout.toPaddings(),
+            state = contentListScrollState,
             verticalArrangement = contentLayout.contentLayout.toArrangementVertical()
         ) {
             if (isImageHeroFlat) {

@@ -1,5 +1,6 @@
 package com.botsi.view.utils
 
+import android.content.res.Resources
 import com.botsi.view.model.content.BotsiColor
 import com.botsi.view.model.content.BotsiColorBehaviour
 import com.botsi.view.model.content.BotsiGradient
@@ -36,7 +37,8 @@ fun String.toHexColorIfPossible(): String = run {
     val matchResultE = regexE.find(this.trim())
     val matchResultF = regexF.find(this.trim())
 
-    val matchResult = matchResultA ?: matchResultB ?: matchResultC ?: matchResultD ?: matchResultE ?: matchResultF
+    val matchResult =
+        matchResultA ?: matchResultB ?: matchResultC ?: matchResultD ?: matchResultE ?: matchResultF
 
     return matchResult?.let { match ->
         val red = match.groupValues[1].toInt().coerceIn(0, 255)
@@ -107,4 +109,10 @@ internal fun JsonElement.toFillBehaviourIfPossible(): BotsiColorBehaviour? {
     return if (color.isNotBlank()) {
         BotsiColor(color)
     } else null
+}
+
+fun getStatusBarHeight(): Int {
+    val resources = Resources.getSystem()
+    val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
+    return resources.getDimensionPixelSize(resourceId)
 }
