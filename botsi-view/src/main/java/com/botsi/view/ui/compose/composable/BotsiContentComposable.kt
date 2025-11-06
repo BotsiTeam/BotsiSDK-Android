@@ -59,7 +59,12 @@ internal fun BotsiContentComposable(
                     buttonContent = content,
                     onClick = {
                         content.action?.let { action ->
-                            onAction(BotsiPaywallUiAction.ButtonClick(action, content.actionLabel))
+                            onAction(
+                                BotsiPaywallUiAction.ButtonClick(
+                                    action,
+                                    content.actionLabel
+                                )
+                            )
                         }
                     },
                 )

@@ -66,7 +66,8 @@ internal fun BotsiPaywallEntryPoint(
                     url?.let { onLinkClick(it) }
                 }
 
-                BotsiActionType.None -> {
+                BotsiActionType.None,
+                BotsiActionType.Purchase -> {
                 }
             }
         }

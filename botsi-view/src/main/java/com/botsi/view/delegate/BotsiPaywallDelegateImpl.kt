@@ -96,35 +96,13 @@ internal class BotsiPaywallDelegateImpl(
                     is BotsiButtonAction.Restore -> BotsiActionType.Restore
                     is BotsiButtonAction.Custom -> BotsiActionType.Custom
                     is BotsiButtonAction.Link -> BotsiActionType.Link
+                    is BotsiButtonAction.Purchase -> BotsiActionType.Purchase
                 }
-                when (action.actionId) {
-                    "Purchase" -> {
-                        if (uiState.value is BotsiPaywallUiState.Success) {
-                            (uiState.value as BotsiPaywallUiState.Success).selectedProductId?.let {
-                                val product = (uiState.value as BotsiPaywallUiState.Success)
-                                    .products.find {
-                                        it.botsiProductId == (uiState.value as BotsiPaywallUiState.Success).selectedProductId
-                                    }
-                                product?.let {
-                                    Botsi.makePurchase(
-                                        activity = activity,
-                                        product = it,
-                                        callback = { profile, purchase ->
-                                            eventHandler?.onSuccessPurchase(
-                                                profile,
-                                                purchase
-                                            )
-                                        },
-                                        errorCallback = { error ->
-                                            eventHandler?.onErrorPurchase(error)
-                                        }
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-                    else -> eventHandler?.onButtonClick(
+                val isPurchaseAction = actionType == BotsiActionType.Purchase
+                if (isPurchaseAction) {
+                    purchase()
+                } else {
+                    eventHandler?.onButtonClick(
                         actionType = actionType,
                         actionId = action.actionId,
                         url = (action.action as? BotsiButtonAction.Link)?.url
@@ -140,9 +118,14 @@ internal class BotsiPaywallDelegateImpl(
                     is BotsiButtonAction.Restore -> BotsiActionType.Restore
                     is BotsiButtonAction.Custom -> BotsiActionType.Custom
                     is BotsiButtonAction.Link -> BotsiActionType.Link
+                    is BotsiButtonAction.Purchase -> BotsiActionType.Purchase
                     null -> BotsiActionType.None
                 }
-                eventHandler?.onTopButtonClick(actionType, action.topButton.actionId)
+                if (actionType == BotsiActionType.Purchase) {
+                    purchase()
+                } else {
+                    eventHandler?.onTopButtonClick(actionType, action.topButton.actionId)
+                }
             }
 
             is BotsiPaywallUiAction.LinkClick -> {
@@ -165,6 +148,32 @@ internal class BotsiPaywallDelegateImpl(
                     } else {
                         it
                     }
+                }
+            }
+        }
+    }
+
+    private fun purchase() {
+        if (uiState.value is BotsiPaywallUiState.Success) {
+            (uiState.value as BotsiPaywallUiState.Success).selectedProductId?.let {
+                val product = (uiState.value as BotsiPaywallUiState.Success)
+                    .products.find {
+                        it.botsiProductId == (uiState.value as BotsiPaywallUiState.Success).selectedProductId
+                    }
+                product?.let {
+                    Botsi.makePurchase(
+                        activity = activity,
+                        product = it,
+                        callback = { profile, purchase ->
+                            eventHandler?.onSuccessPurchase(
+                                profile,
+                                purchase
+                            )
+                        },
+                        errorCallback = { error ->
+                            eventHandler?.onErrorPurchase(error)
+                        }
+                    )
                 }
             }
         }

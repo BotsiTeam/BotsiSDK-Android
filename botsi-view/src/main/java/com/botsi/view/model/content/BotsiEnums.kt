@@ -193,6 +193,7 @@ sealed interface BotsiButtonAction {
     data object Login : BotsiButtonAction
     data object Restore : BotsiButtonAction
     data object Custom : BotsiButtonAction
+    data object Purchase : BotsiButtonAction
 
     // internal usage
     data class Link(val url: String) : BotsiButtonAction
@@ -204,7 +205,13 @@ sealed interface BotsiButtonAction {
                 "Login" -> Login
                 "Restore" -> Restore
                 "Custom" -> Custom
-                else -> None
+                else -> {
+                    if (value.lowercase().contains("purchase")) {
+                        Purchase
+                    } else {
+                        None
+                    }
+                }
             }
     }
 }

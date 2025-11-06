@@ -33,5 +33,7 @@ enum class BotsiActionType {
     /**
      * Link action - opens a URL
      */
-    Link
+    Link,
+
+    Purchase,
 }
