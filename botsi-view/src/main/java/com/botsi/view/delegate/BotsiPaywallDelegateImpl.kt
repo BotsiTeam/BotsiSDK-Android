@@ -1,10 +1,9 @@
 package com.botsi.view.delegate
 
-import android.app.Activity
 import androidx.annotation.RestrictTo
 import com.botsi.Botsi
+import com.botsi.domain.model.BotsiProduct
 import com.botsi.view.handler.BotsiActionHandler
-import com.botsi.view.handler.BotsiActionType
 import com.botsi.view.mapper.BotsiPaywallBlocksMapper
 import com.botsi.view.model.content.BotsiButtonAction
 import com.botsi.view.model.ui.BotsiPaywallUiAction
@@ -24,7 +23,6 @@ import kotlinx.coroutines.launch
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 internal class BotsiPaywallDelegateImpl(
-    private val activity: Activity,
     private val paywallBlocksMapper: BotsiPaywallBlocksMapper,
     private val eventHandler: BotsiActionHandler? = null,
 ) : BotsiPaywallDelegate {
@@ -40,6 +38,14 @@ internal class BotsiPaywallDelegateImpl(
     )
     override val uiSideEffect: Flow<BotsiPaywallUiSideEffect>
         get() = _uiSideEffect
+
+    private val selectedProduct: BotsiProduct?
+        get() = (uiState.value as BotsiPaywallUiState.Success).selectedProductId?.let {
+            (uiState.value as? BotsiPaywallUiState.Success)
+                ?.products?.find {
+                    it.botsiProductId == (uiState.value as BotsiPaywallUiState.Success).selectedProductId
+                }
+        }
 
     override fun onAction(action: BotsiPaywallUiAction) {
         when (action) {
@@ -89,53 +95,12 @@ internal class BotsiPaywallDelegateImpl(
             }
 
             is BotsiPaywallUiAction.ButtonClick -> {
-                val actionType = when (action.action) {
-                    is BotsiButtonAction.None -> BotsiActionType.None
-                    is BotsiButtonAction.Close -> BotsiActionType.Close
-                    is BotsiButtonAction.Login -> BotsiActionType.Login
-                    is BotsiButtonAction.Restore -> BotsiActionType.Restore
-                    is BotsiButtonAction.Custom -> BotsiActionType.Custom
-                    is BotsiButtonAction.Link -> BotsiActionType.Link
-                    is BotsiButtonAction.Purchase -> BotsiActionType.Purchase
-                }
-                val isPurchaseAction = actionType == BotsiActionType.Purchase
-                if (isPurchaseAction) {
-                    purchase()
-                } else {
-                    eventHandler?.onButtonClick(
-                        actionType = actionType,
-                        actionId = action.actionId,
-                        url = (action.action as? BotsiButtonAction.Link)?.url
-                    )
-                }
+                handleClick(action.action)
             }
 
-            is BotsiPaywallUiAction.TopButtonClick -> {
-                val actionType = when (action.topButton.action) {
-                    is BotsiButtonAction.None -> BotsiActionType.None
-                    is BotsiButtonAction.Close -> BotsiActionType.Close
-                    is BotsiButtonAction.Login -> BotsiActionType.Login
-                    is BotsiButtonAction.Restore -> BotsiActionType.Restore
-                    is BotsiButtonAction.Custom -> BotsiActionType.Custom
-                    is BotsiButtonAction.Link -> BotsiActionType.Link
-                    is BotsiButtonAction.Purchase -> BotsiActionType.Purchase
-                    null -> BotsiActionType.None
-                }
-                if (actionType == BotsiActionType.Purchase) {
-                    purchase()
-                } else {
-                    eventHandler?.onTopButtonClick(actionType, action.topButton.actionId)
-                }
-            }
-
-            is BotsiPaywallUiAction.LinkClick -> {
-                eventHandler?.onLinkClick(action.url)
-            }
-
-            is BotsiPaywallUiAction.CustomAction -> {
-                eventHandler?.onCustomAction(
-                    action.actionId,
-                    action.actionLabel
+            is BotsiPaywallUiAction.TimerEnd -> {
+                eventHandler?.onTimerEnd(
+                    customActionId = action.customActionId
                 )
             }
 
@@ -153,29 +118,15 @@ internal class BotsiPaywallDelegateImpl(
         }
     }
 
-    private fun purchase() {
-        if (uiState.value is BotsiPaywallUiState.Success) {
-            (uiState.value as BotsiPaywallUiState.Success).selectedProductId?.let {
-                val product = (uiState.value as BotsiPaywallUiState.Success)
-                    .products.find {
-                        it.botsiProductId == (uiState.value as BotsiPaywallUiState.Success).selectedProductId
-                    }
-                product?.let {
-                    Botsi.makePurchase(
-                        activity = activity,
-                        product = it,
-                        callback = { profile, purchase ->
-                            eventHandler?.onSuccessPurchase(
-                                profile,
-                                purchase
-                            )
-                        },
-                        errorCallback = { error ->
-                            eventHandler?.onErrorPurchase(error)
-                        }
-                    )
-                }
-            }
+    private fun handleClick(action: BotsiButtonAction) {
+        when (action) {
+            is BotsiButtonAction.Close -> eventHandler?.onCloseClick()
+            is BotsiButtonAction.Login -> eventHandler?.onLoginClick()
+            is BotsiButtonAction.Restore -> eventHandler?.onRestoreClick()
+            is BotsiButtonAction.Custom -> eventHandler?.onCustomActionClick(action.id)
+            is BotsiButtonAction.Link -> eventHandler?.onLinkClick(action.url)
+            is BotsiButtonAction.Purchase -> selectedProduct?.let { eventHandler?.onPurchaseClick(it) }
+            is BotsiButtonAction.None -> {}
         }
     }
 }

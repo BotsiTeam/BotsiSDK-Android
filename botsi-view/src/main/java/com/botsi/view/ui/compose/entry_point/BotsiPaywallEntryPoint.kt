@@ -1,6 +1,5 @@
 package com.botsi.view.ui.compose.entry_point
 
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
@@ -17,13 +16,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.media3.common.util.UnstableApi
 import com.botsi.Botsi
-import com.botsi.domain.model.BotsiProfile
-import com.botsi.domain.model.BotsiPurchase
+import com.botsi.domain.model.BotsiProduct
 import com.botsi.view.BotsiViewConfig
 import com.botsi.view.delegate.BotsiPaywallDelegate
 import com.botsi.view.di.BotsiPaywallDIManager
 import com.botsi.view.handler.BotsiActionHandler
-import com.botsi.view.handler.BotsiActionType
 import com.botsi.view.handler.BotsiPublicEventHandler
 import com.botsi.view.isNotEmpty
 import com.botsi.view.model.ui.BotsiPaywallUiAction
@@ -31,57 +28,31 @@ import com.botsi.view.model.ui.BotsiPaywallUiSideEffect
 import com.botsi.view.timer.BotsiTimerManager
 import com.botsi.view.timer.BotsiTimerResolver
 import com.botsi.view.ui.compose.composable.BotsiPaywallScreenComposable
+import com.botsi.view.utils.findActivity
 import kotlinx.coroutines.launch
 
 @OptIn(UnstableApi::class)
 @Composable
-internal fun BotsiPaywallEntryPoint(
-    activity: Activity,
+fun BotsiPaywallEntryPoint(
     viewConfig: BotsiViewConfig,
     timerResolver: BotsiTimerResolver = BotsiTimerResolver.default,
     eventHandler: BotsiPublicEventHandler? = null,
 ) {
     val context = LocalContext.current
     val defaultClickHandler = object : BotsiActionHandler {
-        override fun onButtonClick(actionType: BotsiActionType, actionId: String?, url: String?) {
-            when (actionType) {
-                BotsiActionType.Close -> {
-                    eventHandler?.onCloseAction()
-                }
-
-                BotsiActionType.Login -> {
-                    eventHandler?.onLoginAction()
-                }
-
-                BotsiActionType.Restore -> {
-                    eventHandler?.onRestoreAction()
-                }
-
-                BotsiActionType.Custom -> {
-                    onCustomAction(actionId.orEmpty())
-                }
-
-                BotsiActionType.Link -> {
-                    // Handle link action
-                    url?.let { onLinkClick(it) }
-                }
-
-                BotsiActionType.None,
-                BotsiActionType.Purchase -> {
-                }
-            }
+        override fun onCloseClick() {
+            context.findActivity()?.onBackPressed()
         }
 
-        override fun onTopButtonClick(actionType: BotsiActionType, actionId: String?) {
-            when (actionType) {
-                BotsiActionType.Close -> {
-                    eventHandler?.onCloseAction()
-                }
+        override fun onLoginClick() {
+            eventHandler?.onLoginAction()
+        }
 
-                else -> {
-                    onButtonClick(actionType, actionId)
-                }
-            }
+        override fun onRestoreClick() {
+            Botsi.restorePurchases(
+                successCallback = { eventHandler?.onSuccessRestore(it) },
+                errorCallback = { eventHandler?.onErrorRestore(it) }
+            )
         }
 
         override fun onLinkClick(url: String) {
@@ -93,29 +64,37 @@ internal fun BotsiPaywallEntryPoint(
             }
         }
 
-        override fun onCustomAction(actionId: String, actionLabel: String?) {
-            eventHandler?.onCustomAction(actionId, actionLabel)
+        override fun onCustomActionClick(actionId: String) {
+            eventHandler?.onCustomAction(actionId)
         }
 
-        override fun onSuccessPurchase(
-            profile: BotsiProfile,
-            purchase: BotsiPurchase
-        ) {
-            eventHandler?.onSuccessPurchase(
-                profile,
-                purchase
-            )
+        override fun onTimerEnd(customActionId: String) {
+            eventHandler?.onTimerEnd(customActionId)
         }
 
-        override fun onErrorPurchase(error: Throwable) {
-            eventHandler?.onErrorPurchase(error)
+        override fun onPurchaseClick(product: BotsiProduct) {
+            context.findActivity()?.let {
+                Botsi.makePurchase(
+                    activity = it,
+                    product = product,
+                    callback = { profile, purchase ->
+                        eventHandler?.onSuccessPurchase(
+                            profile,
+                            purchase
+                        )
+                    },
+                    errorCallback = { error ->
+                        eventHandler?.onErrorPurchase(error)
+                    }
+                )
+            }
         }
     }
 
     val diManager =
         remember(viewConfig, eventHandler) {
             BotsiPaywallDIManager(
-                activity = activity,
+                context = context,
                 timerResolver = timerResolver,
                 clickHandler = defaultClickHandler,
             )

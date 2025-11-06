@@ -1,6 +1,6 @@
 package com.botsi.view.di
 
-import android.app.Activity
+import android.content.Context
 import androidx.annotation.RestrictTo
 import com.botsi.view.delegate.BotsiPaywallDelegate
 import com.botsi.view.delegate.BotsiPaywallDelegateImpl
@@ -39,7 +39,7 @@ import com.botsi.view.timer.BotsiTimerStorageImpl
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 internal class BotsiPaywallDIManager(
-    private val activity: Activity,
+    private val context: Context,
     private val timerResolver: BotsiTimerResolver,
     private val clickHandler: BotsiActionHandler? = null,
 ) {
@@ -47,7 +47,7 @@ internal class BotsiPaywallDIManager(
 
     init {
         with(dependencies) {
-            put(BotsiTimerStorage::class.java, BotsiTimerStorageImpl(activity))
+            put(BotsiTimerStorage::class.java, BotsiTimerStorageImpl(context))
             put(
                 BotsiTimerManager::class.java, BotsiTimerManagerImpl(
                     storage = inject(),
@@ -178,7 +178,6 @@ internal class BotsiPaywallDIManager(
             )
             put(
                 BotsiPaywallDelegate::class.java, BotsiPaywallDelegateImpl(
-                    activity = activity,
                     paywallBlocksMapper = inject(),
                     eventHandler = clickHandler
                 )

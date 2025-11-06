@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -19,8 +18,6 @@ import com.botsi.view.model.ui.BotsiPaywallUiAction
 import com.botsi.view.timer.BotsiTimerManager
 import com.botsi.view.utils.toPaddings
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.util.Date
 
 @Composable
@@ -62,9 +59,8 @@ internal fun BotsiTimerComposable(
                     // Handle timer finished
                     if (content.triggerCustomAction == true && content.customActionId != null) {
                         onAction(
-                            BotsiPaywallUiAction.CustomAction(
-                                actionId = content.customActionId,
-                                actionLabel = null
+                            BotsiPaywallUiAction.TimerEnd(
+                                content.customActionId,
                             )
                         )
                     }

@@ -60,10 +60,7 @@ internal fun BotsiContentComposable(
                     onClick = {
                         content.action?.let { action ->
                             onAction(
-                                BotsiPaywallUiAction.ButtonClick(
-                                    action,
-                                    content.actionLabel
-                                )
+                                BotsiPaywallUiAction.ButtonClick(action)
                             )
                         }
                     },
@@ -105,19 +102,7 @@ internal fun BotsiContentComposable(
                 modifier = modifier,
                 content = content,
                 onClick = { action ->
-                    when (action) {
-                        is com.botsi.view.model.content.BotsiButtonAction.Link -> {
-                            onAction(BotsiPaywallUiAction.LinkClick(action.url))
-                        }
-
-                        is com.botsi.view.model.content.BotsiButtonAction.Custom -> {
-                            onAction(BotsiPaywallUiAction.CustomAction("custom", null))
-                        }
-
-                        else -> {
-                            onAction(BotsiPaywallUiAction.ButtonClick(action))
-                        }
-                    }
+                    onAction(BotsiPaywallUiAction.ButtonClick(action))
                 }
             )
         }

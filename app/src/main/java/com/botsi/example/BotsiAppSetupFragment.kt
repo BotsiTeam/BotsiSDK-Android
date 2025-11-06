@@ -44,8 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
 import androidx.fragment.app.Fragment
 import com.botsi.Botsi
-import com.botsi.example.BotsiAiFragment
-import com.botsi.view.ui.screen.BotsiViewFragment
+import com.botsi.example.screen.BotsiViewFragment
 
 class BotsiAppSetupFragment : Fragment() {
 

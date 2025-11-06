@@ -231,7 +231,9 @@ private fun Content(
                     BotsiTopButtonComposable(
                         topButton = button,
                         topButtonClick = { topButton ->
-                            onAction(BotsiPaywallUiAction.TopButtonClick(topButton))
+                            topButton.action?.let { action ->
+                                onAction(BotsiPaywallUiAction.ButtonClick(action))
+                            }
                         }
                     )
                 }

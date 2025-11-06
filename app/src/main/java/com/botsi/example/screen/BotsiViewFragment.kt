@@ -1,16 +1,17 @@
-package com.botsi.view.ui.screen
+package com.botsi.example.screen
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
-import com.botsi.Botsi
 import com.botsi.domain.model.BotsiPaywall
 import com.botsi.domain.model.BotsiProduct
+import com.botsi.domain.model.BotsiProfile
+import com.botsi.domain.model.BotsiPurchase
 import com.botsi.view.BotsiViewConfig
 import com.botsi.view.handler.BotsiPublicEventHandler
 import com.botsi.view.timer.BotsiTimerResolver
@@ -20,8 +21,6 @@ class BotsiViewFragment : Fragment() {
 
     private var paywall: BotsiPaywall? = null
     private var products: List<BotsiProduct>? = null
-    private var eventHandler: BotsiPublicEventHandler? = null
-    private var timerResolver: BotsiTimerResolver? = null
 
     /**
      * Default implementation of BotsiPublicClickHandler with basic functionality
@@ -37,16 +36,57 @@ class BotsiViewFragment : Fragment() {
             setContent {
                 MaterialTheme {
                     BotsiPaywallEntryPoint(
-                        activity = requireActivity(),
                         viewConfig = BotsiViewConfig(
                             paywall = paywall,
                             products = products,
                         ),
-                        eventHandler = eventHandler,
-                        timerResolver = timerResolver ?: BotsiTimerResolver.default
+                        eventHandler = object : BotsiPublicEventHandler {
+                            override fun onLoginAction() {
+                                showToaster("Login action clicked")
+                            }
+
+                            override fun onCustomAction(actionId: String) {
+                                showToaster("$actionId clicked")
+                            }
+
+                            override fun onSuccessRestore(profile: BotsiProfile) {
+                                showToaster("Restore success")
+                            }
+
+                            override fun onErrorRestore(error: Throwable) {
+                                showToaster("Restore error ${error.message}")
+                            }
+
+                            override fun onSuccessPurchase(
+                                profile: BotsiProfile,
+                                purchase: BotsiPurchase
+                            ) {
+                                showToaster("Purchase success")
+                            }
+
+                            override fun onErrorPurchase(error: Throwable) {
+                                showToaster("Purchase error ${error.message}")
+                            }
+
+                            override fun onTimerEnd(actionId: String) {
+                                showToaster("Timer end $actionId")
+                            }
+
+                        },
+                        timerResolver = BotsiTimerResolver.default
                     )
                 }
             }
+        }
+    }
+
+    private fun showToaster(message: String) {
+        requireActivity().runOnUiThread {
+            Toast.makeText(
+                requireContext(),
+                message,
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
@@ -61,17 +101,6 @@ class BotsiViewFragment : Fragment() {
         this.products = products
     }
 
-    /**
-     * Set a custom event handler for this fragment
-     */
-    fun setEventHandler(clickHandler: BotsiPublicEventHandler?) {
-        this.eventHandler = clickHandler
-    }
-
-    fun setTimerResolver(timerResolver: BotsiTimerResolver) {
-        this.timerResolver = timerResolver
-    }
-
     companion object {
         /**
          * Create a new instance of BotsiViewFragment
@@ -79,14 +108,10 @@ class BotsiViewFragment : Fragment() {
         fun newInstance(
             paywall: BotsiPaywall?,
             products: List<BotsiProduct>?,
-            clickHandler: BotsiPublicEventHandler? = null,
-            timerResolver: BotsiTimerResolver = BotsiTimerResolver.default
         ): BotsiViewFragment {
             return BotsiViewFragment().apply {
                 setPaywall(paywall)
                 setProducts(products)
-                setEventHandler(clickHandler)
-                setTimerResolver(timerResolver)
             }
         }
     }

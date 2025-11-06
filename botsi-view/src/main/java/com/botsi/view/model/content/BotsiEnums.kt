@@ -192,19 +192,22 @@ sealed interface BotsiButtonAction {
     data object Close : BotsiButtonAction
     data object Login : BotsiButtonAction
     data object Restore : BotsiButtonAction
-    data object Custom : BotsiButtonAction
+    data class Custom(val id: String) : BotsiButtonAction
     data object Purchase : BotsiButtonAction
 
     // internal usage
     data class Link(val url: String) : BotsiButtonAction
 
     companion object {
-        fun valueOf(value: String): BotsiButtonAction =
+        fun valueOf(
+            value: String,
+            id: String? = null
+        ): BotsiButtonAction =
             when (value) {
                 "Close" -> Close
                 "Login" -> Login
                 "Restore" -> Restore
-                "Custom" -> Custom
+                "Custom" -> Custom(id.orEmpty())
                 else -> {
                     if (value.lowercase().contains("purchase")) {
                         Purchase

@@ -1,5 +1,8 @@
 package com.botsi.view.utils
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.res.Resources
 import com.botsi.view.model.content.BotsiColor
 import com.botsi.view.model.content.BotsiColorBehaviour
@@ -115,4 +118,13 @@ fun getStatusBarHeight(): Int {
     val resources = Resources.getSystem()
     val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
     return resources.getDimensionPixelSize(resourceId)
+}
+
+fun Context.findActivity(): Activity? {
+    var context = this
+    while (context is ContextWrapper) {
+        if (context is Activity) return context
+        context = context.baseContext
+    }
+    return null
 }

@@ -1,5 +1,6 @@
 package com.botsi.view.handler
 
+import com.botsi.domain.model.BotsiProduct
 import com.botsi.domain.model.BotsiProfile
 import com.botsi.domain.model.BotsiPurchase
 
@@ -9,51 +10,12 @@ import com.botsi.domain.model.BotsiPurchase
  * within the paywall UI.
  */
 internal interface BotsiActionHandler {
-
-    /**
-     * Called when a button with a specific action is clicked.
-     *
-     * @param action The button action that was triggered
-     * @param actionId Optional action identifier for custom actions
-     */
-    fun onButtonClick(
-        actionType: BotsiActionType,
-        actionId: String? = null,
-        url: String? = null
-    )
-
-    /**
-     * Called when a top button is clicked.
-     *
-     * @param topButton The top button that was clicked
-     */
-    fun onTopButtonClick(
-        actionType: BotsiActionType,
-        actionId: String? = null
-    )
-
-    /**
-     * Called when a link action is triggered.
-     *
-     * @param url The URL to be opened
-     */
+    fun onCloseClick()
+    fun onLoginClick()
+    fun onRestoreClick()
     fun onLinkClick(url: String)
+    fun onPurchaseClick(product: BotsiProduct)
+    fun onCustomActionClick(actionId: String)
 
-    /**
-     * Called when a custom action is triggered.
-     *
-     * @param actionId The custom action identifier
-     * @param actionLabel Optional action label
-     */
-    fun onCustomAction(
-        actionId: String,
-        actionLabel: String? = null
-    )
-
-    fun onSuccessPurchase(
-        profile: BotsiProfile,
-        purchase: BotsiPurchase,
-    )
-
-    fun onErrorPurchase(error: Throwable)
+    fun onTimerEnd(customActionId: String)
 }
