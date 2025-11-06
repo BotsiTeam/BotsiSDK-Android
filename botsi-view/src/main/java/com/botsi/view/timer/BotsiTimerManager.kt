@@ -6,6 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Date
 import java.util.concurrent.ConcurrentHashMap
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
@@ -19,6 +20,8 @@ internal interface BotsiTimerManager {
         onTimerUpdate: (Long) -> Unit,
         onTimerFinished: () -> Unit
     )
+
+    fun timerEndAtDate(timerId: String): Date
 
     fun dispose(scope: CoroutineScope)
 }
@@ -35,7 +38,6 @@ internal class BotsiTimerManagerImpl(
         val internalTimerId: String?,
         val timerId: String?,
         val timerMode: BotsiTimerMode?,
-        val startTime: Long,
         var currentValue: Long,
         var job: Job?,
         val onUpdate: (Long) -> Unit,
@@ -51,37 +53,25 @@ internal class BotsiTimerManagerImpl(
         onTimerUpdate: (Long) -> Unit,
         onTimerFinished: () -> Unit
     ) {
-        // Stop existing timer if any
         stopTimer(timerInternalId)
 
         val mode = timerMode ?: BotsiTimerMode.ResetEveryTime
-        val initialTime = startTime ?: 0L
+        val initialTime = startTime ?: 0
 
-        // Determine the actual start value based on timer mode
         val actualStartValue = when (mode) {
+            BotsiTimerMode.DeveloperDefined,
             BotsiTimerMode.ResetEveryTime -> {
-                // Always start fresh
                 initialTime
             }
 
             BotsiTimerMode.ResetEveryLaunch -> {
-                // Use stored value if exists, otherwise start fresh
                 storage.getTimerValue(timerInternalId, mode)
                     ?.takeIf { it > 0 } ?: initialTime
             }
 
             BotsiTimerMode.KeepTimer -> {
-                // Use persistent stored value if exists, otherwise start fresh
                 storage.getTimerValue(timerInternalId, mode)
                     ?.takeIf { it > 0 } ?: initialTime
-            }
-
-            BotsiTimerMode.DeveloperDefined -> {
-                // Use stored value if exists, otherwise start fresh
-                timerId?.let {
-                    val date = timerResolver.timerEndAtDate(timerId)
-                    date.time - System.currentTimeMillis()
-                } ?: initialTime
             }
         }
 
@@ -89,7 +79,6 @@ internal class BotsiTimerManagerImpl(
             internalTimerId = timerInternalId,
             timerId = timerId,
             timerMode = mode,
-            startTime = initialTime,
             currentValue = actualStartValue,
             job = null,
             onUpdate = onTimerUpdate,
@@ -97,9 +86,11 @@ internal class BotsiTimerManagerImpl(
         )
 
         activeTimers[timerInternalId] = timerState
-
-        // Start the countdown
         startCountdown(timerInternalId, scope)
+    }
+
+    override fun timerEndAtDate(timerId: String): Date {
+        return timerResolver.timerEndAtDate(timerId)
     }
 
     private fun startCountdown(timerInternalId: String, scope: CoroutineScope) {
@@ -114,10 +105,8 @@ internal class BotsiTimerManagerImpl(
                 timerState.currentValue -= 1000L
             }
 
-            // Timer finished
+            timerState.onUpdate(timerState.currentValue)
             timerState.onFinished()
-
-            // Clean up
             activeTimers.remove(timerInternalId)
         }
     }
@@ -131,7 +120,6 @@ internal class BotsiTimerManagerImpl(
 
     override fun dispose(scope: CoroutineScope) {
         activeTimers.forEach { entry ->
-            storage.setTimerCurrentTimeValue(entry.key, entry.value.timerMode!!)
             storage.setTimerValue(entry.key, entry.value.timerMode!!, entry.value.currentValue)
         }
         activeTimers.values.forEach { it.job?.cancel() }

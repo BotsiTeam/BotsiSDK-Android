@@ -14,6 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.botsi.view.model.content.BotsiTimerContent
+import com.botsi.view.model.content.BotsiTimerMode
 import com.botsi.view.model.ui.BotsiPaywallUiAction
 import com.botsi.view.timer.BotsiTimerManager
 import com.botsi.view.utils.toPaddings
@@ -31,7 +32,13 @@ internal fun BotsiTimerComposable(
 ) {
     val paddings = remember(content) { content.toPaddings() }
     val verticalOffset = remember(content) { (content.verticalOffset ?: 0).dp }
-    val startTime = remember(content) { content.startTime ?: 0 }
+    val startTime = remember(content) {
+        if (content.timerMode == BotsiTimerMode.DeveloperDefined) {
+            timerManager.timerEndAtDate(content.timerId.orEmpty()).time - System.currentTimeMillis()
+        } else {
+            content.startTime ?: 0
+        }
+    }
     var timerValue by rememberSaveable(startTime) { mutableLongStateOf(startTime) }
     var dateFormatted by rememberSaveable(timerValue) {
         mutableStateOf(

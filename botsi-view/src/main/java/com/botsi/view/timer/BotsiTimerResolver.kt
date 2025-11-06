@@ -18,7 +18,7 @@ fun interface BotsiTimerResolver {
     companion object {
         val default = object : BotsiTimerResolver {
             override fun timerEndAtDate(timerId: String): Date {
-                return Date()
+                return Date(System.currentTimeMillis() + 3600 * 1000L)
             }
         }
     }

@@ -58,7 +58,6 @@ internal class BotsiPaywallDelegateImpl(
                     SupervisorJob() + Dispatchers.Default + CoroutineExceptionHandler { context, ex ->
                         ex.message?.let {
                             _uiSideEffect.tryEmit(BotsiPaywallUiSideEffect.Error(it))
-                            _uiSideEffect.tryEmit(BotsiPaywallUiSideEffect.Error(it))
                         }
                     }
                 )
@@ -84,7 +83,6 @@ internal class BotsiPaywallDelegateImpl(
                     errorCallback = { error ->
                         error.message?.let { message ->
                             _uiState.update { BotsiPaywallUiState.Error(message) }
-                            _uiSideEffect.tryEmit(BotsiPaywallUiSideEffect.Error(message))
                         }
                     }
                 )

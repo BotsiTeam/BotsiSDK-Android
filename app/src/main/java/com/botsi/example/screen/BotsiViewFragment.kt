@@ -16,6 +16,7 @@ import com.botsi.view.BotsiViewConfig
 import com.botsi.view.handler.BotsiPublicEventHandler
 import com.botsi.view.timer.BotsiTimerResolver
 import com.botsi.view.ui.compose.entry_point.BotsiPaywallEntryPoint
+import java.util.Date
 
 class BotsiViewFragment : Fragment() {
 
@@ -40,6 +41,62 @@ class BotsiViewFragment : Fragment() {
                             paywall = paywall,
                             products = products,
                         ),
+                        timerResolver = object : BotsiTimerResolver{
+                            override fun timerEndAtDate(timerId: String): Date {
+                                val durationMillis = parseTimeString(timerId)
+                                return Date(System.currentTimeMillis() + durationMillis)
+                            }
+
+                            private fun parseTimeString(timeString: String): Long {
+                                if (timeString.isBlank()) return 0L
+
+                                return try {
+                                    val cleanedTime = timeString.trim().lowercase()
+                                    var totalMilliseconds = 0L
+
+                                    // Extract days (e.g., "1d")
+                                    val dayPattern = Regex("""(\d+)d""")
+                                    dayPattern.find(cleanedTime)?.let { match ->
+                                        val days = match.groupValues[1].toInt()
+                                        totalMilliseconds += days * 86400 * 1000L
+                                    }
+
+                                    // Extract hours (e.g., "10h")
+                                    val hourPattern = Regex("""(\d+)h""")
+                                    hourPattern.find(cleanedTime)?.let { match ->
+                                        val hours = match.groupValues[1].toInt()
+                                        totalMilliseconds += hours * 3600 * 1000L
+                                    }
+
+                                    // Extract minutes (e.g., "12m")
+                                    val minutePattern = Regex("""(\d+)m""")
+                                    minutePattern.find(cleanedTime)?.let { match ->
+                                        val minutes = match.groupValues[1].toInt()
+                                        totalMilliseconds += minutes * 60 * 1000L
+                                    }
+
+                                    // Extract seconds (e.g., "10s")
+                                    val secondPattern = Regex("""(\d+)s""")
+                                    secondPattern.find(cleanedTime)?.let { match ->
+                                        val seconds = match.groupValues[1].toInt()
+                                        totalMilliseconds += seconds * 1000L
+                                    }
+
+                                    // If no time units found, try to parse as plain seconds
+                                    if (totalMilliseconds == 0L) {
+                                        val seconds = cleanedTime.toIntOrNull()
+                                        if (seconds != null && seconds > 0) {
+                                            totalMilliseconds = seconds * 1000L
+                                        }
+                                    }
+
+                                    totalMilliseconds
+                                } catch (e: Exception) {
+                                    // Default to 1 hour if parsing fails
+                                    3600 * 1000L
+                                }
+                            }
+                        },
                         eventHandler = object : BotsiPublicEventHandler {
                             override fun onLoginAction() {
                                 showToaster("Login action clicked")
@@ -73,7 +130,6 @@ class BotsiViewFragment : Fragment() {
                             }
 
                         },
-                        timerResolver = BotsiTimerResolver.default
                     )
                 }
             }
