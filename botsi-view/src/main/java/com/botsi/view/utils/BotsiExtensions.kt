@@ -27,6 +27,9 @@ fun String.toHexColorIfPossible(): String = run {
     val regexA = Regex("""rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d.]+)\s*\)""")
     val regexB = Regex("""rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d.]+)\s*\)""")
 
+    // Comma-separated rgb pattern without alpha (basic rgb format)
+    val regexG = Regex("""rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)""")
+
     // Space-separated rgba patterns (new)
     val regexC = Regex("""rgb\(\s*(\d+)\s+(\d+)\s+(\d+)\s+(\d+(?:\.\d+)?)\s*\)""")
     val regexD = Regex("""rgba\(\s*(\d+)\s+(\d+)\s+(\d+)\s+(\d+(?:\.\d+)?)\s*\)""")
@@ -35,13 +38,14 @@ fun String.toHexColorIfPossible(): String = run {
 
     val matchResultA = regexA.find(this.trim())
     val matchResultB = regexB.find(this.trim())
+    val matchResultG = regexG.find(this.trim())
     val matchResultC = regexC.find(this.trim())
     val matchResultD = regexD.find(this.trim())
     val matchResultE = regexE.find(this.trim())
     val matchResultF = regexF.find(this.trim())
 
     val matchResult =
-        matchResultA ?: matchResultB ?: matchResultC ?: matchResultD ?: matchResultE ?: matchResultF
+        matchResultA ?: matchResultB ?: matchResultG ?: matchResultC ?: matchResultD ?: matchResultE ?: matchResultF
 
     return matchResult?.let { match ->
         val red = match.groupValues[1].toInt().coerceIn(0, 255)
