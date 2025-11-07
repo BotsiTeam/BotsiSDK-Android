@@ -23,18 +23,18 @@ fun JsonElement.toHexColorIfPossible(): String = asString.toHexColorIfPossible()
 fun String.toHexColorIfPossible(): String = run {
     if (startsWith("#")) return@run this
 
-    // Comma-separated rgba patterns (existing)
-    val regexA = Regex("""rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d.]+)\s*\)""")
-    val regexB = Regex("""rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d.]+)\s*\)""")
+    // Comma-separated rgba patterns (existing) - now support decimal RGB values
+    val regexA = Regex("""rgb\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*\)""")
+    val regexB = Regex("""rgba\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*\)""")
 
-    // Comma-separated rgb pattern without alpha (basic rgb format)
-    val regexG = Regex("""rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)""")
+    // Comma-separated rgb pattern without alpha (basic rgb format) - now support decimal RGB values
+    val regexG = Regex("""rgb\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*\)""")
 
-    // Space-separated rgba patterns (new)
-    val regexC = Regex("""rgb\(\s*(\d+)\s+(\d+)\s+(\d+)\s+(\d+(?:\.\d+)?)\s*\)""")
-    val regexD = Regex("""rgba\(\s*(\d+)\s+(\d+)\s+(\d+)\s+(\d+(?:\.\d+)?)\s*\)""")
-    val regexE = Regex("""rgb\(\s*(\d+)\s+(\d+)\s+(\d+)\s*\)""")
-    val regexF = Regex("""rgba\(\s*(\d+)\s+(\d+)\s+(\d+)\s*\)""")
+    // Space-separated rgba patterns (new) - now support decimal RGB values
+    val regexC = Regex("""rgb\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s*\)""")
+    val regexD = Regex("""rgba\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s*\)""")
+    val regexE = Regex("""rgb\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)\s*\)""")
+    val regexF = Regex("""rgba\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)\s*\)""")
 
     val matchResultA = regexA.find(this.trim())
     val matchResultB = regexB.find(this.trim())
@@ -48,9 +48,9 @@ fun String.toHexColorIfPossible(): String = run {
         matchResultA ?: matchResultB ?: matchResultG ?: matchResultC ?: matchResultD ?: matchResultE ?: matchResultF
 
     return matchResult?.let { match ->
-        val red = match.groupValues[1].toInt().coerceIn(0, 255)
-        val green = match.groupValues[2].toInt().coerceIn(0, 255)
-        val blue = match.groupValues[3].toInt().coerceIn(0, 255)
+        val red = match.groupValues[1].toFloat().roundToInt().coerceIn(0, 255)
+        val green = match.groupValues[2].toFloat().roundToInt().coerceIn(0, 255)
+        val blue = match.groupValues[3].toFloat().roundToInt().coerceIn(0, 255)
 
         // Handle alpha value - some patterns have 4 groups, some have 3
         val alpha = if (match.groupValues.size > 4 && match.groupValues[4].isNotEmpty()) {

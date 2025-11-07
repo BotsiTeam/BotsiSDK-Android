@@ -44,4 +44,19 @@ class ExampleUnitTest {
             assertEquals("Failed for input: $input", expected, result)
         }
     }
+
+    @Test
+    fun testToHexColorIfPossible_decimalRgbValues() {
+        // Test the new issue: rgba(249, 183.201, 71, 1) should be parsed correctly
+        val input = "rgba(249, 183.201, 71, 1)"
+        // 183.201 should be rounded to 183, so: Red=249 (F9), Green=183 (B7), Blue=71 (47), Alpha=1.0 (FF)
+        val expected = "#FFF9B747"
+        val result = input.toHexColorIfPossible()
+
+        println("[DEBUG_LOG] Input: $input")
+        println("[DEBUG_LOG] Expected: $expected")
+        println("[DEBUG_LOG] Actual: $result")
+
+        assertEquals(expected, result)
+    }
 }
