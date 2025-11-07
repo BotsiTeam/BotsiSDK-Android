@@ -169,6 +169,7 @@ internal fun BotsiCarouselComposable(
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
                             BotsiContentComposable(
+                                modifier = Modifier.height(pagerHeight),
                                 item = carousel.children[it],
                                 scope = scope,
                                 timerManager = timerManager,

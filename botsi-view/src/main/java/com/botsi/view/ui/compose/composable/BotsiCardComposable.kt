@@ -46,8 +46,9 @@ internal fun BotsiCardComposable(
     if (content != null) {
         val contentComposable = @Composable {
             Column(
-                modifier = modifier
+                modifier = Modifier
                     .padding(outerPaddings)
+                    .then(modifier)
                     .fillMaxWidth()
                     .clip(shape)
                     .then(content.style.toBackground())
