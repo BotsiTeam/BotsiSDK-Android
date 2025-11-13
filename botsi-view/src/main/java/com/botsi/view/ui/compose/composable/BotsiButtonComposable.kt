@@ -54,7 +54,10 @@ internal fun BotsiButtonComposable(
                 brush = buttonColor,
                 shape = buttonShape,
             )
-            .border(buttonBorder)
+            .border(
+                border = buttonBorder,
+                shape = buttonShape,
+            )
             .clickable(onClick = onClick)
             .padding(innerPaddings)
             .offset(y = verticalOffset),
