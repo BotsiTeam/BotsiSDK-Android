@@ -315,7 +315,7 @@ internal fun BotsiHeroImageContent?.toShape(isDefaultShape: Boolean = false): Sh
             }
 
             BotsiHeroImageShape.ConcaveMask -> GenericShape { size, _ ->
-                val ovalDepth = size.height * 0.05f
+                val ovalDepth = 150.dp.value
                 moveTo(0f, 0f)
                 cubicTo(
                     size.width * 0.25f, ovalDepth,
@@ -327,23 +327,30 @@ internal fun BotsiHeroImageContent?.toShape(isDefaultShape: Boolean = false): Sh
             }
 
             BotsiHeroImageShape.ConvexMask -> GenericShape { size, _ ->
-                val ovalHeight = size.height * 0.1f
-                val ovalWidth = size.width
-                val ovalRight = ovalWidth
-                moveTo(0f, ovalHeight)
-                cubicTo(
-                    0f, ovalHeight * 0.5f,
-                    ovalRight, ovalHeight * 0.5f,
-                    ovalRight, ovalHeight
+                val curveHeight = 200.dp.value
+                moveTo(0f, curveHeight)
+                quadraticBezierTo(
+                    size.width / 2f, 0f,
+                    size.width, curveHeight
                 )
-                lineTo(ovalWidth, ovalHeight)
-                lineTo(ovalWidth, size.height)
+                lineTo(size.width, size.height)
                 lineTo(0f, size.height)
+                close()
             }
 
             else -> RectangleShape
         }
     } ?: RectangleShape
+}
+
+internal fun BotsiHeroImageContent?.topPadding(): Dp {
+    return this?.shape?.let {
+        when (it) {
+            BotsiHeroImageShape.ConcaveMask -> 36.dp
+            BotsiHeroImageShape.ConvexMask -> 42.dp
+            else -> 0.dp
+        }
+    } ?: 0.dp
 }
 
 internal fun BotsiComponentStyle?.toShape(): Shape {

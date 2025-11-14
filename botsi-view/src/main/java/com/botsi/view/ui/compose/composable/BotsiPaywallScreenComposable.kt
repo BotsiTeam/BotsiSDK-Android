@@ -49,6 +49,7 @@ import com.botsi.view.utils.toBrush
 import com.botsi.view.utils.toImageHeightPx
 import com.botsi.view.utils.toPaddings
 import com.botsi.view.utils.toShape
+import com.botsi.view.utils.topPadding
 import kotlinx.coroutines.CoroutineScope
 import kotlin.math.roundToInt
 
@@ -202,7 +203,9 @@ private fun Content(
                     }
                 }
                 .padding(bottom = with(density) { footerHeight.toDp() }),
-            contentPadding = contentLayout.contentLayout.toPaddings(),
+            contentPadding = contentLayout.contentLayout.toPaddings(
+                extraTopPadding = heroImageContent.topPadding()
+            ),
             state = contentListScrollState,
             verticalArrangement = contentLayout.contentLayout.toArrangementVertical()
         ) {
