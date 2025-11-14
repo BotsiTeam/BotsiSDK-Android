@@ -105,8 +105,8 @@ internal enum class BotsiImageAspect {
 
 @Keep
 internal enum class BotsiDefaultIcon {
-    Tick,
     Checkmark,
+    Tick,
     Dot,
 }
 
