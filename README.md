@@ -30,6 +30,7 @@ To integrate the BotsiSDK into your project using Maven Central, add the followi
 ```gradle
 dependencies {
     implementation 'com.botsi:sdk:{version}'
+    implementation 'com.botsi:view:{version}'
 }
 ```
 
@@ -562,7 +563,7 @@ Add the botsi-view module dependency to your `build.gradle` file:
 
 ```gradle
 dependencies {
-    implementation 'com.botsi:botsi-view:{version}'
+    implementation 'com.botsi:view:{version}'
 }
 ```
 
