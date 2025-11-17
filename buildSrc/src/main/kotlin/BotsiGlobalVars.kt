@@ -6,8 +6,9 @@ object BotsiGlobalVars {
     val nameSpace = "com.botsi"
     val viewNameSpace = "com.botsi.view"
     val sdkVersion = "1.0.1"
-    val viewSdkVersion = "0.0.1-beta"
+    val viewSdkVersion = "1.0.0"
     val artifactId = "sdk"
+    val viewArtifactId = "view"
     val groupId = "com.botsi"
     val githubMavenUrl = "https://maven.pkg.github.com/BotsiTeam/BotsiSDK-Android"
 

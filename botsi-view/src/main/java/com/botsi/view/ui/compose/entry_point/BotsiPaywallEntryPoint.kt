@@ -31,6 +31,84 @@ import com.botsi.view.ui.compose.composable.BotsiPaywallScreenComposable
 import com.botsi.view.utils.findActivity
 import kotlinx.coroutines.launch
 
+/**
+ * Main entry point composable for displaying Botsi paywalls in Jetpack Compose applications.
+ * 
+ * This composable provides a complete paywall UI solution that handles:
+ * - Paywall display with customizable layouts
+ * - Purchase flows integration with Google Play Billing
+ * - User authentication and profile management
+ * - Purchase restoration functionality
+ * - Custom action handling and timer functionality
+ * - Error handling and user feedback
+ * 
+ * The composable automatically manages its lifecycle, handles UI state, and provides
+ * callbacks for all user interactions through the [BotsiPublicEventHandler] interface.
+ * 
+ * **Important**: Ensure the Botsi SDK is activated with [com.botsi.Botsi.activate] before
+ * using this composable. The paywall data should be loaded using [com.botsi.Botsi.getPaywall]
+ * and [com.botsi.Botsi.getPaywallProducts] before passing to this composable.
+ * 
+ * @param viewConfig Configuration containing the paywall and products to display.
+ *                   Should include both paywall configuration from [com.botsi.Botsi.getPaywall]
+ *                   and products with pricing from [com.botsi.Botsi.getPaywallProducts].
+ *                   If empty or null, the composable will not display any content.
+ * 
+ * @param timerResolver Optional custom timer resolver for countdown functionality.
+ *                      Defaults to [BotsiTimerResolver.default] which provides a 1-hour
+ *                      countdown from the current time. Implement custom logic to provide
+ *                      different timer behaviors for different timer IDs.
+ * 
+ * @param eventHandler Optional event handler for responding to user interactions.
+ *                     Implement this interface to handle login actions, custom actions,
+ *                     purchase success/failure, restore success/failure, and timer expiration.
+ *                     If null, default behaviors will be used (e.g., back navigation for close).
+ * 
+ * @sample
+ * ```kotlin
+ * @Composable
+ * fun MyPaywallScreen() {
+ *     var viewConfig by remember { mutableStateOf(BotsiViewConfig()) }
+ *     
+ *     LaunchedEffect(Unit) {
+ *         Botsi.getPaywall(
+ *             placementId = "premium_upgrade",
+ *             successCallback = { paywall ->
+ *                 Botsi.getPaywallProducts(paywall) { products ->
+ *                     viewConfig = BotsiViewConfig(paywall, products)
+ *                 }
+ *             }
+ *         )
+ *     }
+ *     
+ *     BotsiPaywallEntryPoint(
+ *         viewConfig = viewConfig,
+ *         eventHandler = object : BotsiPublicEventHandler {
+ *             override fun onSuccessPurchase(profile: BotsiProfile, purchase: BotsiPurchase) {
+ *                 // Handle successful purchase
+ *                 navigateToMainScreen()
+ *             }
+ *             
+ *             override fun onLoginAction() {
+ *                 // Handle login button tap
+ *                 navigateToLogin()
+ *             }
+ *             
+ *             // Implement other required methods...
+ *         }
+ *     )
+ * }
+ * ```
+ * 
+ * @see BotsiViewConfig
+ * @see BotsiPublicEventHandler
+ * @see BotsiTimerResolver
+ * @see com.botsi.Botsi.getPaywall
+ * @see com.botsi.Botsi.getPaywallProducts
+ * @see com.botsi.Botsi.logShowPaywall
+ * 
+ * @since 1.0.0
+ */
 @OptIn(UnstableApi::class)
 @Composable
 fun BotsiPaywallEntryPoint(
@@ -39,15 +117,22 @@ fun BotsiPaywallEntryPoint(
     eventHandler: BotsiPublicEventHandler? = null,
 ) {
     val context = LocalContext.current
+
+    // Default action handler that implements all paywall interactions
+    // This handler bridges between the internal paywall UI and the public event handler
     val defaultClickHandler = object : BotsiActionHandler {
+
+        // Handle close button clicks by triggering back navigation
         override fun onCloseClick() {
             context.findActivity()?.onBackPressed()
         }
 
+        // Delegate login clicks to the public event handler
         override fun onLoginClick() {
             eventHandler?.onLoginAction()
         }
 
+        // Handle restore purchases by calling the Botsi SDK and forwarding results
         override fun onRestoreClick() {
             Botsi.restorePurchases(
                 successCallback = { eventHandler?.onSuccessRestore(it) },
@@ -55,23 +140,28 @@ fun BotsiPaywallEntryPoint(
             )
         }
 
+        // Handle external link clicks by opening them in the default browser
         override fun onLinkClick(url: String) {
             try {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                 context.startActivity(intent)
             } catch (e: Exception) {
+                // Show user-friendly error if link cannot be opened
                 Toast.makeText(context, "Failed to open link", Toast.LENGTH_SHORT).show()
             }
         }
 
+        // Delegate custom action clicks to the public event handler
         override fun onCustomActionClick(actionId: String) {
             eventHandler?.onCustomAction(actionId)
         }
 
+        // Handle timer expiration events by notifying the public event handler
         override fun onTimerEnd(customActionId: String) {
             eventHandler?.onTimerEnd(customActionId)
         }
 
+        // Handle purchase clicks by initiating the purchase flow through Botsi SDK
         override fun onPurchaseClick(product: BotsiProduct) {
             context.findActivity()?.let {
                 Botsi.makePurchase(
@@ -91,6 +181,8 @@ fun BotsiPaywallEntryPoint(
         }
     }
 
+    // Set up dependency injection manager with all required dependencies
+    // This manager provides all the necessary components for the paywall functionality
     val diManager =
         remember(viewConfig, eventHandler) {
             BotsiPaywallDIManager(
@@ -99,25 +191,36 @@ fun BotsiPaywallEntryPoint(
                 clickHandler = defaultClickHandler,
             )
         }
+
+    // Get the main paywall delegate that manages UI state and business logic
     val delegate = remember(viewConfig, eventHandler) { diManager.inject<BotsiPaywallDelegate>() }
+
+    // Set up UI components for user feedback and coroutine management
     val snackbarHostState = remember(Unit) { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+
+    // Observe UI state and side effects from the delegate
     val uiState by delegate.uiState.collectAsState()
     val uiSideEffect by delegate.uiSideEffect.collectAsState(BotsiPaywallUiSideEffect.None)
 
+    // Initialize the paywall view when the composable is first created
     LaunchedEffect(Unit) {
         delegate.onAction(BotsiPaywallUiAction.View)
     }
 
+    // Log paywall impression for analytics when paywall data is available
     LaunchedEffect(Unit) {
         viewConfig.paywall?.let {
             Botsi.logShowPaywall(it)
         }
     }
 
+    // Get timer manager for handling countdown timers in the paywall
     val timerManager = diManager.inject<BotsiTimerManager>()
 
+    // Only render the paywall UI if we have valid configuration data
     if (viewConfig.isNotEmpty()) {
+        // Load paywall data into the delegate when configuration changes
         LaunchedEffect(viewConfig) {
             viewConfig.paywall?.let {
                 delegate.onAction(
@@ -129,12 +232,14 @@ fun BotsiPaywallEntryPoint(
             }
         }
 
+        // Clean up timer resources when the composable is disposed
         DisposableEffect(Unit) {
             onDispose {
                 timerManager.dispose(scope)
             }
         }
 
+        // Render the main paywall UI composable
         BotsiPaywallScreenComposable(
             uiState = uiState,
             snackbarHostState = snackbarHostState,
@@ -144,6 +249,7 @@ fun BotsiPaywallEntryPoint(
         )
     }
 
+    // Handle UI side effects (errors, notifications, etc.) regardless of paywall state
     BotsiCollectUiSideEffect(
         uiSideEffect = uiSideEffect,
         snackbarHostState = snackbarHostState,
@@ -151,6 +257,17 @@ fun BotsiPaywallEntryPoint(
     )
 }
 
+/**
+ * Internal composable that handles UI side effects from the paywall delegate.
+ * 
+ * This composable observes UI side effects (such as error messages) and presents them
+ * to the user through appropriate UI components like snackbars. It acts as a bridge
+ * between the business logic layer and the UI presentation layer.
+ * 
+ * @param uiSideEffect The current UI side effect to handle. Can be None, Error, etc.
+ * @param snackbarHostState The snackbar host state for displaying error messages.
+ * @param onAction Callback to send actions back to the paywall delegate when side effects are handled.
+ */
 @Composable
 private fun BotsiCollectUiSideEffect(
     uiSideEffect: BotsiPaywallUiSideEffect,

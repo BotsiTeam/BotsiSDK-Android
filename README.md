@@ -10,6 +10,7 @@ The Botsi SDK enables seamless in-app purchases and paywall management in Androi
 - [Profile Management](#profile-management)
 - [Purchase Operations](#purchase-operations)
 - [Paywall Management](#paywall-management)
+- [Botsi-View Module (UI Components)](#botsi-view-module-ui-components)
 - [Error Handling](#error-handling)
 - [Development Guidelines](#development-guidelines)
 - [Architecture](#architecture)
@@ -17,8 +18,8 @@ The Botsi SDK enables seamless in-app purchases and paywall management in Androi
 ## Installation
 
 <p align="center">
-<a href="https://jitpack.io/#BotsiTeam/BotsiSDK-Android"><img src="https://jitpack.io/v/BotsiTeam/BotsiSDK-Android.svg"></a>
 <a href="https://central.sonatype.com/artifact/com.botsi/sdk/versions"><img src="https://img.shields.io/maven-central/v/com.botsi/sdk"></a>
+<a href="https://central.sonatype.com/artifact/com.botsi/view/versions"><img src="https://img.shields.io/maven-central/v/com.botsi/view"></a>
 <a href="https://www.apache.org/licenses/LICENSE-2.0.txt"><img src="https://img.shields.io/badge/license-Apache-brightgreen.svg"></a>
 </p>
 
@@ -29,27 +30,6 @@ To integrate the BotsiSDK into your project using Maven Central, add the followi
 ```gradle
 dependencies {
     implementation 'com.botsi:sdk:{version}'
-}
-```
-
-### JitPack
-
-Alternatively, you can use JitPack by adding the JitPack repository and dependency:
-
-1. **Add JitPack repository to your root `build.gradle`:**
-```gradle
-allprojects {
-    repositories {
-        ...
-        maven { url 'https://jitpack.io' }
-    }
-}
-```
-
-2. **Add the dependency to your app's `build.gradle`:**
-```gradle
-dependencies {
-    implementation 'com.github.BotsiTeam:BotsiSDK-Android:{version}'
 }
 ```
 
@@ -571,6 +551,284 @@ Botsi.getPaywall(
     }
 )
 ```
+
+## Botsi-View Module (UI Components)
+
+The `botsi-view` module provides ready-to-use Jetpack Compose UI components for displaying paywalls and handling purchase flows. This module integrates seamlessly with the core Botsi SDK to provide a complete monetization solution.
+
+### Installation
+
+Add the botsi-view module dependency to your `build.gradle` file:
+
+```gradle
+dependencies {
+    implementation 'com.botsi:botsi-view:{version}'
+}
+```
+
+### BotsiPaywallEntryPoint
+
+The main composable function for displaying paywalls in your Compose UI.
+
+```kotlin
+@Composable
+fun BotsiPaywallEntryPoint(
+    viewConfig: BotsiViewConfig,
+    timerResolver: BotsiTimerResolver = BotsiTimerResolver.default,
+    eventHandler: BotsiPublicEventHandler? = null,
+)
+```
+
+**Parameters:**
+- `viewConfig`: Configuration containing the paywall and products to display
+- `timerResolver`: Optional custom timer resolver for countdown functionality. Uses default 1-hour timer if not provided
+- `eventHandler`: Optional event handler for responding to user interactions
+
+### BotsiViewConfig
+
+Configuration class that holds the paywall and products data needed for display.
+
+```kotlin
+class BotsiViewConfig(
+    val paywall: BotsiPaywall? = null,
+    val products: List<BotsiProduct>? = null,
+)
+```
+
+**Properties:**
+- `paywall`: The paywall configuration obtained from `Botsi.getPaywall()`
+- `products`: List of products with pricing obtained from `Botsi.getPaywallProducts()`
+
+### BotsiPublicEventHandler
+
+Interface for handling paywall user interactions and events.
+
+```kotlin
+interface BotsiPublicEventHandler {
+    fun onLoginAction()
+    fun onCustomAction(actionId: String)
+    fun onSuccessRestore(profile: BotsiProfile)
+    fun onErrorRestore(error: Throwable)
+    fun onSuccessPurchase(profile: BotsiProfile, purchase: BotsiPurchase)
+    fun onErrorPurchase(error: Throwable)
+    fun onTimerEnd(actionId: String)
+}
+```
+
+**Methods:**
+- `onLoginAction()`: Called when user taps login/sign-in button
+- `onCustomAction(actionId)`: Called when user taps custom action buttons
+- `onSuccessRestore(profile)`: Called when purchase restoration succeeds
+- `onErrorRestore(error)`: Called when purchase restoration fails
+- `onSuccessPurchase(profile, purchase)`: Called when purchase completes successfully
+- `onErrorPurchase(error)`: Called when purchase fails
+- `onTimerEnd(actionId)`: Called when countdown timer reaches zero
+
+### BotsiTimerResolver
+
+Interface for customizing countdown timer behavior in paywalls.
+
+```kotlin
+fun interface BotsiTimerResolver {
+    fun timerEndAtDate(timerId: String): Date
+
+    companion object {
+        val default: BotsiTimerResolver // 1-hour countdown from current time
+    }
+}
+```
+
+**Methods:**
+- `timerEndAtDate(timerId)`: Returns the end date for the specified timer
+
+### Usage Examples
+
+#### Basic Paywall Display
+
+```kotlin
+@Composable
+fun MyPaywallScreen() {
+    var viewConfig by remember { mutableStateOf(BotsiViewConfig()) }
+
+    LaunchedEffect(Unit) {
+        // Load paywall data
+        Botsi.getPaywall(
+            placementId = "premium_upgrade",
+            successCallback = { paywall ->
+                Botsi.getPaywallProducts(
+                    paywall = paywall,
+                    successCallback = { products ->
+                        viewConfig = BotsiViewConfig(
+                            paywall = paywall,
+                            products = products
+                        )
+                    }
+                )
+            }
+        )
+    }
+
+    BotsiPaywallEntryPoint(
+        viewConfig = viewConfig
+    )
+}
+```
+
+#### Advanced Usage with Event Handling
+
+```kotlin
+@Composable
+fun AdvancedPaywallScreen() {
+    var viewConfig by remember { mutableStateOf(BotsiViewConfig()) }
+
+    val eventHandler = object : BotsiPublicEventHandler {
+        override fun onLoginAction() {
+            // Handle login button tap
+            navigateToLogin()
+        }
+
+        override fun onCustomAction(actionId: String) {
+            // Handle custom action buttons
+            when (actionId) {
+                "contact_support" -> openSupportChat()
+                "view_terms" -> openTermsOfService()
+            }
+        }
+
+        override fun onSuccessPurchase(profile: BotsiProfile, purchase: BotsiPurchase) {
+            // Handle successful purchase
+            showSuccessMessage("Purchase successful!")
+            navigateToMainScreen()
+        }
+
+        override fun onErrorPurchase(error: Throwable) {
+            // Handle purchase error
+            showErrorMessage("Purchase failed: ${error.message}")
+        }
+
+        override fun onSuccessRestore(profile: BotsiProfile) {
+            // Handle successful restore
+            showSuccessMessage("Purchases restored!")
+            updateUIForPremiumUser(profile)
+        }
+
+        override fun onErrorRestore(error: Throwable) {
+            // Handle restore error
+            showErrorMessage("Restore failed: ${error.message}")
+        }
+
+        override fun onTimerEnd(actionId: String) {
+            // Handle timer expiration
+            when (actionId) {
+                "limited_offer" -> hideLimitedTimeOffer()
+                "discount_expires" -> removeDiscountPricing()
+            }
+        }
+    }
+
+    // Load paywall data
+    LaunchedEffect(Unit) {
+        Botsi.getPaywall(
+            placementId = "premium_upgrade",
+            successCallback = { paywall ->
+                Botsi.getPaywallProducts(
+                    paywall = paywall,
+                    successCallback = { products ->
+                        viewConfig = BotsiViewConfig(
+                            paywall = paywall,
+                            products = products
+                        )
+                    }
+                )
+            }
+        )
+    }
+
+    BotsiPaywallEntryPoint(
+        viewConfig = viewConfig,
+        eventHandler = eventHandler
+    )
+}
+```
+
+#### Custom Timer Configuration
+
+```kotlin
+@Composable
+fun PaywallWithCustomTimer() {
+    val customTimerResolver = object : BotsiTimerResolver {
+        override fun timerEndAtDate(timerId: String): Date {
+            return when (timerId) {
+                "flash_sale" -> Date(System.currentTimeMillis() + 30 * 60 * 1000L) // 30 minutes
+                "weekend_offer" -> getNextMondayMidnight() // Until Monday
+                else -> Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000L) // 24 hours
+            }
+        }
+    }
+
+    BotsiPaywallEntryPoint(
+        viewConfig = viewConfig,
+        timerResolver = customTimerResolver,
+        eventHandler = eventHandler
+    )
+}
+```
+
+### Integration with Navigation
+
+```kotlin
+@Composable
+fun PaywallNavigation() {
+    val navController = rememberNavController()
+
+    NavHost(navController = navController, startDestination = "paywall") {
+        composable("paywall") {
+            BotsiPaywallEntryPoint(
+                viewConfig = viewConfig,
+                eventHandler = object : BotsiPublicEventHandler {
+                    override fun onLoginAction() {
+                        navController.navigate("login")
+                    }
+
+                    override fun onSuccessPurchase(profile: BotsiProfile, purchase: BotsiPurchase) {
+                        navController.navigate("success") {
+                            popUpTo("paywall") { inclusive = true }
+                        }
+                    }
+
+                    // Implement other methods...
+                }
+            )
+        }
+
+        composable("login") {
+            LoginScreen(
+                onLoginSuccess = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable("success") {
+            PurchaseSuccessScreen()
+        }
+    }
+}
+```
+
+### Best Practices
+
+1. **Always load paywall data before displaying**: Ensure you have both paywall configuration and products with pricing before showing the UI.
+
+2. **Handle all event callbacks**: Implement all methods in BotsiPublicEventHandler to provide proper user feedback.
+
+3. **Use proper error handling**: Always handle errors gracefully and provide meaningful feedback to users.
+
+4. **Log paywall impressions**: Call `Botsi.logShowPaywall(paywall)` when the paywall is displayed for analytics.
+
+5. **Manage lifecycle properly**: The composable handles its own lifecycle, but ensure your parent composable doesn't recreate unnecessarily.
+
+6. **Test timer functionality**: If using custom timers, thoroughly test different timer scenarios.
 
 ## Error Handling
 
