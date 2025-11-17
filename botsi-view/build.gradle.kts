@@ -54,11 +54,5 @@ dependencies {
     implementation("androidx.compose.material3:material3") {
         exclude(module = "androidx.lifecycle:lifecycle-livedata-core")
     }
-    if (findProject(":botsi") != null) {
-        // Local build - use project dependency
-        compileOnly(project(":botsi"))
-    } else {
-        // External consumer - use JitPack dependency
-        implementation("com.github.BotsiTeam:BotsiSDK-Android:${BotsiGlobalVars.sdkVersion}")
-    }
+    implementation("com.botsi:sdk:1.0.0")
 }
