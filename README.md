@@ -1,15 +1,18 @@
 # Botsi Android SDK Documentation
 
-The Botsi SDK enables seamless in-app purchases and paywall management in Android applications using Google Play Billing. This documentation covers the public API methods available for integration.
+The Botsi SDK enables seamless in-app purchases and paywall management in Android applications using Google Play Billing. This comprehensive SDK provides a complete solution for monetization, user profile management, and analytics tracking.
 
 ## Table of Contents
 - [Installation](#installation)
+- [Project Structure](#project-structure)
+- [Build Requirements](#build-requirements)
 - [Initialization](#initialization)
 - [Profile Management](#profile-management)
-- [Product Management](#product-management)
 - [Purchase Operations](#purchase-operations)
 - [Paywall Management](#paywall-management)
 - [Error Handling](#error-handling)
+- [Development Guidelines](#development-guidelines)
+- [Architecture](#architecture)
 
 ## Installation
 
@@ -52,6 +55,38 @@ dependencies {
 
 3. **Sync your project** and start using the SDK.
 
+## Project Structure
+
+The Botsi Android SDK consists of three main modules:
+
+- **app**: Example application demonstrating the SDK usage and integration patterns
+- **botsi**: Core SDK module containing the business logic, API clients, and data management
+- **botsi-view**: UI components and Compose-based views for displaying paywalls and purchase flows
+
+This modular architecture allows you to include only the components you need in your application.
+
+## Build Requirements
+
+### Prerequisites
+- **Java 17**: Required for compilation and runtime
+- **Kotlin 2.1.10**: The SDK is built with Kotlin and requires this version or compatible
+- **Android SDK 35**: Compile and target SDK version
+- **Minimum SDK 21**: The SDK supports Android API level 21 and above
+- **Android Studio**: Latest stable version recommended for development
+
+### Building the Project
+If you're contributing to the SDK or building from source:
+
+1. Clone the repository
+2. Open the project in Android Studio
+3. Sync Gradle files
+4. Build the project using the Gradle build command or Android Studio's build option
+
+```bash
+# Build the project from command line
+./gradlew build
+```
+
 ## Initialization
 
 ### `activate(context, apiKey, customerUserId?, clearCache?, successCallback?, errorCallback?)`
@@ -77,6 +112,9 @@ Activates and initializes the Botsi SDK with your API key. This method must be c
 - `clearCache`: Whether to clear any cached data during activation. Set to true to force fresh data retrieval.
 - `successCallback`: Optional callback invoked when activation succeeds, providing the current user profile. Called on the main thread.
 - `errorCallback`: Optional callback invoked when activation fails, providing the error details. Called on the main thread.
+
+**Throws:**
+- `IllegalArgumentException`: If the API key is empty or invalid
 
 **Example:**
 ```kotlin
@@ -304,6 +342,7 @@ Initiates a purchase flow for the specified product. This method launches the Go
 
 **Example:**
 ```kotlin
+// For a simple product purchase
 Botsi.makePurchase(
     activity = this,
     product = selectedProduct,
@@ -313,6 +352,24 @@ Botsi.makePurchase(
     },
     errorCallback = { error ->
         Log.e("Botsi", "Purchase failed", error)
+    }
+)
+
+// For subscription upgrade/downgrade
+val updateParams = BotsiSubscriptionUpdateParameters(
+    oldProductId = "old_subscription_id",
+    replacementMode = BotsiReplacementMode.WITH_TIME_PRORATION
+)
+Botsi.makePurchase(
+    activity = this,
+    product = newSubscriptionProduct,
+    subscriptionUpdateParams = updateParams,
+    callback = { profile, purchase ->
+        Log.d("Botsi", "Subscription updated: ${purchase.productId}")
+        Log.d("Botsi", "Updated profile: ${profile.customerUserId}")
+    },
+    errorCallback = { error ->
+        Log.e("Botsi", "Subscription update failed", error)
     }
 )
 ```
@@ -371,7 +428,7 @@ fun getPaywall(
 )
 ```
 
-Retrieves paywall configuration for the specified placement. A paywall represents a monetization screen that can be displayed to users.
+Retrieves paywall configuration for the specified placement with backend-only data. A paywall represents a monetization screen that can be displayed to users. This method returns only backend parameters without Google Play Store integration. To get products with pricing information from Google Play, use `getPaywallProducts` after retrieving the paywall configuration.
 
 **Parameters:**
 - `placementId`: The identifier for the paywall placement
@@ -488,7 +545,9 @@ Botsi.getPaywallViewConfiguration(
 fun logShowPaywall(paywall: BotsiPaywall)
 ```
 
-Logs an analytics event when a paywall is shown to the user. This method should be called whenever a paywall is displayed to track user interactions.
+Logs an analytics event when a paywall is shown to the user. This method should be called whenever a paywall is displayed to track user interactions and measure paywall performance. The event is sent to Botsi analytics for reporting and optimization purposes.
+
+**Important:** Call this method immediately when the paywall becomes visible to the user to ensure accurate analytics data.
 
 **Parameters:**
 - `paywall`: The paywall that was shown to the user
@@ -582,6 +641,67 @@ Botsi.makePurchase(
 ```
 
 Properly handle these errors in your application to provide appropriate feedback to users and ensure a smooth user experience.
+
+## Development Guidelines
+
+### Code Style
+- The project follows Kotlin coding conventions and best practices
+- Use meaningful function and variable names that clearly express intent
+- Include proper KDoc documentation for all public APIs
+- Follow SOLID principles and clean architecture patterns
+- Maintain consistent formatting and indentation
+
+### Dependency Management
+- Dependencies are managed through the `libs.versions.toml` file using version catalogs
+- This ensures consistent dependency versions across all modules
+- When adding new dependencies, update the version catalog appropriately
+
+### Publishing
+- The SDK is published to GitHub Packages and Maven Central
+- Publishing configuration is defined in the buildSrc directory
+- Version management follows semantic versioning principles
+
+### Error Handling Best Practices
+- Use proper exception handling and propagate errors to the appropriate layer
+- Provide meaningful error messages and comprehensive logging
+- Handle edge cases gracefully and provide fallback mechanisms
+- Always provide error callbacks in public API methods
+
+## Architecture
+
+### Overview
+The Botsi SDK follows a clean, modular architecture with clear separation of concerns:
+
+### Layers
+- **Data Layer**: Contains repositories, data sources, HTTP clients, and data models
+- **Domain Layer**: Contains business logic, use cases, and domain models
+- **UI Layer**: Contains UI components, view models, and Compose-based views
+
+### Key Components
+- **BotsiFacade**: Main entry point that coordinates all SDK operations
+- **DiManager**: Dependency injection manager providing required dependencies
+- **Interactors**: Business logic components for profiles, products, and purchases
+- **HTTP Clients**: Network communication with Botsi services
+- **Analytics Tracker**: Event tracking and analytics reporting
+
+### Design Principles
+- **Single Responsibility**: Each class has a single, well-defined purpose
+- **Dependency Injection**: All dependencies are injected, making the code testable
+- **Thread Safety**: All public methods are thread-safe and callbacks execute on the main thread
+- **Error Handling**: Comprehensive error handling with meaningful error messages
+- **Caching**: Local caching for offline access and improved performance
+
+### Jetpack Compose Integration
+- The SDK uses Jetpack Compose for modern, declarative UI components
+- Follow Compose best practices for performance and maintainability
+- UI components are reusable and customizable
+- State management follows Compose patterns and guidelines
+
+### Threading Model
+- All SDK operations are asynchronous and non-blocking
+- Network operations are performed on background threads
+- Callbacks are always executed on the main thread
+- The SDK handles thread management internally
 
 ## License
 
