@@ -112,7 +112,7 @@ internal fun BotsiListComposable(
                                         BotsiDefaultIcon.Checkmark -> R.drawable.ic_checkmark_24
                                         BotsiDefaultIcon.Tick -> R.drawable.ic_tick_24
                                         BotsiDefaultIcon.Dot -> R.drawable.ic_dot_6
-                                        else -> R.drawable.ic_tick_24
+                                        else -> R.drawable.ic_checkmark_24
                                     }
                                 )
                                 Icon(

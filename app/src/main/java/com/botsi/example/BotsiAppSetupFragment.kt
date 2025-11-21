@@ -141,27 +141,19 @@ class BotsiAppSetupFragment : Fragment() {
                                                                 },
                                                                 errorCallback = { e ->
                                                                     isLoading = false
-                                                                    requireActivity().runOnUiThread {
-                                                                        Toast.makeText(
-                                                                            requireContext(),
-                                                                            e.message.orEmpty(),
-                                                                            Toast.LENGTH_LONG
-                                                                        ).show()
-                                                                    }
+                                                                    showToaster(e.message.orEmpty())
                                                                 },
                                                             )
                                                         },
-                                                        errorCallback = {
-                                                            requireActivity().runOnUiThread {
-                                                                Toast.makeText(
-                                                                    requireContext(),
-                                                                    it.message.orEmpty(),
-                                                                    Toast.LENGTH_LONG
-                                                                ).show()
-                                                            }
+                                                        errorCallback = { e ->
+                                                            showToaster(e.message.orEmpty())
                                                             isLoading = false
                                                         }
                                                     )
+                                                },
+                                                errorCallback = { e ->
+                                                    showToaster(e.message.orEmpty())
+                                                    isLoading = false
                                                 }
                                             )
                                         }
@@ -179,13 +171,7 @@ class BotsiAppSetupFragment : Fragment() {
                                                     )
                                                 },
                                                 errorCallback = { e ->
-                                                    requireActivity().runOnUiThread {
-                                                        Toast.makeText(
-                                                            requireContext(),
-                                                            e.message.orEmpty(),
-                                                            Toast.LENGTH_LONG
-                                                        ).show()
-                                                    }
+                                                    showToaster(e.message.orEmpty())
                                                 }
                                             )
                                         }
@@ -363,6 +349,16 @@ class BotsiAppSetupFragment : Fragment() {
                     }
                 }
             }
+        }
+    }
+
+    private fun showToaster(message: String) {
+        requireActivity().runOnUiThread {
+            Toast.makeText(
+                requireContext(),
+                message,
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 }
