@@ -13,7 +13,7 @@ android {
         applicationId = "com.botsi.example"
         minSdk = BotsiGlobalVars.minSdk
         targetSdk = BotsiGlobalVars.targetSdk
-        versionCode = 47
+        versionCode = 50
         versionName = "1.0"
         multiDexEnabled = true
     }
@@ -54,6 +54,8 @@ dependencies {
     implementation("androidx.compose.material3:material3") {
         exclude(module = "androidx.lifecycle:lifecycle-livedata-core")
     }
+    // Jetpack Navigation for Compose
+    implementation("androidx.navigation:navigation-compose:2.8.4")
     implementation(libs.core.ktx)
 
     // Testing dependencies

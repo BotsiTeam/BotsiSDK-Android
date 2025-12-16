@@ -3,6 +3,7 @@ package com.botsi.example
 import androidx.multidex.MultiDex
 import androidx.multidex.MultiDexApplication
 import com.botsi.Botsi
+import com.botsi.example.storage.BotsiConfigsStorage
 
 class BotsiApp : MultiDexApplication() {
 

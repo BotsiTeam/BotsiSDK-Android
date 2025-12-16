@@ -1,110 +1,103 @@
-# Botsi Android SDK Development Guidelines
+### Botsi Android SDK – Development Guidelines (Project‑Specific)
 
-## Build/Configuration Instructions
+#### Build and Configuration
+- Toolchain
+  - Java: 17 (`buildSrc/src/main/kotlin/BotsiGlobalVars.kt` → `javaVersion = JavaVersion.VERSION_17`, `jvmTarget = "17"`)
+  - Kotlin: 2.1.10 (`gradle/libs.versions.toml` → `kotlin = "2.1.10"`)
+  - Android SDK: compile/target 35, min 21 (see `BotsiGlobalVars.compileSdk/targetSdk/minSdk`)
 
-### Project Structure
-The project consists of three main modules:
-- **app**: Example application demonstrating the SDK usage
-- **botsi**: Core SDK module containing the business logic
-- **botsi-view**: UI components for the SDK
+- Modules
+  - `app`: Example application showcasing SDK usage (Compose UI)
+  - `botsi`: Core SDK module (business logic, billing, HTTP)
+  - `botsi-view`: UI components for the SDK (Compose)
+  - `botsi-ai`: AI/assistant UI module
 
-### Build Requirements
-- Java 17
-- Kotlin 2.1.10
-- Android SDK 35 (compile and target)
-- Minimum SDK 21
+- Version catalogs
+  - Dependencies are centralized in `gradle/libs.versions.toml` (Compose BOM, Kotlin BOM, test libs, etc.). Prefer adding dependencies via the catalog to keep versions consistent.
 
-### Building the Project
-1. Clone the repository
-2. Open the project in Android Studio
-3. Sync Gradle files
-4. Build the project using the Gradle build command or Android Studio's build option
+- Building (root)
+  - Full build (all modules):
+    ```bash
+    ./gradlew build
+    ```
+  - Example app variants:
+    ```bash
+    ./gradlew :app:assembleDebug
+    ./gradlew :app:assembleRelease
+    ```
+  - SDK module publishing (GitHub Packages) uses `com.vanniktech.maven.publish` with coordinates from `BotsiGlobalVars`. Required `local.properties` entries:
+    ```properties
+    admin.username=<github-username>
+    admin.token=<github-personal-access-token>
+    ```
+    Repository URL: `https://maven.pkg.github.com/BotsiTeam/BotsiSDK-Android`.
 
-```bash
-# Build the project from command line
-./gradlew build
-```
+- Compose/AGP
+  - Compose is enabled in `app` and `botsi-view`; versions are controlled by the Compose BOM in the catalog. Keep Kotlin and Compose plugin versions aligned with the catalog to avoid ABI/runtime issues.
 
-## Testing Information
+#### Testing
+- Frameworks
+  - Unit: JUnit 4.13.2 (`libs.junit`)
+  - Instrumented: AndroidX JUnit + Espresso 3.6.1 (`libs.ext.junit`, `libs.espresso.core`). Instrumented tests require a device/emulator and the Android SDK.
 
-### Testing Framework
-The project uses JUnit 4.13.2 for unit tests and Espresso 3.6.1 for UI tests.
+- Running tests
+  - All unit tests (root):
+    ```bash
+    ./gradlew test
+    ```
+  - Unit tests per module (app):
+    ```bash
+    ./gradlew :app:testDebugUnitTest
+    # or
+    ./gradlew :app:testReleaseUnitTest
+    ```
+  - Instrumented tests (app, device/emulator required):
+    ```bash
+    ./gradlew :app:connectedDebugAndroidTest
+    ```
 
-### Running Tests
-To run tests, you can use Android Studio's test runner or Gradle commands:
-
-```bash
-# Run all unit tests
-./gradlew test
-
-# Run all instrumented tests
-./gradlew connectedAndroidTest
-```
-
-### Adding New Tests
-1. Unit tests should be placed in the `src/test/java` directory of the respective module
-2. Instrumented tests should be placed in the `src/androidTest/java` directory
-3. Follow the existing test patterns and naming conventions
-
-#### Example Unit Test
-```kotlin
-class ExampleUnitTest {
-    @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+- Adding tests
+  - Unit tests go under `MODULE/src/test/java` (or `.../kotlin`) with the module’s package structure.
+  - Instrumented tests go under `MODULE/src/androidTest/java`.
+  - Ensure module test deps are declared. The `app` module already has:
+    ```kotlin
+    // app/build.gradle.kts
+    dependencies {
+        testImplementation(libs.junit)
+        androidTestImplementation(libs.ext.junit)
+        androidTestImplementation(libs.espresso.core)
     }
-}
-```
+    ```
+  - If adding tests to SDK modules, include `testImplementation(libs.junit)` in that module’s `build.gradle.kts`.
 
-Note: In your actual test file, you'll need to include the appropriate package and imports:
-```
-import org.junit.Test
-import org.junit.Assert.*
-```
+- Verified example (executed locally during preparation)
+  - Existing unit tests in the app module were executed; all passed.
+    - File: `app/src/test/java/com/botsi/example/ExampleUnitTest.kt`
+    - To run just this class via Gradle:
+      ```bash
+      ./gradlew :app:testDebugUnitTest --tests "com.botsi.example.ExampleUnitTest"
+      ```
 
-To add test dependencies to a module, include them in the module's build.gradle.kts file:
+#### Additional Development Notes
+- Code style and architecture
+  - Kotlin conventions; document public SDK APIs where applicable.
+  - Separation of concerns:
+    - `botsi`: data/domain, HTTP/billing, models (e.g., `BotsiPaywall`), facades (`Botsi`, `BotsiFacade`).
+    - `botsi-view`: Compose UI and mappers (e.g., `BotsiProductItemContentMapper`).
+    - `app`: example screens/fragments (e.g., `BotsiAppSetupFragment`, `BotsiViewFragment`) using the SDK.
 
-```kotlin
-dependencies {
-    // Testing dependencies
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.ext.junit)
-    androidTestImplementation(libs.espresso.core)
-}
-```
+- Shared configuration via BuildSrc
+  - Adjust SDK versions, namespaces, artifact details, and publication metadata in `buildSrc/src/main/kotlin/BotsiGlobalVars.kt`.
+  - Bump `sdkVersion`/`viewSdkVersion` there before publishing.
 
-## Additional Development Information
+- Publishing notes
+  - Modules `botsi` and `botsi-view` are configured with `mavenPublishing` (Sonatype configuration present as well). Ensure credentials exist in `local.properties` before invoking publish tasks.
 
-### Code Style
-- The project follows Kotlin coding conventions
-- Use meaningful function and variable names
-- Include proper documentation for public APIs
-- Follow SOLID principles and clean architecture patterns
+- Local environment
+  - Android SDK 35 must be installed. Set Gradle JDK to 17 in Android Studio. After updating `libs.versions.toml`, sync Gradle to propagate versions.
 
-### Architecture
-- The SDK follows a modular architecture with clear separation of concerns
-- Data layer: Contains repositories, data sources, and models
-- Domain layer: Contains business logic and use cases
-- UI layer: Contains UI components and view models
+- Compose/UI specifics
+  - Material3 is used in the example app; keep Compose BOM current and aligned with Kotlin (see `compose-bom` and `kotlin` versions in the catalog).
 
-### Dependency Management
-- Dependencies are managed through the `libs.versions.toml` file
-- Version catalogs are used to ensure consistent dependency versions across modules
-
-### Publishing
-- The SDK is published to GitHub Packages
-- Publishing configuration is defined in the buildSrc directory
-
-### Error Handling
-- Use proper exception handling and propagate errors to the appropriate layer
-- Provide meaningful error messages and logging
-
-### Compose UI
-- The project uses Jetpack Compose for UI components
-- Follow Compose best practices for performance and maintainability
-
-### Testing Best Practices
-- Write tests for all critical functionality
-- Use mocks and fakes for dependencies to isolate the code being tested
-- Test edge cases and error scenarios
-- Keep tests independent and focused on a single functionality
+- Error handling & logging
+  - Propagate domain-level errors from `botsi` to consumers; add contextual logs around HTTP and billing flows (`botsi/src/main/kotlin/com/botsi/data/http/*`).

@@ -1,4 +1,4 @@
-package com.botsi.example
+package com.botsi.example.storage
 
 import android.content.Context
 import androidx.core.content.edit
