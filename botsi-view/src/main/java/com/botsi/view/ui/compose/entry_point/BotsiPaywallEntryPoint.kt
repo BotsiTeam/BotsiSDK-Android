@@ -17,6 +17,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.media3.common.util.UnstableApi
 import com.botsi.Botsi
 import com.botsi.domain.model.BotsiProduct
+import com.botsi.domain.model.BotsiProfile
+import com.botsi.domain.model.BotsiSubscriptionUpdateParameters
 import com.botsi.view.BotsiViewConfig
 import com.botsi.view.delegate.BotsiPaywallDelegate
 import com.botsi.view.di.BotsiPaywallDIManager
@@ -33,7 +35,7 @@ import kotlinx.coroutines.launch
 
 /**
  * Main entry point composable for displaying Botsi paywalls in Jetpack Compose applications.
- * 
+ *
  * This composable provides a complete paywall UI solution that handles:
  * - Paywall display with customizable layouts
  * - Purchase flows integration with Google Play Billing
@@ -41,35 +43,35 @@ import kotlinx.coroutines.launch
  * - Purchase restoration functionality
  * - Custom action handling and timer functionality
  * - Error handling and user feedback
- * 
+ *
  * The composable automatically manages its lifecycle, handles UI state, and provides
  * callbacks for all user interactions through the [BotsiPublicEventHandler] interface.
- * 
+ *
  * **Important**: Ensure the Botsi SDK is activated with [com.botsi.Botsi.activate] before
  * using this composable. The paywall data should be loaded using [com.botsi.Botsi.getPaywall]
  * and [com.botsi.Botsi.getPaywallProducts] before passing to this composable.
- * 
+ *
  * @param viewConfig Configuration containing the paywall and products to display.
  *                   Should include both paywall configuration from [com.botsi.Botsi.getPaywall]
  *                   and products with pricing from [com.botsi.Botsi.getPaywallProducts].
  *                   If empty or null, the composable will not display any content.
- * 
+ *
  * @param timerResolver Optional custom timer resolver for countdown functionality.
  *                      Defaults to [BotsiTimerResolver.default] which provides a 1-hour
  *                      countdown from the current time. Implement custom logic to provide
  *                      different timer behaviors for different timer IDs.
- * 
+ *
  * @param eventHandler Optional event handler for responding to user interactions.
  *                     Implement this interface to handle login actions, custom actions,
  *                     purchase success/failure, restore success/failure, and timer expiration.
  *                     If null, default behaviors will be used (e.g., back navigation for close).
- * 
+ *
  * @sample
  * ```kotlin
  * @Composable
  * fun MyPaywallScreen() {
  *     var viewConfig by remember { mutableStateOf(BotsiViewConfig()) }
- *     
+ *
  *     LaunchedEffect(Unit) {
  *         Botsi.getPaywall(
  *             placementId = "premium_upgrade",
@@ -80,7 +82,7 @@ import kotlinx.coroutines.launch
  *             }
  *         )
  *     }
- *     
+ *
  *     BotsiPaywallEntryPoint(
  *         viewConfig = viewConfig,
  *         eventHandler = object : BotsiPublicEventHandler {
@@ -88,25 +90,25 @@ import kotlinx.coroutines.launch
  *                 // Handle successful purchase
  *                 navigateToMainScreen()
  *             }
- *             
+ *
  *             override fun onLoginAction() {
  *                 // Handle login button tap
  *                 navigateToLogin()
  *             }
- *             
+ *
  *             // Implement other required methods...
  *         }
  *     )
  * }
  * ```
- * 
+ *
  * @see BotsiViewConfig
  * @see BotsiPublicEventHandler
  * @see BotsiTimerResolver
  * @see com.botsi.Botsi.getPaywall
  * @see com.botsi.Botsi.getPaywallProducts
  * @see com.botsi.Botsi.logShowPaywall
- * 
+ *
  * @since 1.0.0
  */
 @OptIn(UnstableApi::class)
@@ -167,6 +169,7 @@ fun BotsiPaywallEntryPoint(
                 Botsi.makePurchase(
                     activity = it,
                     product = product,
+                    subscriptionUpdateParams = eventHandler?.onAwaitSubscriptionsParams(product),
                     callback = { profile, purchase ->
                         eventHandler?.onSuccessPurchase(
                             profile,
@@ -259,11 +262,11 @@ fun BotsiPaywallEntryPoint(
 
 /**
  * Internal composable that handles UI side effects from the paywall delegate.
- * 
+ *
  * This composable observes UI side effects (such as error messages) and presents them
  * to the user through appropriate UI components like snackbars. It acts as a bridge
  * between the business logic layer and the UI presentation layer.
- * 
+ *
  * @param uiSideEffect The current UI side effect to handle. Can be None, Error, etc.
  * @param snackbarHostState The snackbar host state for displaying error messages.
  * @param onAction Callback to send actions back to the paywall delegate when side effects are handled.

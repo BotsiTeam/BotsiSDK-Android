@@ -35,6 +35,7 @@ import androidx.navigation.compose.rememberNavController
 import com.botsi.Botsi
 import com.botsi.ai.ui.composables.BotsiAiEntryPoint
 import com.botsi.domain.model.BotsiProduct
+import com.botsi.domain.model.BotsiSubscriptionUpdateParameters
 import com.botsi.example.BotsiApp
 import com.botsi.view.BotsiViewConfig
 import com.botsi.view.handler.BotsiPublicEventHandler
@@ -53,8 +54,16 @@ fun AppNavGraph(navController: NavHostController = rememberNavController()) {
             val destination = backStackEntry.arguments?.getString("destination") ?: "classic"
             SetupScreen(navController, destination)
         }
-        composable("classic") { ClassicScreen(navController) }
-        composable("ui") { UiPaywallScreen() }
+        composable("classic/{clearCache}") { backStackEntry ->
+            val clearCache = backStackEntry.arguments?.getString("clearCache")
+                ?.toBooleanStrictOrNull() ?: false
+            ClassicScreen(navController, clearCache)
+        }
+        composable("ui/{clearCache}") { backStackEntry ->
+            val clearCache = backStackEntry.arguments?.getString("clearCache")
+                ?.toBooleanStrictOrNull() ?: false
+            UiPaywallScreen(clearCache)
+        }
         composable("ai") { AiScreen(navController) }
     }
 }
@@ -285,39 +294,11 @@ private fun SetupScreen(navController: NavHostController, destinationRoute: Stri
 
                     when (destinationRoute) {
                         "ai" -> navigateOnUi(navController, "ai")
-                        "ui" -> {
-                            isLoading = true
-                            Botsi.activate(
-                                context = context,
-                                apiKey = app.botsiStorage.appKey,
-                                clearCache = clearCache,
-                                successCallback = {
-                                    isLoading = false
-                                    navigateOnUi(navController, "ui")
-                                },
-                                errorCallback = { e ->
-                                    isLoading = false
-                                    context.toast(e.message.orEmpty())
-                                }
-                            )
-                        }
+                        "ui" -> navigateOnUi(navController, "ui", clearCache)
 
                         else -> {
-                            // Classic
-                            isLoading = true
-                            Botsi.activate(
-                                context = context,
-                                apiKey = app.botsiStorage.appKey,
-                                clearCache = clearCache,
-                                successCallback = {
-                                    isLoading = false
-                                    navigateOnUi(navController, "classic")
-                                },
-                                errorCallback = { e ->
-                                    isLoading = false
-                                    context.toast(e.message.orEmpty())
-                                }
-                            )
+                            // Classic: navigate and let ClassicScreen handle activation
+                            navigateOnUi(navController, "classic", clearCache)
                         }
                     }
                 }
@@ -445,7 +426,7 @@ private fun AiScreen(navController: NavHostController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun UiPaywallScreen() {
+private fun UiPaywallScreen(clearCache: Boolean) {
     val context = LocalContext.current
     val app = remember { context.applicationContext as BotsiApp }
 
@@ -459,19 +440,30 @@ private fun UiPaywallScreen() {
     val textPrimary = Color.White
 
     LaunchedEffect(Unit) {
-        Botsi.getPaywall(
-            placementId = app.botsiStorage.placementId,
-            successCallback = { paywall ->
-                Botsi.getPaywallProducts(
-                    paywall = paywall,
-                    successCallback = { products ->
-                        state = UiState(paywall = paywall, products = products)
-                        isLoading = false
+        Botsi.activate(
+            context = context,
+            apiKey = app.botsiStorage.appKey,
+            clearCache = clearCache,
+            successCallback = {
+                Botsi.getPaywall(
+                    placementId = app.botsiStorage.placementId,
+                    successCallback = { paywall ->
+                        Botsi.getPaywallProducts(
+                            paywall = paywall,
+                            successCallback = { products ->
+                                state = UiState(paywall = paywall, products = products)
+                                isLoading = false
+                            },
+                            errorCallback = { e -> error = e; isLoading = false }
+                        )
                     },
                     errorCallback = { e -> error = e; isLoading = false }
                 )
             },
-            errorCallback = { e -> error = e; isLoading = false }
+            errorCallback = { e ->
+                isLoading = false
+                context.toast(e.message.orEmpty())
+            }
         )
     }
 
@@ -549,6 +541,10 @@ private fun UiPaywallScreen() {
                             override fun onTimerEnd(actionId: String) {
                                 context.toast("Timer end $actionId")
                             }
+
+                            override fun onAwaitSubscriptionsParams(product: BotsiProduct): BotsiSubscriptionUpdateParameters? {
+                                return null
+                            }
                         },
                     )
                 }
@@ -559,7 +555,7 @@ private fun UiPaywallScreen() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ClassicScreen(navController: NavHostController) {
+private fun ClassicScreen(navController: NavHostController, clearCache: Boolean) {
     val context = LocalContext.current
     val app = remember { context.applicationContext as BotsiApp }
 
@@ -572,24 +568,37 @@ private fun ClassicScreen(navController: NavHostController) {
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
-        Botsi.getPaywall(
-            placementId = app.botsiStorage.placementId,
+        // Activate Botsi first, then load paywall and products
+        Botsi.activate(
+            context = context,
+            apiKey = app.botsiStorage.appKey,
+            clearCache = clearCache,
             successCallback = {
-                Botsi.getPaywallProducts(
-                    paywall = it,
-                    successCallback = { result ->
-                        isLoading = false
-                        products = result
+                Botsi.getPaywall(
+                    placementId = app.botsiStorage.placementId,
+                    successCallback = { paywall ->
+                        Botsi.getPaywallProducts(
+                            paywall = paywall,
+                            successCallback = { result ->
+                                isLoading = false
+                                products = result
+                            },
+                            errorCallback = {
+                                isError = true
+                                isLoading = false
+                            },
+                        )
                     },
                     errorCallback = {
                         isError = true
                         isLoading = false
-                    },
+                    }
                 )
             },
-            errorCallback = {
+            errorCallback = { e ->
                 isError = true
                 isLoading = false
+                context.toast(e.message.orEmpty())
             }
         )
     }
@@ -873,10 +882,22 @@ private fun Context.toast(message: String) {
     }
 }
 
-private fun navigateOnUi(navController: NavHostController, route: String) {
+private fun navigateOnUi(navController: NavHostController, route: String, clearCache: Boolean = false) {
     if (Looper.myLooper() == Looper.getMainLooper()) {
-        navController.navigate(route)
+        val target = when (route) {
+            "ui" -> "ui/${clearCache}"
+            "classic" -> "classic/${clearCache}"
+            else -> route
+        }
+        navController.navigate(target)
     } else {
-        Handler(Looper.getMainLooper()).post { navController.navigate(route) }
+        Handler(Looper.getMainLooper()).post {
+            val target = when (route) {
+                "ui" -> "ui/${clearCache}"
+                "classic" -> "classic/${clearCache}"
+                else -> route
+            }
+            navController.navigate(target)
+        }
     }
 }

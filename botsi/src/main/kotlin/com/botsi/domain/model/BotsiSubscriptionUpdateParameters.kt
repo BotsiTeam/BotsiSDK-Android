@@ -55,8 +55,8 @@ import androidx.annotation.Keep
 @Keep
 data class BotsiSubscriptionUpdateParameters(
     val oldSubVendorProductId: String,
-    val isOfferPersonalized: Boolean,
-    val obfuscatedAccountId: String?,
-    val obfuscatedProfileId: String?,
+    val isOfferPersonalized: Boolean = false,
+    val obfuscatedAccountId: String? = null,
+    val obfuscatedProfileId: String? = null,
     val replacementMode: BotsiReplacementMode = BotsiReplacementMode.WITHOUT_PRORATION,
 )

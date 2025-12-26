@@ -1,8 +1,6 @@
 package com.botsi.view.handler
 
 import com.botsi.domain.model.BotsiProduct
-import com.botsi.domain.model.BotsiProfile
-import com.botsi.domain.model.BotsiPurchase
 
 /**
  * Interface for handling click actions in Botsi paywall components.

@@ -1,7 +1,9 @@
 package com.botsi.view.handler
 
+import com.botsi.domain.model.BotsiProduct
 import com.botsi.domain.model.BotsiProfile
 import com.botsi.domain.model.BotsiPurchase
+import com.botsi.domain.model.BotsiSubscriptionUpdateParameters
 
 /**
  * Interface for handling public events from the Botsi SDK.
@@ -87,4 +89,6 @@ interface BotsiPublicEventHandler {
      * @param actionId The unique identifier of the action whose timer has ended
      */
     fun onTimerEnd(actionId: String)
+
+    fun onAwaitSubscriptionsParams(product: BotsiProduct): BotsiSubscriptionUpdateParameters?
 }
