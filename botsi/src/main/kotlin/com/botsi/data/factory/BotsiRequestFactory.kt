@@ -8,7 +8,6 @@ import com.botsi.data.model.dto.BotsiPurchasableProductDto
 import com.botsi.data.model.dto.BotsiPurchaseRecordDto
 import com.botsi.data.model.dto.BotsiUpdateProfileParametersDto
 import com.botsi.data.model.request.BotsiRequest
-import com.botsi.data.model.request.BotsiSendEventRequest
 import com.botsi.domain.model.BotsiPurchase
 import com.google.gson.Gson
 
@@ -114,7 +113,7 @@ internal class BotsiRequestFactory(
         buildRequest {
             method = BotsiRequest.Method.POST
             endPoint = "events"
-            body = gson.toJson(BotsiSendEventRequest.create(events))
+            body = gson.toJson(events)
         }
 
     @JvmSynthetic

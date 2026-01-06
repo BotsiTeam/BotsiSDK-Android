@@ -77,7 +77,7 @@ private fun BotsiLogo(modifier: Modifier = Modifier) {
     ) {
         // Circle icon
         Image(
-            painter = painterResource(com.botsi.example.R.drawable.logo),
+            painter = painterResource(com.botsi.example.R.drawable.ic_launcher_foreground),
             contentDescription = null
         )
 
@@ -468,86 +468,84 @@ private fun UiPaywallScreen(clearCache: Boolean) {
     }
 
     Scaffold(containerColor = backgroundDark) { padding ->
-        Box(Modifier.padding(padding)) {
-            if (isLoading) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = accentBlue)
-                }
-            } else if (error != null) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Error: ${error?.message ?: "unknown"}", color = textPrimary)
-                }
-            } else {
-                MaterialTheme {
-                    BotsiPaywallEntryPoint(
-                        viewConfig = BotsiViewConfig(
-                            paywall = state.paywall,
-                            products = state.products,
-                        ),
-                        timerResolver = object : BotsiTimerResolver {
-                            override fun timerEndAtDate(timerId: String): Date {
-                                val durationMillis = parseTimeString(timerId)
-                                return Date(System.currentTimeMillis() + durationMillis)
-                            }
+        if (isLoading) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = accentBlue)
+            }
+        } else if (error != null) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("Error: ${error?.message ?: "unknown"}", color = textPrimary)
+            }
+        } else {
+            MaterialTheme {
+                BotsiPaywallEntryPoint(
+                    viewConfig = BotsiViewConfig(
+                        paywall = state.paywall,
+                        products = state.products,
+                    ),
+                    timerResolver = object : BotsiTimerResolver {
+                        override fun timerEndAtDate(timerId: String): Date {
+                            val durationMillis = parseTimeString(timerId)
+                            return Date(System.currentTimeMillis() + durationMillis)
+                        }
 
-                            private fun parseTimeString(timeString: String): Long {
-                                if (timeString.isBlank()) return 0L
-                                return try {
-                                    val cleanedTime = timeString.trim().lowercase()
-                                    var totalMilliseconds = 0L
-                                    Regex("""(\d+)d""").find(cleanedTime)
-                                        ?.let { m -> totalMilliseconds += m.groupValues[1].toInt() * 86400 * 1000L }
-                                    Regex("""(\d+)h""").find(cleanedTime)
-                                        ?.let { m -> totalMilliseconds += m.groupValues[1].toInt() * 3600 * 1000L }
-                                    Regex("""(\d+)m""").find(cleanedTime)
-                                        ?.let { m -> totalMilliseconds += m.groupValues[1].toInt() * 60 * 1000L }
-                                    Regex("""(\d+)s""").find(cleanedTime)
-                                        ?.let { m -> totalMilliseconds += m.groupValues[1].toInt() * 1000L }
-                                    if (totalMilliseconds == 0L) cleanedTime.toIntOrNull()
-                                        ?.let { it * 1000L } ?: 0L else totalMilliseconds
-                                } catch (_: Exception) {
-                                    3600 * 1000L
-                                }
+                        private fun parseTimeString(timeString: String): Long {
+                            if (timeString.isBlank()) return 0L
+                            return try {
+                                val cleanedTime = timeString.trim().lowercase()
+                                var totalMilliseconds = 0L
+                                Regex("""(\d+)d""").find(cleanedTime)
+                                    ?.let { m -> totalMilliseconds += m.groupValues[1].toInt() * 86400 * 1000L }
+                                Regex("""(\d+)h""").find(cleanedTime)
+                                    ?.let { m -> totalMilliseconds += m.groupValues[1].toInt() * 3600 * 1000L }
+                                Regex("""(\d+)m""").find(cleanedTime)
+                                    ?.let { m -> totalMilliseconds += m.groupValues[1].toInt() * 60 * 1000L }
+                                Regex("""(\d+)s""").find(cleanedTime)
+                                    ?.let { m -> totalMilliseconds += m.groupValues[1].toInt() * 1000L }
+                                if (totalMilliseconds == 0L) cleanedTime.toIntOrNull()
+                                    ?.let { it * 1000L } ?: 0L else totalMilliseconds
+                            } catch (_: Exception) {
+                                3600 * 1000L
                             }
-                        },
-                        eventHandler = object : BotsiPublicEventHandler {
-                            override fun onLoginAction() {
-                                context.toast("Login action clicked")
-                            }
+                        }
+                    },
+                    eventHandler = object : BotsiPublicEventHandler {
+                        override fun onLoginAction() {
+                            context.toast("Login action clicked")
+                        }
 
-                            override fun onCustomAction(actionId: String) {
-                                context.toast("$actionId clicked")
-                            }
+                        override fun onCustomAction(actionId: String) {
+                            context.toast("$actionId clicked")
+                        }
 
-                            override fun onSuccessRestore(profile: com.botsi.domain.model.BotsiProfile) {
-                                context.toast("Restore success")
-                            }
+                        override fun onSuccessRestore(profile: com.botsi.domain.model.BotsiProfile) {
+                            context.toast("Restore success")
+                        }
 
-                            override fun onErrorRestore(error: Throwable) {
-                                context.toast("Restore error ${error.message}")
-                            }
+                        override fun onErrorRestore(error: Throwable) {
+                            context.toast("Restore error ${error.message}")
+                        }
 
-                            override fun onSuccessPurchase(
-                                profile: com.botsi.domain.model.BotsiProfile,
-                                purchase: com.botsi.domain.model.BotsiPurchase
-                            ) {
-                                context.toast("Purchase success")
-                            }
+                        override fun onSuccessPurchase(
+                            profile: com.botsi.domain.model.BotsiProfile,
+                            purchase: com.botsi.domain.model.BotsiPurchase
+                        ) {
+                            context.toast("Purchase success")
+                        }
 
-                            override fun onErrorPurchase(error: Throwable) {
-                                context.toast("Purchase error ${error.message}")
-                            }
+                        override fun onErrorPurchase(error: Throwable) {
+                            context.toast("Purchase error ${error.message}")
+                        }
 
-                            override fun onTimerEnd(actionId: String) {
-                                context.toast("Timer end $actionId")
-                            }
+                        override fun onTimerEnd(actionId: String) {
+                            context.toast("Timer end $actionId")
+                        }
 
-                            override fun onAwaitSubscriptionsParams(product: BotsiProduct): BotsiSubscriptionUpdateParameters? {
-                                return null
-                            }
-                        },
-                    )
-                }
+                        override fun onAwaitSubscriptionsParams(product: BotsiProduct): BotsiSubscriptionUpdateParameters? {
+                            return null
+                        }
+                    },
+                )
             }
         }
     }

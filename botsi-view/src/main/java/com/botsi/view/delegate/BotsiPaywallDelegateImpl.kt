@@ -66,8 +66,6 @@ internal class BotsiPaywallDelegateImpl(
             is BotsiPaywallUiAction.Load -> {
                 _uiState.update { BotsiPaywallUiState.Loading }
 
-                Botsi.getProfile(successCallback = {})
-
                 Botsi.getPaywallViewConfiguration(
                     paywallId = action.paywall.id,
                     successCallback = {

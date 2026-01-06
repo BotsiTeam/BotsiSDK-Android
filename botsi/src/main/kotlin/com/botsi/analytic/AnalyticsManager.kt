@@ -31,7 +31,7 @@ internal class AnalyticsManager(
     private val installationMetaRetrieverService: BotsiInstallationMetaRetrieverService,
 ) : AnalyticsTracker {
 
-    private val eventFlow = MutableSharedFlow<AnalyticsEvent>()
+    private val eventFlow = MutableSharedFlow<AnalyticsEvent>(extraBufferCapacity = 1)
 
     init {
         startProcessingEvents()
@@ -41,9 +41,8 @@ internal class AnalyticsManager(
     private fun startProcessingEvents() {
         launch {
             eventFlow
-                .bufferList(Duration.convert(30.0, DurationUnit.MINUTES, DurationUnit.MILLISECONDS).toLong())
-                .flatMapConcat { events ->
-                    sendData(events)
+                .flatMapConcat { event ->
+                    sendData(listOf(event))
                         .retryIfNecessary(DEFAULT_RETRY_COUNT)
                 }
                 .collect()
@@ -52,8 +51,9 @@ internal class AnalyticsManager(
 
     override fun trackEvent(event: AnalyticsEvent) {
         launch {
-            val meta = installationMetaRetrieverService.installationMetaFlow(storageManager.deviceId)
-                .first()
+            val meta =
+                installationMetaRetrieverService.installationMetaFlow(storageManager.deviceId)
+                    .first()
             eventFlow.tryEmit(
                 event.copy(
                     profileId = storageManager.profileId,
