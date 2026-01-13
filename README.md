@@ -613,6 +613,9 @@ interface BotsiPublicEventHandler {
     fun onSuccessPurchase(profile: BotsiProfile, purchase: BotsiPurchase)
     fun onErrorPurchase(error: Throwable)
     fun onTimerEnd(actionId: String)
+    fun onAwaitSubscriptionsParams(product: BotsiProduct): BotsiSubscriptionUpdateParameters?
+    suspend fun onPurchaseProcessed(product: BotsiProduct): BotsiPurchaseResult
+    suspend fun onRestoreClick(): BotsiRestoreResult
 }
 ```
 
@@ -624,6 +627,25 @@ interface BotsiPublicEventHandler {
 - `onSuccessPurchase(profile, purchase)`: Called when purchase completes successfully
 - `onErrorPurchase(error)`: Called when purchase fails
 - `onTimerEnd(actionId)`: Called when countdown timer reaches zero
+- `onAwaitSubscriptionsParams(product)`: Called when the SDK needs additional parameters for a subscription update (e.g., when replacing an existing subscription).
+- `onPurchaseProcessed(product)`: Called when a purchase is being processed. Implement this to handle the purchase process manually. Return `BotsiPurchaseResult.NotImplemented` to let the SDK handle it.
+- `onRestoreClick()`: Called when the restore action is triggered. Implement this to handle the restore process manually. Return `BotsiRestoreResult.NotImplemented` to let the SDK handle it.
+
+### BotsiPurchaseResult
+
+Represents the result of a purchase operation handled by the application.
+
+- `Success(purchase: BotsiPurchase)`: Indicates a successful purchase.
+- `Error(exception: Throwable)`: Indicates that the purchase failed.
+- `NotImplemented`: Signals the SDK to perform its default purchase flow.
+
+### BotsiRestoreResult
+
+Represents the result of a restore operation handled by the application.
+
+- `Success(purchase: BotsiPurchase)`: Indicates a successful restore.
+- `Error(exception: Throwable)`: Indicates that the restore failed.
+- `NotImplemented`: Signals the SDK to perform its default restore flow.
 
 ### BotsiTimerResolver
 

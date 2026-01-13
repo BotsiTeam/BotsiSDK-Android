@@ -18,6 +18,7 @@ import androidx.media3.common.util.UnstableApi
 import com.botsi.Botsi
 import com.botsi.domain.model.BotsiProduct
 import com.botsi.domain.model.BotsiProfile
+import com.botsi.domain.model.BotsiPurchase
 import com.botsi.domain.model.BotsiSubscriptionUpdateParameters
 import com.botsi.view.BotsiViewConfig
 import com.botsi.view.delegate.BotsiPaywallDelegate
@@ -25,6 +26,8 @@ import com.botsi.view.di.BotsiPaywallDIManager
 import com.botsi.view.handler.BotsiActionHandler
 import com.botsi.view.handler.BotsiPublicEventHandler
 import com.botsi.view.isNotEmpty
+import com.botsi.view.model.BotsiPurchaseResult
+import com.botsi.view.model.BotsiRestoreResult
 import com.botsi.view.model.ui.BotsiPaywallUiAction
 import com.botsi.view.model.ui.BotsiPaywallUiSideEffect
 import com.botsi.view.timer.BotsiTimerManager
@@ -32,6 +35,8 @@ import com.botsi.view.timer.BotsiTimerResolver
 import com.botsi.view.ui.compose.composable.BotsiPaywallScreenComposable
 import com.botsi.view.utils.findActivity
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withTimeout
 
 /**
  * Main entry point composable for displaying Botsi paywalls in Jetpack Compose applications.
@@ -135,11 +140,16 @@ fun BotsiPaywallEntryPoint(
         }
 
         // Handle restore purchases by calling the Botsi SDK and forwarding results
-        override fun onRestoreClick() {
-            Botsi.restorePurchases(
-                successCallback = { eventHandler?.onSuccessRestore(it) },
-                errorCallback = { eventHandler?.onErrorRestore(it) }
-            )
+        override suspend fun onRestoreClick(): BotsiRestoreResult {
+            return eventHandler?.onRestoreClick() ?: BotsiRestoreResult.NotImplemented
+        }
+
+        override fun onSuccessRestore(profile: BotsiProfile) {
+            eventHandler?.onSuccessRestore(profile)
+        }
+
+        override fun onErrorRestore(error: Throwable) {
+            eventHandler?.onErrorRestore(error)
         }
 
         // Handle external link clicks by opening them in the default browser
@@ -163,24 +173,25 @@ fun BotsiPaywallEntryPoint(
             eventHandler?.onTimerEnd(customActionId)
         }
 
-        // Handle purchase clicks by initiating the purchase flow through Botsi SDK
-        override fun onPurchaseClick(product: BotsiProduct) {
-            context.findActivity()?.let {
-                Botsi.makePurchase(
-                    activity = it,
-                    product = product,
-                    subscriptionUpdateParams = eventHandler?.onAwaitSubscriptionsParams(product),
-                    callback = { profile, purchase ->
-                        eventHandler?.onSuccessPurchase(
-                            profile,
-                            purchase
-                        )
-                    },
-                    errorCallback = { error ->
-                        eventHandler?.onErrorPurchase(error)
-                    }
-                )
-            }
+        override suspend fun onPurchaseProcessed(
+            product: BotsiProduct,
+        ): BotsiPurchaseResult {
+            return eventHandler?.onPurchaseProcessed(product) ?: BotsiPurchaseResult.NotImplemented
+        }
+
+        override fun onSuccessPurchase(
+            profile: BotsiProfile,
+            purchase: BotsiPurchase
+        ) {
+            eventHandler?.onSuccessPurchase(profile, purchase)
+        }
+
+        override fun onErrorPurchase(error: Throwable) {
+            eventHandler?.onErrorPurchase(error)
+        }
+
+        override fun onAwaitSubscriptionsParams(product: BotsiProduct): BotsiSubscriptionUpdateParameters? {
+            return eventHandler?.onAwaitSubscriptionsParams(product)
         }
     }
 

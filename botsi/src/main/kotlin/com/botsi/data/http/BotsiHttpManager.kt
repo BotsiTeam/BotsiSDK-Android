@@ -18,12 +18,22 @@ import com.google.gson.JsonElement
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
 
+/**
+ * Manager for handling HTTP requests to the Botsi backend.
+ *
+ * This class provides a high-level API for interacting with Botsi services,
+ * handling request creation via [BotsiRequestFactory] and execution via [BotsiHttpClient].
+ * It also handles response parsing and error propagation.
+ */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 internal class BotsiHttpManager(
     private val requestFactory: BotsiRequestFactory,
     private val httpClient: BotsiHttpClient,
 ) {
 
+    /**
+     * Creates a new user profile.
+     */
     fun createProfile(
         profileId: String,
         customerUserId: String?,
@@ -44,6 +54,9 @@ internal class BotsiHttpManager(
         }
     }
 
+    /**
+     * Retrieves an existing user profile.
+     */
     fun getProfile(profileId: String): BotsiProfileDto {
         val request = requestFactory.getProfileRequest(profileId = profileId)
         val response = httpClient.newRequest<BotsiBaseResponse<BotsiProfileDto>>(
@@ -56,6 +69,9 @@ internal class BotsiHttpManager(
         }
     }
 
+    /**
+     * Updates user profile attributes.
+     */
     fun updateProfile(
         profileId: String,
         customerUserId: String?,
@@ -76,6 +92,9 @@ internal class BotsiHttpManager(
         }
     }
 
+    /**
+     * Retrieves the list of all product IDs available in the system.
+     */
     fun getProductIds(): List<String> {
         val response = httpClient.newRequest<BotsiBaseResponse<List<String>>>(
             requestFactory.getProductIdsRequest(),
@@ -87,6 +106,9 @@ internal class BotsiHttpManager(
         }
     }
 
+    /**
+     * Retrieves paywall configuration for a placement.
+     */
     fun getPaywall(
         placementId: String,
         profileId: String,
@@ -101,6 +123,9 @@ internal class BotsiHttpManager(
         }
     }
 
+    /**
+     * Retrieves UI configuration for a paywall.
+     */
     fun getPaywallViewConfiguration(paywallId: Long): JsonElement {
         val response = httpClient.newRequest<JsonElement>(
             requestFactory.getViewConfigurationRequest(paywallId),
@@ -113,6 +138,9 @@ internal class BotsiHttpManager(
         }
     }
 
+    /**
+     * Validates a purchase with the backend.
+     */
     fun validatePurchase(
         profileId: String,
         purchase: BotsiPurchase,
@@ -133,6 +161,9 @@ internal class BotsiHttpManager(
         }
     }
 
+    /**
+     * Synchronizes purchase records with the backend.
+     */
     fun syncPurchases(
         profileId: String,
         purchases: List<Pair<BotsiPurchaseRecordDto, ProductDetails>>

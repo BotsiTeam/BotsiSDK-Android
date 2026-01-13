@@ -39,6 +39,16 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Semaphore
 import kotlin.coroutines.resumeWithException
 
+/**
+ * Manager for handling interactions with the Google Play Billing Library.
+ *
+ * This class encapsulates all billing-related operations, including querying product details,
+ * launching purchase flows, and processing purchase updates. It handles connection management
+ * and retry logic for billing service interactions.
+ *
+ * @property context The Android context used for initializing the billing client.
+ * @property logger The logger used for recording billing events and errors.
+ */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 internal class BotsiGoogleStoreManager(
     context: Context,
@@ -60,6 +70,12 @@ internal class BotsiGoogleStoreManager(
 
     private var purchaseCallback: BotsiPurchaseCallback? = null
 
+    /**
+     * Retrieves purchase history data for restoration.
+     *
+     * @param maxAttemptCount The maximum number of retry attempts.
+     * @return A flow emitting the list of purchase records found in history.
+     */
     @JvmSynthetic
     fun getPurchaseHistoryDataToRestore(maxAttemptCount: Long = DEFAULT_RETRY_COUNT): Flow<List<BotsiPurchaseRecordDto>> =
         getPurchaseHistoryDataToRestoreForType(BillingClient.ProductType.SUBS, maxAttemptCount)
@@ -210,6 +226,14 @@ internal class BotsiGoogleStoreManager(
         }
 
     @JvmSynthetic
+    /**
+     * Initiates a purchase flow for a product.
+     *
+     * @param activity The activity from which the purchase flow is launched.
+     * @param purchaseableProduct The product to be purchased.
+     * @param subscriptionUpdateParams Parameters for subscription updates (e.g., upgrade/downgrade).
+     * @param callback Callback for receiving purchase results.
+     */
     fun makePurchase(
         activity: Activity,
         purchaseableProduct: BotsiPurchasableProductDto,

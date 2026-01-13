@@ -24,6 +24,18 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.retryWhen
 
+/**
+ * Internal facade class that coordinates various interactors to provide SDK functionality.
+ *
+ * This class acts as a central hub between the public [Botsi] object and the internal
+ * business logic implemented in various interactors (profile, purchase, products).
+ * It handles coroutine launching, error propagation, and retry logic for SDK operations.
+ *
+ * @property profileInteractor Interactor for user profile management.
+ * @property purchaseInteractor Interactor for handling purchase and restore operations.
+ * @property productsInteractor Interactor for retrieving paywall and product information.
+ * @property analyticsTracker Tracker for logging SDK events and analytics.
+ */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 internal class BotsiFacade(
     private val profileInteractor: BotsiProfileInteractor,
@@ -32,6 +44,13 @@ internal class BotsiFacade(
     private val analyticsTracker: AnalyticsTracker,
 ) {
 
+    /**
+     * Activates the SDK for a user.
+     *
+     * @param customerUserId Optional user identifier to associate with the profile.
+     * @param successCallback Callback invoked when activation is complete.
+     * @param errorCallback Callback invoked if activation fails.
+     */
     @JvmSynthetic
     fun activate(
         customerUserId: String?,
@@ -50,6 +69,9 @@ internal class BotsiFacade(
         }
     }
 
+    /**
+     * Retrieves the current user profile.
+     */
     @JvmSynthetic
     fun getProfile(
         successCallback: ((BotsiProfile) -> Unit)? = null,
@@ -64,6 +86,9 @@ internal class BotsiFacade(
         }
     }
 
+    /**
+     * Updates user profile attributes.
+     */
     @JvmSynthetic
     fun updateProfile(
         params: BotsiUpdateProfileParameters?,
@@ -81,6 +106,9 @@ internal class BotsiFacade(
         }
     }
 
+    /**
+     * Initiates a purchase flow for a product.
+     */
     @JvmSynthetic
     fun makePurchase(
         activity: Activity,
@@ -102,6 +130,9 @@ internal class BotsiFacade(
         }
     }
 
+    /**
+     * Restores previous purchases for the user.
+     */
     @JvmSynthetic
     fun restorePurchases(
         successCallback: ((BotsiProfile) -> Unit)? = null,
@@ -116,6 +147,9 @@ internal class BotsiFacade(
         }
     }
 
+    /**
+     * Logs out the current user and clears user-specific data.
+     */
     @JvmSynthetic
     fun logout(
         successCallback: (() -> Unit)? = null,
@@ -133,6 +167,9 @@ internal class BotsiFacade(
         }
     }
 
+    /**
+     * Identifies the user with a specific customer identifier.
+     */
     @JvmSynthetic
     fun identify(
         customerUserId: String?,
@@ -151,6 +188,9 @@ internal class BotsiFacade(
         }
     }
 
+    /**
+     * Retrieves paywall configuration for a placement.
+     */
     fun getPaywall(
         placementId: String,
         successCallback: ((BotsiPaywall) -> Unit)? = null,
@@ -165,6 +205,9 @@ internal class BotsiFacade(
         }
     }
 
+    /**
+     * Retrieves products associated with a paywall, including store pricing.
+     */
     fun getPaywallProducts(
         paywall: BotsiPaywall,
         successCallback: ((List<BotsiProduct>) -> Unit)? = null,
@@ -179,6 +222,9 @@ internal class BotsiFacade(
         }
     }
 
+    /**
+     * Retrieves UI configuration for a paywall.
+     */
     fun getPaywallViewConfiguration(
         paywallId: Long,
         successCallback: ((JsonElement) -> Unit)? = null,
@@ -193,6 +239,9 @@ internal class BotsiFacade(
         }
     }
 
+    /**
+     * Logs a paywall impression event.
+     */
     fun logShowPaywall(
         paywall: BotsiPaywall,
     ) {
@@ -217,6 +266,9 @@ internal class BotsiFacade(
         }
     }
 
+    /**
+     * Clears all locally cached SDK data.
+     */
     fun clearCache() {
         launch {
             profileInteractor.clearCache()

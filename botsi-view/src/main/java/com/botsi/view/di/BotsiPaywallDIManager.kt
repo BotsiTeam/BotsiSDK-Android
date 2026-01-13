@@ -37,11 +37,21 @@ import com.botsi.view.timer.BotsiTimerResolver
 import com.botsi.view.timer.BotsiTimerStorage
 import com.botsi.view.timer.BotsiTimerStorageImpl
 
+/**
+ * Internal dependency injection manager for the Botsi paywall module.
+ *
+ * This class is responsible for creating and providing instances of various
+ * mappers, managers, and other components required for the paywall to function.
+ *
+ * @property context Android context used for initializing storage and other components.
+ * @property timerResolver Resolver for handling paywall timers.
+ * @property clickHandler Handler for processing paywall actions.
+ */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 internal class BotsiPaywallDIManager(
     private val context: Context,
     private val timerResolver: BotsiTimerResolver,
-    private val clickHandler: BotsiActionHandler? = null,
+    private val clickHandler: BotsiActionHandler,
 ) {
     private val dependencies = mutableMapOf<Class<*>, Any>()
 
@@ -179,7 +189,8 @@ internal class BotsiPaywallDIManager(
             put(
                 BotsiPaywallDelegate::class.java, BotsiPaywallDelegateImpl(
                     paywallBlocksMapper = inject(),
-                    eventHandler = clickHandler
+                    eventHandler = clickHandler,
+                    context = context,
                 )
             )
         }
