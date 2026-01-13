@@ -103,5 +103,5 @@ dependencies {
     implementation("androidx.compose.material3:material3") {
         exclude(module = "androidx.lifecycle:lifecycle-livedata-core")
     }
-    implementation("com.botsi:sdk:1.0.1")
+    compileOnly(project(":botsi"))
 }
