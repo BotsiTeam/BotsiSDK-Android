@@ -5,7 +5,7 @@ object BotsiGlobalVars {
     val jvmTarget = "17"
     val nameSpace = "com.botsi"
     val viewNameSpace = "com.botsi.view"
-    val sdkVersion = "1.0.3"
+    val sdkVersion = "1.0.4"
     val viewSdkVersion = "1.0.2"
     val artifactId = "sdk"
     val viewArtifactId = "view"
