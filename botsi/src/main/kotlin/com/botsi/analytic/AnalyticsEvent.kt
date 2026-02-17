@@ -25,4 +25,6 @@ internal data class AnalyticsEvent(
     val proceedsLocal: Double? = null,
     val purchaseCurrency: String? = null,
     val cancellationReason: String? = null,
+    val aiPricingModelId: Long? = null,
+    val isExperiment: Boolean? = null,
 )

@@ -54,7 +54,9 @@ internal class BotsiProductsInteractorImpl(
                     abTestId = paywall.abTestId ?: 0L,
                     remoteConfigs = paywall.remoteConfigs.orEmpty(),
                     revision = paywall.revision ?: 0L,
-                    sourceProducts = backendProducts
+                    sourceProducts = backendProducts,
+                    aiPricingModelId = paywall.aiPricingModelId,
+                    isExperiment = paywall.isExperiment ?: false,
                 )
             }
     }

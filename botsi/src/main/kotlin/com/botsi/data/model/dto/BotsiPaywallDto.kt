@@ -12,4 +12,6 @@ internal data class BotsiPaywallDto(
     val remoteConfigs: String? = null,
     val revision: Long? = null,
     val sourceProducts: List<BotsiProductDto>? = null,
+    val aiPricingModelId: Long? = null,
+    val isExperiment: Boolean? = null,
 )

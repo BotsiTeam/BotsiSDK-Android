@@ -258,6 +258,8 @@ internal class BotsiFacade(
                             paywallId = paywall.id.toString(),
                             abTestId = paywall.abTestId,
                             eventType = "paywall_shown",
+                            aiPricingModelId = paywall.aiPricingModelId,
+                            isExperiment = paywall.isExperiment,
                         )
                     )
                 }

@@ -39,6 +39,8 @@ import androidx.annotation.Keep
  * @param remoteConfigs JSON string containing remote configuration data for the paywall
  * @param revision The revision number of this paywall configuration
  * @param sourceProducts List of backend product configurations associated with this paywall
+ * @param aiPricingModelId Optional identifier for the AI pricing model used for this paywall
+ * @param isExperiment Whether this paywall is part of an AI pricing experiment
  * @since 1.0.0
  * @see com.botsi.Botsi.getPaywall
  * @see com.botsi.Botsi.getPaywallProducts
@@ -54,4 +56,6 @@ data class BotsiPaywall(
     val remoteConfigs: String,
     val revision: Long,
     val sourceProducts: List<BotsiBackendProduct>,
+    val aiPricingModelId: Long? = null,
+    val isExperiment: Boolean = false,
 )
