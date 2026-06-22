@@ -24,8 +24,8 @@ internal class BotsiRequest internal constructor(val baseUrl: String) {
     var headers: Set<Header>? = null
 
     @Keep
-    internal class Builder(private val baseRequest: BotsiRequest = BotsiRequest(baseUrl = "https://development.botsi.com/api/v1/sdk/")) {
-//    internal class Builder(private val baseRequest: BotsiRequest = BotsiRequest(baseUrl = "https://app.botsi.com/api/v1/sdk/")) {
+//    internal class Builder(private val baseRequest: BotsiRequest = BotsiRequest(baseUrl = "https://development.botsi.com/api/v1/sdk/")) {
+    internal class Builder(private val baseRequest: BotsiRequest = BotsiRequest(baseUrl = "https://app.botsi.com/api/v1/sdk/")) {
 
         @get:JvmSynthetic
         @set:JvmSynthetic

@@ -21,6 +21,10 @@ internal class BotsiValidateReceiptRequest(
     val abTestId: Long,
     @SerializedName("isSubscription")
     val isSubscription: Boolean,
+    @SerializedName("aiPricingModelId")
+    val aiPricingModelId: Long?,
+    @SerializedName("isExperiment")
+    val isExperiment: Boolean,
     @SerializedName("oneTimePurchaseOfferDetails")
     val oneTimePurchaseOfferDetails: BotsiOneTimePurchaseOfferDetailsRequestData? = null,
     @SerializedName("subscriptionOfferDetails")

@@ -184,6 +184,7 @@ internal class BotsiPaywallDelegateImpl(
                         context.findActivity()?.let {
                             Botsi.makePurchase(
                                 activity = it,
+                                paywall = (uiState.value as BotsiPaywallUiState.Success).paywall,
                                 product = selectedProduct!!,
                                 subscriptionUpdateParams = eventHandler.onAwaitSubscriptionsParams(
                                     selectedProduct!!

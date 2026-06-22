@@ -72,6 +72,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.botsi.Botsi
 import com.botsi.ai.ui.composables.BotsiAiEntryPoint
+import com.botsi.domain.model.BotsiPaywall
 import com.botsi.domain.model.BotsiProduct
 import com.botsi.domain.model.BotsiPurchase
 import com.botsi.example.BotsiApp
@@ -592,6 +593,7 @@ private fun ClassicScreen(navController: NavHostController, clearCache: Boolean)
     val app = remember { context.applicationContext as BotsiApp }
 
     var products by remember { mutableStateOf<List<BotsiProduct>>(emptyList()) }
+    var mPaywall by remember { mutableStateOf<BotsiPaywall?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     var isSuccessPayment by remember { mutableStateOf(false) }
     var isError by remember { mutableStateOf(false) }
@@ -609,6 +611,7 @@ private fun ClassicScreen(navController: NavHostController, clearCache: Boolean)
                 Botsi.getPaywall(
                     placementId = app.botsiStorage.placementId,
                     successCallback = { paywall ->
+                        mPaywall = paywall
                         Botsi.getPaywallProducts(
                             paywall = paywall,
                             successCallback = { result ->
@@ -798,19 +801,22 @@ private fun ClassicScreen(navController: NavHostController, clearCache: Boolean)
                         onClick = {
                             selectedSub?.let { sub ->
                                 isLoading = true
-                                Botsi.makePurchase(
-                                    activity = context.findActivity(),
-                                    product = sub,
-                                    callback = { _, _ ->
-                                        isSuccessPayment = true
-                                        isLoading = false
-                                        scope.launch { snackbarHostState.showSnackbar("Success") }
-                                    },
-                                    errorCallback = {
-                                        isLoading = false
-                                        isError = false
-                                    }
-                                )
+                                mPaywall?.let { paywall ->
+                                    Botsi.makePurchase(
+                                        activity = context.findActivity(),
+                                        product = sub,
+                                        paywall = paywall,
+                                        callback = { _, _ ->
+                                            isSuccessPayment = true
+                                            isLoading = false
+                                            scope.launch { snackbarHostState.showSnackbar("Success") }
+                                        },
+                                        errorCallback = {
+                                            isLoading = false
+                                            isError = false
+                                        }
+                                    )
+                                }
                             }
                         },
                     ) {

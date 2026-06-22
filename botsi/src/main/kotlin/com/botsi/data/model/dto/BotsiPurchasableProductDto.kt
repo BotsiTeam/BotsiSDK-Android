@@ -15,6 +15,8 @@ internal class BotsiPurchasableProductDto(
     val paywallId: Long,
     val placementId: String,
     val abTestId: Long,
+    val aiPricingModelId: Long?,
+    val isExperiment: Boolean,
     val currentSubOfferDetails: BotsiSubscriptionOfferDetails?,
     val currentOneTmeOfferDetails: BotsiOneTimePurchaseOfferDetails?,
     val productDetails: ProductDetails,

@@ -6,6 +6,7 @@ import com.botsi.data.model.dto.BotsiProfileDto
 import com.botsi.data.model.dto.BotsiPurchasableProductDto
 import com.botsi.data.model.dto.BotsiSubscriptionUpdateParametersDto
 import com.botsi.data.model.dto.BotsiUpdateProfileParametersDto
+import com.botsi.domain.model.BotsiPaywall
 import com.botsi.domain.model.BotsiProduct
 import com.botsi.domain.model.BotsiProfile
 import com.botsi.domain.model.BotsiPurchasableProduct
@@ -118,6 +119,7 @@ internal fun BotsiSubscriptionUpdateParameters.toDto(): BotsiSubscriptionUpdateP
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 internal fun BotsiProduct.toPurchasableProduct(
     productDetails: ProductDetails,
+    paywall: BotsiPaywall,
 ): BotsiPurchasableProduct {
     return BotsiPurchasableProduct(
         productId = productId,
@@ -126,6 +128,8 @@ internal fun BotsiProduct.toPurchasableProduct(
         abTestId = abTestId,
         paywallId = paywallId,
         isConsumable = isConsumable,
+        isExperiment = paywall.isExperiment,
+        aiPricingModelId = paywall.aiPricingModelId,
         currentSubOfferDetails = subscriptionOffer,
         currentOneTmeOfferDetails = onTimePurchaseOffers,
         productDetails = productDetails,
@@ -144,6 +148,8 @@ internal fun BotsiPurchasableProduct.toDto(): BotsiPurchasableProductDto {
         placementId = placementId,
         paywallId = paywallId,
         abTestId = abTestId,
+        aiPricingModelId = aiPricingModelId,
+        isExperiment = isExperiment,
     )
 }
 

@@ -33,6 +33,8 @@ internal class BotsiRequestDataFactory {
             paywallId = product.paywallId,
             abTestId = product.abTestId,
             isSubscription = product.currentSubOfferDetails != null,
+            isExperiment = product.isExperiment,
+            aiPricingModelId = product.aiPricingModelId,
             oneTimePurchaseOfferDetails = product
                 .currentOneTmeOfferDetails
                 ?.let { oneTime ->

@@ -3,6 +3,7 @@ package com.botsi.domain.interactor.purchase
 import android.app.Activity
 import androidx.annotation.RestrictTo
 import com.android.billingclient.api.ProductDetails
+import com.botsi.domain.model.BotsiPaywall
 import com.botsi.domain.model.BotsiProduct
 import com.botsi.domain.model.BotsiProfile
 import com.botsi.domain.model.BotsiPurchase
@@ -15,6 +16,7 @@ internal interface BotsiPurchaseInteractor {
     fun makePurchase(
         activity: Activity,
         product: BotsiProduct,
+        paywall: BotsiPaywall,
         subscriptionUpdateParams: BotsiSubscriptionUpdateParameters?,
     ): Flow<Pair<BotsiProfile, BotsiPurchase>>
 

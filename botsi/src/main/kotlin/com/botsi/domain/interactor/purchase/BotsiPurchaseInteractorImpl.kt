@@ -11,6 +11,7 @@ import com.botsi.domain.interactor.profile.BotsiProfileInteractor
 import com.botsi.domain.mapper.toDomain
 import com.botsi.domain.mapper.toDto
 import com.botsi.domain.mapper.toPurchasableProduct
+import com.botsi.domain.model.BotsiPaywall
 import com.botsi.domain.model.BotsiProduct
 import com.botsi.domain.model.BotsiProfile
 import com.botsi.domain.model.BotsiPurchasableProduct
@@ -42,6 +43,7 @@ internal class BotsiPurchaseInteractorImpl(
     override fun makePurchase(
         activity: Activity,
         product: BotsiProduct,
+        paywall: BotsiPaywall,
         subscriptionUpdateParams: BotsiSubscriptionUpdateParameters?,
     ): Flow<Pair<BotsiProfile, BotsiPurchase>> {
         return googlePlayManager.queryInfoForProduct(product.productId, product.type)
@@ -49,6 +51,7 @@ internal class BotsiPurchaseInteractorImpl(
                 val purchasableProduct = product
                     .toPurchasableProduct(
                         productDetails,
+                        paywall
                     )
                 flow {
                     emit(

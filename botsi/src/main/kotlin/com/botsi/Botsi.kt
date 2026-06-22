@@ -519,6 +519,7 @@ object Botsi {
     fun makePurchase(
         activity: Activity,
         product: BotsiProduct,
+        paywall: BotsiPaywall,
         subscriptionUpdateParams: BotsiSubscriptionUpdateParameters? = null,
         callback: (BotsiProfile, BotsiPurchase) -> Unit,
         errorCallback: ((Throwable) -> Unit)? = null,
@@ -527,6 +528,7 @@ object Botsi {
         facade.makePurchase(
             activity,
             product,
+            paywall,
             subscriptionUpdateParams,
             callback,
             errorCallback

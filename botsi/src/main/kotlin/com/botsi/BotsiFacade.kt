@@ -113,6 +113,7 @@ internal class BotsiFacade(
     fun makePurchase(
         activity: Activity,
         product: BotsiProduct,
+        paywall: BotsiPaywall,
         subscriptionUpdateParams: BotsiSubscriptionUpdateParameters?,
         successCallback: ((BotsiProfile, BotsiPurchase) -> Unit)? = null,
         errorCallback: ((Throwable) -> Unit)? = null,
@@ -122,6 +123,7 @@ internal class BotsiFacade(
                 purchaseInteractor.makePurchase(
                     activity,
                     product,
+                    paywall,
                     subscriptionUpdateParams,
                 )
             )
